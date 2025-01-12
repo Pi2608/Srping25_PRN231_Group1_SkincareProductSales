@@ -1,0 +1,20 @@
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.swp
+
+# Logs
+*.log
+
+# Visual Studio working files
+.vscode/
+.vs/
+
+# Environment files
+.env
+
+# Misc
+.DS_Store
