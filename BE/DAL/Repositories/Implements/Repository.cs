@@ -62,7 +62,7 @@ namespace DAL.Repositories.Implements
             return query;
         }
 
-        public async Task<T> GetById(Guid Id, bool noTracked = false, params string[] includeProperties)
+        public async Task<T> GetByIdAsync(Guid Id, bool noTracked = false, params string[] includeProperties)
         {
             IQueryable<T> query;
             if (noTracked is true)
@@ -85,7 +85,7 @@ namespace DAL.Repositories.Implements
             return entity;
         }
 
-        public Task<T> GetWithCondition(Expression<Func<T, bool>>? expression, bool noTracked = false, params string[] includeProperties)
+        public Task<T> GetWithConditionAsync(Expression<Func<T, bool>>? expression, bool noTracked = false, params string[] includeProperties)
         {
             var result = _dbSet.Where(expression);
             if (includeProperties is not null)
