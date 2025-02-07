@@ -29,7 +29,50 @@ namespace DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //TODO
+            //UserModel
+            modelBuilder.Entity<User>()
+                        .HasOne(user => user.Role)
+                        .WithMany(role => role.Users)
+                        .HasForeignKey(user => user.RoleId).OnDelete(DeleteBehavior.NoAction);
+
+
+            //ProductModel
+            modelBuilder.Entity<ProductDetail>()
+                        .HasOne(detail => detail.Product)
+                        .WithMany(product => product.ProductDetails)
+                        .HasForeignKey(detail => detail.ProductId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<RatingReview>()
+                        .HasOne(review => review.Product)
+                        .WithMany(product => product.RatingReviews)
+                        .HasForeignKey(review => review.ProductId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ProductCategory>()
+                        .HasOne(pc => pc.Product)
+                        .WithMany(product => product.ProductCategories)
+                        .HasForeignKey(pc => pc.ProductId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ProductCategory>()
+                        .HasOne(pc => pc.Category)
+                        .WithMany(category => category.ProductCategories)
+                        .HasForeignKey(pc => pc.CategoryId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<ProductCategory>().HasKey(pc => new { pc.ProductId, pc.CategoryId });
+
+            //OrderModel
+            modelBuilder.Entity<OrderDetail>()
+                        .HasOne(od => od.Product)
+                        .WithMany(product => product.OrderDetails)
+                        .HasForeignKey(od => od.ProductId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<OrderDetail>()
+                        .HasOne(od => od.Order)
+                        .WithMany(order => order.OrderDetails)
+                        .HasForeignKey(od => od.OrderId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<OrderVoucher>()
+                        .HasOne(voucher => voucher.Order)
+                        .WithMany(order => order.OrderVouchers)
+                        .HasForeignKey(voucher => voucher.OrderId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<OrderVoucher>()
+                        .HasOne(ov => ov.Voucher)
+                        .WithMany(voucher => voucher.OrderVouchers)
+                        .HasForeignKey(ov => ov.VoucherId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<OrderVoucher>().HasKey(ov => new { ov.OrderId, ov.VoucherId });
         }
     }
 }
