@@ -1,6 +1,8 @@
-﻿namespace DAL.Repositories.Interfaces.IUserRepos
+﻿using DAL.Models.UserModel;
+
+namespace DAL.Repositories.Interfaces.IUserRepos
 {
-    internal interface IRoleRepository
+    public interface IRoleRepository : IRepository<Role>
     {
     }
 }

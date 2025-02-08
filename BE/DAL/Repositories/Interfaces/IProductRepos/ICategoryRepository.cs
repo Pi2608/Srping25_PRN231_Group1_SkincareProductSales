@@ -1,6 +1,8 @@
-﻿namespace DAL.Repositories.Interfaces.IProductRepos
+﻿using DAL.Models.ProductModel;
+
+namespace DAL.Repositories.Interfaces.IProductRepos
 {
-    internal interface ICategoryRepository
+    public interface ICategoryRepository : IRepository<Category>
     {
     }
 }

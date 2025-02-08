@@ -1,6 +1,8 @@
-﻿namespace DAL.Repositories.Interfaces.IOrderRepos
+﻿using DAL.Models.OrderModel;
+
+namespace DAL.Repositories.Interfaces.IOrderRepos
 {
-    internal interface IVoucherRepository
+    public interface IVoucherRepository : IRepository<Voucher>
     {
     }
 }

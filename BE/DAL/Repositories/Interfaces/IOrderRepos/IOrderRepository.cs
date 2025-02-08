@@ -1,6 +1,8 @@
-﻿namespace DAL.Repositories.Interfaces.IOrderRepos
+﻿using DAL.Models.OrderModel;
+
+namespace DAL.Repositories.Interfaces.IOrderRepos
 {
-    internal interface IOrderRepository
+    public interface IOrderRepository : IRepository<Order>
     {
     }
 }
