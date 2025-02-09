@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.ResolveConnectionString(connectionString);
+builder.Services.ResolveBussinessLogicInstance();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
