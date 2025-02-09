@@ -1,0 +1,39 @@
+.home-header {
+    background-color: #f8f9fa;
+    padding: 12px 25px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.home-header p {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.home-header nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.home-header nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+.home-header nav ul li a {
+    font-size: 20px;
+    text-decoration: none;
+    color: #333;
+    transition: color 0.5s;
+}
+
+.home-header nav ul li a:hover {
+    color: #ff4444;
+}
+
+.home-header .ult {
+    display: flex;
+    gap: 10px;
+}
