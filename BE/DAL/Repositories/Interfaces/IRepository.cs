@@ -11,6 +11,6 @@ namespace DAL.Repositories.Interfaces
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> values);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        Task DeleteAsync(T entity, bool isHardDelete = false);
     }
 }
