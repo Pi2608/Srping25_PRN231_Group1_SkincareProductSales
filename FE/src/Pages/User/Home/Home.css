@@ -1,0 +1,71 @@
+.home {
+    font-family: Arial, sans-serif;
+}
+
+.home-banner {
+    width: 100%;
+    height: 75vh;
+    padding: 0 50px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    background: linear-gradient(-10deg, #ff996d 34%, #ee3e31 73%, #ff0051 100%);
+}
+
+.home-banner > .banner-left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.home-banner > .banner-left > p {
+    font-size: 32px;
+    font-weight: 600;
+    color: #ddd;    
+}
+
+.home-banner > .banner-left > .discover {
+    width: fit-content;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #282828;
+    border: none;
+    color: #ddd;
+    font-size: 20px;
+    font-weight: 500;
+    transform: translateX(-40%);
+    transition: all 0.4s;
+    cursor: pointer;
+}
+
+.home-banner > .banner-left > .discover:hover {
+    background-color: #ddd;
+    color: #282828;
+}
+
+.home-banner > .banner-right {
+    flex: 2;
+    height: 100%;
+}
+
+.home-banner > .banner-right img {
+    height: 75vh;
+}
+
+.about-company {
+    padding: 20px;
+}
+
+.product-list {
+    display: flex;
+    justify-content: space-around;
+}
+
+.product-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 30%;
+    text-align: center;
+}

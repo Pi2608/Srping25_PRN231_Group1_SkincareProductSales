@@ -1,0 +1,74 @@
+#reviews {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 24px; /* px-[24px] py-[32px] */
+    margin-top: 5rem; /* Equivalent to mt-20 (20 * 0.25rem) */
+    gap: 2rem; /* Equivalent to space-y-8 (8 * 0.25rem) */
+}
+
+#reviews .tittle {
+    font-weight: bold;
+    font-size: 1.5rem; /* Equivalent to text-2xl */
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Equivalent to tracking-wider */
+}
+
+#reviews .review-container {
+    width: 100%; /* Equivalent to w-full */
+}
+
+#reviews .swiper {
+    width: 100%;
+    padding: 2rem; /* Equivalent to p-[2rem] */
+}
+
+#reviews .review {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: white;
+    border-radius: 0.5rem; /* Equivalent to rounded-lg */
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    gap: 16px; /* Equivalent to gap-x-[16px] */
+    height: auto;
+    /* width: 300px; */
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05); /* Equivalent to shadow-xl */
+    /* gap: 1rem;  */
+}
+
+#reviews .review .img {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    top: -25px;
+    left: 45%;
+    border-radius: 50%; /* Equivalent to rounded-full */
+}
+
+#reviews .review .comment {
+    display: flex;
+    align-items: center;
+    font-size: 1rem; /* Equivalent to text-base */
+    font-weight: 500; /* Equivalent to font-medium */
+    letter-spacing: 0.025em; /* Equivalent to tracking-wide */
+    line-height: 1.625; /* Equivalent to leading-relaxed */
+}
+
+#reviews .review hr {
+    height: 1px;
+    width: 80%;
+    background-color: black;
+    border-style: solid;
+}
+
+#reviews .review .name {
+    display: flex;
+    align-items: center;
+    font-size: 1.125rem; /* Equivalent to text-lg */
+    font-weight: bold;
+    letter-spacing: 0.05em; /* Equivalent to tracking-wider */
+}
