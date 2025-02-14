@@ -35,5 +35,12 @@
 
 .home-header .ult {
     display: flex;
+    justify-content: center;
     gap: 10px;
+}
+
+.home-header .ult div:hover {
+    color: #ff4444;
+    cursor: pointer;
+    transition: all 0.2s;
 }

@@ -31,7 +31,7 @@ const Products = () => {
                                     <span className='name'>{product.name} <br></br></span>
                                     <span className='details'>{product.detail}</span>
                                 </div>
-                                <span className='price'>{product.price}$</span>
+                                <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.price)}VND</span>
                                 <div className='buy-btn'>Buy Now</div>
                             </div>
 
