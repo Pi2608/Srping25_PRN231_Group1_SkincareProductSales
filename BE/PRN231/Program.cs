@@ -1,4 +1,8 @@
-﻿using DAL.Context;
+﻿using BLL.Services.Implements.ProductServices;
+using BLL.Services.Interfaces.IProductServices;
+using DAL.Context;
+using DAL.Repositories.Implements.ProductRepos;
+using DAL.Repositories.Interfaces.IProductRepos;
 using PRN231.ResolveDependencies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
