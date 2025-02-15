@@ -92,12 +92,12 @@ const Register = () => {
         <div className="h-[100vh] flex items-center justify-center px-5 lg:px-0">
             <ToastContainer />
             <div className="flex justify-center flex-1 bg-white">
-                <div className="flex-1 hidden text-center md:flex">
-                    {/* <img
+                {/* <div className="flex-1 hidden text-center md:flex">
+                    <img
                         src="src\assets\logo.png"
                         className="w-[44rem] h-[43rem] bg-center bg-no-repeat bg-inherit rounded-lg justify-center items-center aspect-square"
-                    ></img> */}
-                </div>
+                    ></img>
+                </div> */}
                 <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-[2rem]  md:w-1/3">
                     <div className="flex flex-col items-center">
                         <div className="text-center">
