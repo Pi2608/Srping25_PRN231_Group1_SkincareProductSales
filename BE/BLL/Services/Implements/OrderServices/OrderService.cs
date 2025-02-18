@@ -2,6 +2,7 @@
 using DAL.Models.OrderModel;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Services.Implements.OrderServices
 {
@@ -42,7 +43,7 @@ namespace BLL.Services.Implements.OrderServices
         public async Task<List<Order>> GetAllOrder()
         {
             var orders = await _unitOfWork.OrderRepository.GetAllAsync(null, true);
-            if (orders is null)
+            if (orders.IsNullOrEmpty())
             {
                 throw new Exception("Orders is empty");
             }
