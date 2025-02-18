@@ -11,11 +11,5 @@ namespace DAL.Repositories.Implements.ProductRepos
         public ProductRepository(AppDbContext context) : base(context)
         {
         }
-
-        public async Task<Product> UpdateAsync(Product product)
-        {
-            await base.UpdateAsync(product);
-            return product;
-        }
     }
 }
