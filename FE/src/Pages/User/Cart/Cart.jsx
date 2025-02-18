@@ -7,6 +7,7 @@ import './Cart.css'
 
 const Cart = () => {
     const [cart, setCart] = useState(ProductsData);
+    
 
     const updateQuantity = (id, change) => {
         setCart((prevCart) =>
