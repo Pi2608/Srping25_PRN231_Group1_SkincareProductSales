@@ -28,10 +28,17 @@ namespace DAL.Repositories.Implements
             }
         }
 
-        public async Task DeleteAsync(T entity)
+        public async Task DeleteAsync(T entity, bool isHardDelete = false)
         {
-            entity.IsDeleted = true;
-            _dbSet.Update(entity);
+            if (isHardDelete)
+            {
+                _dbSet.Remove(entity);
+            }
+            else
+            {
+                entity.IsDeleted = true;
+                _dbSet.Update(entity);
+            }
         }
 
         public async Task<IQueryable<T>> GetAllAsync(Expression<Func<T, bool>>? expression = null, bool noTracked = false, params string[] includeProperties)

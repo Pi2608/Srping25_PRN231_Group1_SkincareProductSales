@@ -35,7 +35,6 @@ namespace DAL.Context
                         .WithMany(role => role.Users)
                         .HasForeignKey(user => user.RoleId).OnDelete(DeleteBehavior.NoAction);
 
-
             //ProductModel
             modelBuilder.Entity<ProductDetail>()
                         .HasOne(detail => detail.Product)
@@ -73,6 +72,29 @@ namespace DAL.Context
                         .WithMany(voucher => voucher.OrderVouchers)
                         .HasForeignKey(ov => ov.VoucherId).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<OrderVoucher>().HasKey(ov => new { ov.OrderId, ov.VoucherId });
+        }
+
+        public static void SeedData(AppDbContext context)
+        {
+            var existingRoles = context.Roles.Select(r => r.RoleName).ToHashSet();
+
+            var rolesToAdd = new List<Role>();
+
+            if (!existingRoles.Contains("Admin"))
+            {
+                rolesToAdd.Add(new Role { Id = Guid.NewGuid(), RoleName = "Admin" });
+            }
+
+            if (!existingRoles.Contains("Customer"))
+            {
+                rolesToAdd.Add(new Role { Id = Guid.NewGuid(), RoleName = "Customer" });
+            }
+
+            if (rolesToAdd.Count > 0)
+            {
+                context.Roles.AddRange(rolesToAdd);
+                context.SaveChanges();
+            }
         }
     }
 }
