@@ -5,6 +5,7 @@ import ProductsPage from './Pages/User/ProductsPage/ProductsPage.jsx'
 import Login from './Components/Login/Login.jsx'
 import Register from './Components/Register/Register.jsx'
 import Cart from './Pages/User/Cart/Cart.jsx'
+import ProductDetail from './Pages/User/ProductDetail/ProductDetail.jsx'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/cart' element={<Cart />} />
+        <Route path='/product' element={<ProductDetail />} />
     </Routes>
   )
 }

@@ -33,14 +33,38 @@
     color: #ff4444;
 }
 
-.home-header .ult {
+.home-header .ult{
+    width: 10%;
+}
+
+.home-header .ult .ult-item {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.home-header .ult .ult-item > div:hover {
+    color: #ff4444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.home-header .user {
     display: flex;
     justify-content: center;
     gap: 10px;
 }
 
-.home-header .ult div:hover {
-    color: #ff4444;
+.home-header .user > button {
+    border: 1px solid #000;
+    padding: 5px 10px;
+}
+
+.home-header .user > button:hover {
+    background-color: #ff4444;
+    color: #fff;
+    border: 1px solid #ff4444;
+    padding: 5px 10px;
     cursor: pointer;
     transition: all 0.2s;
 }

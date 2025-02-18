@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../AuthContext/AuthContext";
 // import layerImage from "../../assets/img4.png"; 
 
 const Login = () => {
@@ -13,9 +14,10 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+    const { login } = useAuth();
 
     const validateUsername = (username) => username.trim() !== "";
-    const validatePassword = (password) => password.length >= 8;
+    const validatePassword = (password) => password.length >= 5;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,34 +34,39 @@ const Login = () => {
 
         try {
             setLoading(true);
-            const response = await fetch(
-                "",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ username, password }),
-                }
-            );
+            // const response = await fetch(
+            //     "",
+            //     {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify({ username, password }),
+            //     }
+            // );
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(errorData.message || t("LoginFailed"));
+            const response = await login(username, password);
+            const data = await response;
+            // if (!response.ok) {
+            //     const errorData = await response;
+            //     toast.error(errorData.message || t("LoginFailed"));
+            //     return;
+            // }
+
+            if (!data) {
+                toast.error(t("LoginFailed"));
                 return;
             }
-
-            const data = await response.json();
             toast.success(data.message || t("LoginSuccess"));
+            navigate("/");
+            // localStorage.setItem("username", username);
 
-            localStorage.setItem("username", username);
-
-            if (data.role === "user") {
-                navigate("/user-homepage");
-            }
-            if (data.role === "admin") {
-                navigate("/admin");
-            }
+            // if (data.role === "user") {
+            //     navigate("/");
+            // }
+            // if (data.role === "admin") {
+            //     navigate("/admin");
+            // }
         } catch (error) {
             console.error("Login error:", error);
             toast.error(t("LoginFailed"));

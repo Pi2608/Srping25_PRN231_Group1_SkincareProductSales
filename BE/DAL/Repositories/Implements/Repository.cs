@@ -15,9 +15,10 @@ namespace DAL.Repositories.Implements
             _dbSet = context.Set<T>();
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             _dbSet.Add(entity);
+            return entity;
         }
 
         public async Task AddRangeAsync(IEnumerable<T> values)
