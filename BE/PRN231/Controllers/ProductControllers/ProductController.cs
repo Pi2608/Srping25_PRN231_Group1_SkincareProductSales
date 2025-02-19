@@ -1,61 +1,85 @@
 ﻿using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace PRN231.Controllers.ProductControllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
-
         public ProductController(IProductService productService)
         {
             _productService = productService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllProductsAsync();
-            return Ok(products);
+            try
+            {
+                var products = await _productService.GetAllProducts();
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null) return NotFound();
-            return Ok(product);
+            try
+            {
+                var product = await _productService.GetProductById(id);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create([FromBody] Product product)
-        //{
-        //    if (!ModelState.IsValid) return BadRequest(ModelState);
-        //    var createdProduct = await _productService.CreateProductAsync(product);
-        //    return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
-        //}
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Product product)
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] Product product)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var updatedProduct = await _productService.UpdateProductAsync(id, product);
-            if (updatedProduct == null) return NotFound();
-            return Ok(updatedProduct);
+            try
+            {
+                var result = await _productService.CreateProduct(product);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPut]
+        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] Product product)
         {
-            var success = await _productService.DeleteProductAsync(id);
-            if (!success) return NotFound();
-            return NoContent();
+            try
+            {
+                var result = await _productService.UpdateProduct(id, product);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = await _productService.DeleteProduct(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
     }
 }
