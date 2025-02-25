@@ -13,10 +13,10 @@ const Header = () => {
             <p>Skincare Haven</p>
             <nav>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="products">Products</a></li>
-                    <li><a href="about">About Us</a></li>
-                    <li><a href="contact">Contact</a></li>
+                    <li onClick={() => navigate("/")}>Home</li>
+                    <li onClick={() => navigate("/products")}>Products</li>
+                    <li onClick={() => navigate("/about")}>About Us</li>
+                    <li onClick={() => navigate("/contact")}>Contact</li>
                 </ul>
             </nav>
             <div className="ult">

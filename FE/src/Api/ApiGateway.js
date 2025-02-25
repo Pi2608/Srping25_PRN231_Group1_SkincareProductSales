@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class ApiGateway {
-    static API_BASE = "https://localhost:7118/";
+    static API_BASE = "http://localhost:5276/";
 
     static axiosInstance = axios.create({
         baseURL: ApiGateway.API_BASE,

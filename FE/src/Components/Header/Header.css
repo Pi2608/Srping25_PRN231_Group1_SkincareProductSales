@@ -22,14 +22,15 @@
     margin: 0 10px;
 }
 
-.home-header nav ul li a {
+.home-header nav ul li {
     font-size: 20px;
     text-decoration: none;
     color: #333;
     transition: color 0.5s;
+    cursor: pointer;
 }
 
-.home-header nav ul li a:hover {
+.home-header nav ul li:hover {
     color: #ff4444;
 }
 

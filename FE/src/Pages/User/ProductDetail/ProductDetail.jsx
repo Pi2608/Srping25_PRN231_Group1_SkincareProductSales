@@ -1,30 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ProductDetail.css";
+import { useParams } from "react-router-dom";
 import Header from "../../../Components/Header/Header";
 import Footer from "../../../Components/Footer/Footer";
+import { ProductsData } from '../../../data/products';
 
 const ProductDetail = () => {
     const [selectedSize, setSelectedSize] = useState("100ml");
     const [quantity, setQuantity] = useState(1);
+
+    const { productId } = useParams();
+    const product = ProductsData.find(p => p.id == productId);
+
+    if (!product) {
+        return <div>Product not found.</div>;
+    }
+
+    useEffect(() => {
+        // window.screen.scrollTo(0,0);
+        window.scrollTo(0,0);
+    },[])
 
     return (
         <div id="product-detail">
             <Header />
             <div className="product-container">
                 <div className="product-image">
-                    <span className="badge">Best Seller</span>
-                    {/* <img src={productImage} alt="Oh My Bod! Sunscreen" /> */}
-                    <div className="img"></div>
+                    {/* <span className="badge">Best Seller</span> */}
+                    <img src={product.img} alt={product.name}/>
+                    {/* <div className="img"></div> */}
                 </div>
 
                 <div className="product-details">
-                    <h4 className="brand">EVERYDAY HUMANS</h4>
-                    <h1 className="title">Oh My Bod! Sunscreen Lotion</h1>
+                    <h4 className="brand">{product.detail}</h4>
+                    <h1 className="title">{product.name}</h1>
                     <div className="rating">
                         ⭐⭐⭐⭐⭐ <span>214 reviews</span>
                     </div>
                     <div className="price">
-                        <span className="current-price">$16.00</span>
+                        <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product.price)} VND</span>
                         {/* <span className="old-price">$20.00</span>
                         <span className="discount">20% OFF</span> */}
                     </div>
