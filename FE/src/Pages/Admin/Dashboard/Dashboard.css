@@ -1,0 +1,33 @@
+#db_container {
+    padding: 20px;
+}
+
+#db_container .stats {
+    display: flex;
+    gap: 15px;
+}
+
+#db_container .card {
+    background: white;
+    padding: 20px;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#db_container .chart {
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+#db_container .chart-placeholder {
+    height: 200px;
+    background: #bdc3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

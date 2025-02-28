@@ -1,0 +1,125 @@
+#user_mng {
+    padding: 20px;
+}
+
+#user_mng .table-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#user_mng .search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#user_mng .product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#user_mng .product-table tbody tr:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+#user_mng .product-table th,
+#user_mng .product-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+#user_mng .product-table th:first-child,
+#user_mng .product-table td:first-child {
+    text-align: center;
+}
+
+#user_mng .product-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+}
+
+#user_mng .rating {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+#user_mng .rating.perfect {
+    color: #28a745;
+}
+
+#user_mng .rating.very-good {
+    color: #17a2b8;
+}
+
+#user_mng .rating.good {
+    color: #ffc107;
+}
+
+#user_mng .rating.bad {
+    color: #dc3545;
+}
+
+#user_mng .switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 20px;
+}
+
+#user_mng .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+#user_mng .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+#user_mng .slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+#user_mng input:checked + .slider {
+    background-color: #28a745;
+}
+
+#user_mng input:checked + .slider:before {
+    transform: translateX(14px);
+}
+
+#user_mng .user-info {
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

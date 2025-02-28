@@ -23,7 +23,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> GetAllUser()
         {
             var users = await _userService.GetAllUsers();
