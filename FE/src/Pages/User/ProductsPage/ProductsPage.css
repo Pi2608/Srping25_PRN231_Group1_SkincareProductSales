@@ -1,19 +1,20 @@
 #product-page .product-container {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    padding: 1rem; 
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    padding: 1rem 5rem; 
     gap: 1rem;
 }
  
 #product-page .type {
     list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 1rem; 
+    gap: 3rem; 
     font-weight: 500; 
     font-size: 1.125rem; 
     letter-spacing: 0.025em; 
     line-height: 1.625; 
+    justify-content: center;
 }
 
 #product-page .menu {
@@ -22,7 +23,7 @@
 }
 
 #product-page .menu:hover {
-    color: #ffffff;
+    color: #ff996d;
 }
 
 #product-page .items {
@@ -36,21 +37,28 @@
 }
 
 #product-page .items .item {
-    width: 240px;
-    height: 150px;
+    width: 320px;
+    height: 200px;
     background-color: white;
     position: relative;
     overflow: hidden;
     padding: 1rem;
     display: flex;
+    justify-content: space-between;
+    border: 1px solid #000;
     border-radius: 0.75rem;
     gap: 2.25rem;
+    transition: all 0.25s ease-in-out;
+}
+
+#product-page .items .item:hover {
+    border: 1px solid #ff996d;
 }
 
 #product-page .item img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+    width: fit-content;
+    height: fit-content;
+    object-fit: contain;
     border-radius: 0.5rem;
 }
 
@@ -60,7 +68,7 @@
 }
 
 #product-page .item .product-info .name {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: bold;
     letter-spacing: 0.05em;
 }
@@ -77,34 +85,36 @@
 }
 
 #product-page .item .buy-btn {
+    width: fit-content;
     font-size: 1rem;
     font-weight: 400;
     border: 1px solid black;
     border-radius: 9999px;
     padding: 0.25rem 0.25rem;
     cursor: pointer;
-    transition: all 0.7s ease-in-out;
+    transition: all 0.25s ease-in-out;
     margin-top: 0.25rem;
 }
 
 #product-page .item .buy-btn:hover {
-    background-color: black;
+    background-color: #ff996d;
     color: white;
+    border: 1px solid #ff996d;
 }
 
 #product-page .img-container {
-    position: absolute;
+    /* position: absolute;
     top: 38px;
-    right: 0px;
+    right: 0px; */
     width: fit-content;
-    height: 176px;
-    transform: rotate(-20deg);
+    height: 200px;
+    /* transform: rotate(-20deg); */
 }
 
 #product-page .img-container img{
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 #product-page .items::-webkit-scrollbar {
