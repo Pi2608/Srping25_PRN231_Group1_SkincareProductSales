@@ -1,41 +1,70 @@
 ﻿using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
-using DAL.Repositories.Interfaces.IProductRepos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using DAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Services.Implements.ProductServices
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductService(IUnitOfWork unitOfWork)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<Product> CreateProduct(Product product)
         {
-            return await _productRepository.GetAllAsync();
+            var newProduct = await _unitOfWork.ProductRepository.AddAsync(product);
+            var process = await _unitOfWork.SaveChangeAsync();
+            if (process > 0)
+            {
+                return newProduct;
+            }
+            throw new Exception("Add fail");
         }
 
-        public async Task<Product?> GetProductByIdAsync(Guid id)
+        public async Task<bool> DeleteProduct(Guid id)
         {
-            return await _productRepository.GetByIdAsync(id);
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (product is null)
+            {
+                throw new Exception("Delete fail");
+            }
+            product.DeletedAt = DateTime.UtcNow;
+            await _unitOfWork.ProductRepository.DeleteAsync(product);
+            return true;
         }
 
-        //public async Task<Product> CreateProductAsync(Product product)
-        //{
-        //    return await _productRepository.AddAsync(product);
-        //}
-
-        public async Task<Product?> UpdateProductAsync(Guid id, Product product)
+        public async Task<List<Product>> GetAllProducts()
         {
-            var existingProduct = await _productRepository.GetByIdAsync(id);
-            if (existingProduct == null) return null;
+            var products = await _unitOfWork.ProductRepository.GetAllAsync(null, true);
+            if (products.IsNullOrEmpty())
+            {
+                throw new Exception("Products is empty");
+            }
+            return await products.ToListAsync();
+        }
 
+        public async Task<Product> GetProductById(Guid id)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (product is null)
+            {
+                throw new Exception("Product is null");
+            }
+            return product;
+        }
+
+        public async Task<Product> UpdateProduct(Guid id, Product product)
+        {
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id, true);
+            if (existingProduct is null)
+            {
+                throw new Exception("Product is null");
+            }
             existingProduct.Name = product.Name;
             existingProduct.Image = product.Image;
             existingProduct.ShortDescription = product.ShortDescription;
@@ -43,17 +72,15 @@ namespace BLL.Services.Implements.ProductServices
             existingProduct.RatingReviews = product.RatingReviews;
             existingProduct.ProductCategories = product.ProductCategories;
             existingProduct.OrderDetails = product.OrderDetails;
+            existingProduct.UpdateAt = DateTime.Now;
 
-            existingProduct = await _productRepository.UpdateAsync(existingProduct);
-            return existingProduct;
-        }
-
-        public async Task<bool> DeleteProductAsync(Guid id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null) return false;
-            await _productRepository.DeleteAsync(product);
-            return true;
+            await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
+            var process = await _unitOfWork.SaveChangeAsync();
+            if (process > 0)
+            {
+                return existingProduct;
+            }
+            throw new Exception("Update fail");
         }
     }
 }
