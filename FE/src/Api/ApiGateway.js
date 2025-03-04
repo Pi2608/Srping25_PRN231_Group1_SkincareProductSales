@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class ApiGateway {
-    static API_BASE = "http://localhost:5276/";
+    static API_BASE = "https://localhost:7118/";
 
     static axiosInstance = axios.create({
         baseURL: ApiGateway.API_BASE,
@@ -10,12 +10,26 @@ class ApiGateway {
         },
     });
 
-    // ✅ Set Authorization Token
     static setAuthToken(token) {
         ApiGateway.axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    // ✅ Login
+    static async register(newUser) {
+        try {
+            // const formData = new FormData();
+            // formData.append("username", newUser.username);
+            // formData.append("email", newUser.email);
+            // formData.append("password", newUser.password);
+            console.log(newUser);
+            const response = await ApiGateway.axiosInstance.post("User/Register", newUser);
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Registration error:", error);
+            return null;
+        }
+    }
+
     static async login(email, password) {
         try {
             const response = await ApiGateway.axiosInstance.get(`User/Login?email=${email}&password=${password}`);
@@ -26,7 +40,6 @@ class ApiGateway {
         }
     }
 
-    // ✅ Get all users
     static async getAllUsers() {
         try {
             const response = await ApiGateway.axiosInstance.get("User/GetAllUser");
@@ -37,14 +50,22 @@ class ApiGateway {
         }
     }
 
-    // ✅ Get user by ID (requires `id`)
     static async getUserById() {
         try {
             const response = await ApiGateway.axiosInstance.get(`User/GetUser`);
-            console.log(response.data);
             return response.data;
         } catch (error) {
             console.error("Get User by ID error:", error);
+            throw error;
+        }
+    }
+
+    static async getRole() {
+        try {
+            const response = await ApiGateway.axiosInstance.get("/Role/GetUserRole");
+            return response.data;
+        } catch (error) {
+            console.error("Get Role error:", error);
             throw error;
         }
     }

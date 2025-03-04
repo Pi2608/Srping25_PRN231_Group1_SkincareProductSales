@@ -1,5 +1,7 @@
 ﻿using BLL.Services.Interfaces.IUserServices;
+using DTO.User;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -35,9 +37,27 @@ namespace PRN231.Controllers.UserControllers
         public async Task<IActionResult> GetUser()
         {
             Guid userId = Guid.Parse(User.Claims.First(c => c.Type == "userId").Value);
-            var user = await _userService.GetUser(userId);
+            var user = await _userService.GetUserById(userId);
             if (user == null) return NotFound("User not found.");
             return Ok(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register([FromForm] UserDTO newUser)
+        {
+            if (string.IsNullOrWhiteSpace(newUser.Email) || string.IsNullOrWhiteSpace(newUser.Password))
+            {
+                return BadRequest("Email and Password are required.");
+            }
+
+            var token = await _userService.Register(newUser);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest("U failed");
+            }
+
+            return Ok(token);
         }
     }
 }

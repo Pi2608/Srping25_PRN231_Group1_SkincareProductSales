@@ -1,0 +1,52 @@
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    height: fit-content;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+.sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px 0;
+    position: sticky;
+    height: 100vh;
+    top: 0;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 10px 25px;
+    cursor: pointer;
+}
+
+.sidebar li:hover {
+    background-color: #3d5770;
+}
+
+.main-content {
+    flex: 1;
+    background: #ecf0f1;
+}
+
+.top-nav {
+    background: white;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.active {
+    font-weight: bold;
+    background-color: #2c3f50; /* Change to your preferred active color */
+}

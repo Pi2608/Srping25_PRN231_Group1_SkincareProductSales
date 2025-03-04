@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import { ProductsData } from '../../../data/products';
+import { useAuth } from '../../../AuthContext/AuthContext';
 import './ProductsPage.css';
 
 const ProductsPage = ()=>{
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleLoginRedirect = () => {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+    };
+
+    const { user } = useAuth();
     const [MenuProducts, setMenuProducts] = useState(ProductsData)
     
     const filter = (type) => {
@@ -27,7 +35,7 @@ const ProductsPage = ()=>{
         
                     <div className='items'>
                         {MenuProducts.map((product, i) => (
-                                <div className='item'>
+                                <div className='item' onClick={() => navigate(`/product/${product.id}`)}>
                                     <div className="img-container">
                                         <img 
                                             src={product.img} 
@@ -41,7 +49,10 @@ const ProductsPage = ()=>{
                                             <span className='details'>{product.detail}</span>
                                         </div>
                                         <span className='price'>{product.price}$</span>
-                                        <div className='buy-btn'>Buy Now</div>
+                                        <div className='buy-btn' onClick={(e) => {
+                                            e.stopPropagation(); 
+                                            user ? {} : handleLoginRedirect();
+                                        }}>Buy Now</div>
                                     </div>
                                 </div>
                             ))

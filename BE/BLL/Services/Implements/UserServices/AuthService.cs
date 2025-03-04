@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DAL.Models.UserModel;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,16 @@ namespace BLL.Services.Implements.UserServices
         }
 
         //public string GenerateJwtToken(string userId, string userEmail)
-        public string GenerateJwtToken(Guid userId)
+        public string GenerateJwtToken(User user)
         {
-            Console.WriteLine(userId);
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]);
-            Console.WriteLine(secretKey);
 
             var claims = new[]
             {
-            new Claim("userId", userId.ToString()),
+            new Claim("email", user.Email),
+            new Claim("userId", user.Id.ToString()),
+            new Claim("role", user.Role.RoleName),
             //new Claim(JwtRegisteredClaimNames.Email, userEmail),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Unique ID cho token
         };

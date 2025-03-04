@@ -6,16 +6,31 @@ import Login from './Components/Login/Login.jsx'
 import Register from './Components/Register/Register.jsx'
 import Cart from './Pages/User/Cart/Cart.jsx'
 import ProductDetail from './Pages/User/ProductDetail/ProductDetail.jsx'
+import Dashboard from './Pages/Admin/Dashboard/Dashboard.jsx'
+import ProductMng from './Pages/Admin/Product/ProductMng.jsx'
+import UserMng from './Pages/Admin/User/UserMng.jsx'
+import OrderMng from './Pages/Admin/Order/OrderMng.jsx'
+import VoucherMng from './Pages/Admin/Voucher/VoucherMng.jsx'
 
 function App() {
   return (
     <Routes>
-				<Route path='/' element={<Home />} />
-        <Route path='/products' element={<ProductsPage />} />
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/product/:productId' element={<ProductDetail />} />
+				<Route path='/'>
+          <Route index  element={<Home />}/>
+          <Route path='/products' element={<ProductsPage />} />
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/product/:productId' element={<ProductDetail />} />
+        </Route>
+
+        <Route path='/dashboard'>
+          <Route index element={<Dashboard/>}/>
+          <Route path='mng-user' element={<UserMng/>}/>
+          <Route path='mng-product' element={<ProductMng/>}/>
+          <Route path='mng-order' element={<OrderMng/>}/>
+          <Route path='mng-voucher' element={<VoucherMng/>}/>
+        </Route>
     </Routes>
   )
 }

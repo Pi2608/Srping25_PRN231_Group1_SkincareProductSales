@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams  } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
@@ -12,7 +12,9 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const redirectPath = searchParams.get("redirect") || "/";
     const { t, i18n } = useTranslation();
     const { login } = useAuth();
 
@@ -58,15 +60,7 @@ const Login = () => {
                 return;
             }
             toast.success(data.message || t("LoginSuccess"));
-            navigate("/");
-            // localStorage.setItem("username", username);
-
-            // if (data.role === "user") {
-            //     navigate("/");
-            // }
-            // if (data.role === "admin") {
-            //     navigate("/admin");
-            // }
+            navigate(redirectPath);
         } catch (error) {
             console.error("Login error:", error);
             toast.error(t("LoginFailed"));
