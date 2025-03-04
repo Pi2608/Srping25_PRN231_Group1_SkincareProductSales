@@ -61,14 +61,6 @@ const Login = () => {
             }
             toast.success(data.message || t("LoginSuccess"));
             navigate(redirectPath);
-            // localStorage.setItem("username", username);
-
-            // if (data.role === "user") {
-            //     navigate("/");
-            // }
-            // if (data.role === "admin") {
-            //     navigate("/admin");
-            // }
         } catch (error) {
             console.error("Login error:", error);
             toast.error(t("LoginFailed"));

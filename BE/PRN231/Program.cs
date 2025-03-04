@@ -17,6 +17,7 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
+using BLL.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -110,7 +111,7 @@ builder.Services.AddControllers()
      ); // Define the OData route
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
-//builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

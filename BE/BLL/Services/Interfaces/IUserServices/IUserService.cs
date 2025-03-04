@@ -1,4 +1,5 @@
 ﻿using DAL.Models.UserModel;
+using DTO.User;
 
 namespace BLL.Services.Interfaces.IUserServices
 {
@@ -8,7 +9,7 @@ namespace BLL.Services.Interfaces.IUserServices
         Task<User?> GetUserById(Guid id);
         Task<User?> GetUserByEmail(string email);
         Task<bool> CheckUserExist(string email);
-        Task<bool> Register(User user);
+        Task<string?> Register(UserDTO? user);
         Task<string?> Login(string email, string password);
     }
 }

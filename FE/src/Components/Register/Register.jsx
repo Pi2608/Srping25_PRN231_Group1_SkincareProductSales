@@ -1,29 +1,39 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../../AuthContext/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
-//import logo from "../../assets/Logo.png";
+import ApiGateway from "../../Api/ApiGateway";
 
 const Register = () => {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { register } = useAuth();    
+    const [searchParams] = useSearchParams();   
+    const redirectPath = searchParams.get("redirect") || "/";
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
-        username: "",
-        password: "",
+        account: "",
         email: "",
+        password: "",
+        confirmPassword: "", // ➜ Thêm trường xác nhận mật khẩu
     });
+
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // Kiểm tra email có đúng định dạng Gmail không
     const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
 
+    // Kiểm tra mật khẩu có đủ 8 ký tự không
     const validatePassword = (password) => password.length >= 8;
 
+    // Kiểm tra form trước khi gửi
     const validateForm = () => {
-        if (!formData.username.trim()) {
+        if (!formData.account.trim()) {
             toast.error(t("UsernameRequired"));
             return false;
         }
@@ -35,6 +45,11 @@ const Register = () => {
 
         if (!validatePassword(formData.password)) {
             toast.error(t("PasswordLength"));
+            return false;
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.error(t("PasswordsDoNotMatch"));
             return false;
         }
 
@@ -55,31 +70,16 @@ const Register = () => {
 
         try {
             setLoading(true);
-            const response = await fetch(
-                "",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formData),
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                toast.error(errorData.message || t("RegistrationFailed"));
-                return;
+            const newUser = {
+                account: formData.account,
+                email: formData.email,
+                password: formData.password,
             }
-
-            const data = await response.json();
-
+            const response = await register(newUser);
+            const data = await response;
             toast.success(t("RegistrationSuccess"));
             localStorage.setItem("token", data.token);
-
-            if (data.role === "user") {
-                navigate("/");
-            }
+            navigate(redirectPath);
         } catch (error) {
             console.error("Network Error:", error);
             toast.error(t("RegistrationFailed"));
@@ -92,13 +92,7 @@ const Register = () => {
         <div className="h-[100vh] flex items-center justify-center px-5 lg:px-0">
             <ToastContainer />
             <div className="flex justify-center flex-1 bg-white">
-                {/* <div className="flex-1 hidden text-center md:flex">
-                    <img
-                        src="src\assets\logo.png"
-                        className="w-[44rem] h-[43rem] bg-center bg-no-repeat bg-inherit rounded-lg justify-center items-center aspect-square"
-                    ></img>
-                </div> */}
-                <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-[2rem]  md:w-1/3">
+                <div className="p-4 lg:w-1/2 xl:w-1/2 sm:p-[2rem] md:w-1/3">
                     <div className="flex flex-col items-center">
                         <div className="text-center">
                             <h1 className="mt-4 mb-2 text-2xl font-extrabold text-blue-900 xl:text-4xl">
@@ -113,9 +107,21 @@ const Register = () => {
                                 <input
                                     className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
                                     type="text"
-                                    name="username"
+                                    name="account"
                                     placeholder="Nhập tên đăng nhập"
-                                    value={formData.username}
+                                    value={formData.account}
+                                    onChange={handleInputChange}
+                                />
+
+                                <label className="text-sm font-medium text-left text-gray-700">
+                                    Email
+                                </label>
+                                <input
+                                    className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+                                    type="email"
+                                    name="email"
+                                    placeholder="Nhập email"
+                                    value={formData.email}
                                     onChange={handleInputChange}
                                 />
 
@@ -136,43 +142,43 @@ const Register = () => {
                                         className="absolute text-gray-500 right-3 top-3"
                                         onClick={() => setPasswordVisible(!passwordVisible)}
                                     >
-                                        {passwordVisible ? (
-                                            <EyeInvisibleOutlined />
-                                        ) : (
-                                            <EyeOutlined />
-                                        )}
+                                        {passwordVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                                     </button>
                                 </div>
 
                                 <label className="text-sm font-medium text-left text-gray-700">
-                                    Email
+                                    Xác nhận mật khẩu
                                 </label>
-                                <input
-                                    className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
-                                    type="email"
-                                    name="email"
-                                    placeholder="Nhập email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                />
+                                <div className="relative w-full">
+                                    <input
+                                        className="w-full px-5 py-3 text-sm font-medium placeholder-gray-500 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 focus:bg-white"
+                                        type={confirmPasswordVisible ? "text" : "password"}
+                                        name="confirmPassword"
+                                        placeholder="Nhập lại mật khẩu"
+                                        value={formData.confirmPassword}
+                                        onChange={handleInputChange}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute text-gray-500 right-3 top-3"
+                                        onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                                    >
+                                        {confirmPasswordVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                                    </button>
+                                </div>
 
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out bg-blue-900 rounded-lg  hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
+                                    className="flex items-center justify-center w-full py-4 mt-5 font-semibold tracking-wide text-gray-100 transition-all duration-300 ease-in-out bg-blue-900 rounded-lg hover:bg-indigo-700 focus:shadow-outline focus:outline-none"
                                 >
-                                    {loading ? (
-                                        "Đang xử lý..."
-                                    ) : (
-                                        <span className="ml-3">{"Đăng ký"}</span>
-                                    )}
+                                    {loading ? "Đang xử lý..." : <span className="ml-3">Đăng ký</span>}
                                 </button>
+
                                 <p className="mt-2 mb-4 text-xs text-center text-gray-600">
-                                    Bạn đã có tài khoản{" "} - {" "}
+                                    Bạn đã có tài khoản?{" "}
                                     <Link to="/login">
-                                        <span className="font-semibold text-blue-900">
-                                            Đăng nhập
-                                        </span>
+                                        <span className="font-semibold text-blue-900">Đăng nhập</span>
                                     </Link>
                                 </p>
                             </div>

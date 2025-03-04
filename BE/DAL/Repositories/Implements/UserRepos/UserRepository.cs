@@ -23,7 +23,7 @@ namespace DAL.Repositories.Implements.UserRepos
         public async Task<User?> GetUserByEmail(string email)
         {
             IQueryable<User> query = _dbSet;
-            return await query.FirstAsync(u => u.Email == email);
+            return await query.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User?> Login(string email, string password)

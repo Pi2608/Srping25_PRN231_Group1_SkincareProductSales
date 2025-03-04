@@ -14,20 +14,21 @@ class ApiGateway {
         ApiGateway.axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    // static async register(username, email, password, address) {
-    //     try {
-    //         const response = await ApiGateway.axiosInstance.post("User/Register", {
-    //             username,
-    //             email,
-    //             password,
-    //             address,
-    //         });
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Registration error:", error);
-    //         return null;
-    //     }
-    // }
+    static async register(newUser) {
+        try {
+            // const formData = new FormData();
+            // formData.append("username", newUser.username);
+            // formData.append("email", newUser.email);
+            // formData.append("password", newUser.password);
+            console.log(newUser);
+            const response = await ApiGateway.axiosInstance.post("User/Register", newUser);
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Registration error:", error);
+            return null;
+        }
+    }
 
     static async login(email, password) {
         try {

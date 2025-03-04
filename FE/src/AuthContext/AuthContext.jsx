@@ -15,6 +15,23 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    const register = async (newUser) => {
+        try {
+            const newToken = await ApiGateway.register(newUser);
+            if (newToken) {
+                sessionStorage.setItem("token", newToken);
+                setToken(newToken);
+                ApiGateway.setAuthToken(newToken);
+                await fetchUser();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Register failed:", error);
+            return false;
+        }
+    }
+
     const login = async (email, password) => {
         try {
             const newToken = await ApiGateway.login(email, password);
@@ -54,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, role, token, login, logout }}>
+        <AuthContext.Provider value={{ user, role, token, register, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
