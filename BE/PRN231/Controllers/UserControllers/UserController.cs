@@ -43,7 +43,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm] UserDTO newUser)
+        public async Task<IActionResult> Register([FromBody] UserDTO newUser)
         {
             if (string.IsNullOrWhiteSpace(newUser.Email) || string.IsNullOrWhiteSpace(newUser.Password))
             {
@@ -58,6 +58,42 @@ namespace PRN231.Controllers.UserControllers
             }
 
             return Ok(token);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateProfile(Guid userId, [FromBody] UserProfileDTO userProfile)
+        {
+            if (userProfile == null)
+            {
+                return BadRequest("Invalid profile data.");
+            }
+
+            bool success = await _userService.UpdateProfile(userId, userProfile);
+            if (!success)
+            {
+                return NotFound("User not found or update failed.");
+            }
+
+            return Ok("Profile updated successfully.");
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordDTO changePasswordDto)
+        {
+            if (changePasswordDto == null ||
+                string.IsNullOrWhiteSpace(changePasswordDto.OldPassword) ||
+                string.IsNullOrWhiteSpace(changePasswordDto.NewPassword))
+            {
+                return BadRequest("Invalid password data.");
+            }
+
+            bool success = await _userService.ChangePassword(userId, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+            if (!success)
+            {
+                return BadRequest("Invalid credentials or password change failed.");
+            }
+
+            return Ok("Password changed successfully.");
         }
     }
 }

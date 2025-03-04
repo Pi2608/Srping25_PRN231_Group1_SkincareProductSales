@@ -13,9 +13,10 @@ const users = [
 
 const UserMng = () => {
   const [search, setSearch] = useState("");
-  const [userList, setUserList] = useState(users);
+  const [userList, setUserList] = useState(null);
   const [thisUser, setThisUser] = useState();
   const [openPopup, setOpenPopup] = useState(false);
+  const [loading, setLoading] = useState([]);
   
   useEffect(() => {
     fetchUsers();
@@ -72,7 +73,7 @@ const UserMng = () => {
                           <td>{user.account}</td>
                           <td>{user.email}</td>
                           <td>{user.address}</td>
-                          <td>{user.roleId == "f5e71b77-2d89-42e3-bb20-6ac071226c93" ? "Admin" : "Customer"}</td>
+                          <td>{user.roleId == "f5e71b77-2d89-42e3-bb20-6ac071226c93" ? "Customer" : "Admin"}</td>
                           <td style={user.status ? {color: "#ff4040"} : {color: "#46FF40"}}>
                               {/* <label className="switch">
                               <input

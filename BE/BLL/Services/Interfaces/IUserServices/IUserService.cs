@@ -11,5 +11,7 @@ namespace BLL.Services.Interfaces.IUserServices
         Task<bool> CheckUserExist(string email);
         Task<string?> Register(UserDTO? user);
         Task<string?> Login(string email, string password);
+        Task<bool> UpdateProfile(Guid userId, UserProfileDTO us);
+        Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword);
     }
 }
