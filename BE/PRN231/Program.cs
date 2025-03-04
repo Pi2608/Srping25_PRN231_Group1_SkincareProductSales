@@ -16,6 +16,7 @@ using DAL.Models.ProductModel;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -94,7 +95,8 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // Không trì hoãn thời gian hết hạn
     };
-    options.Audience = "your_audience"; // Replace with your API audience
+    options.Audience = "your_audience";
+    options.MapInboundClaims = false;
 });
 builder.Services.AddControllers()
     .AddOData(options => options
@@ -108,6 +110,7 @@ builder.Services.AddControllers()
      ); // Define the OData route
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
+//builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

@@ -23,7 +23,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpGet]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllUser()
         {
             var users = await _userService.GetAllUsers();
@@ -35,9 +35,11 @@ namespace PRN231.Controllers.UserControllers
         public async Task<IActionResult> GetUser()
         {
             Guid userId = Guid.Parse(User.Claims.First(c => c.Type == "userId").Value);
-            var user = await _userService.GetUser(userId);
+            var user = await _userService.GetUserById(userId);
             if (user == null) return NotFound("User not found.");
             return Ok(user);
         }
+
+
     }
 }

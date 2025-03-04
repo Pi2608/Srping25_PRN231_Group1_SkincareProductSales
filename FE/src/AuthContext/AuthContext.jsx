@@ -4,8 +4,9 @@ import ApiGateway from "../Api/ApiGateway.js";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
     const [token, setToken] = useState(sessionStorage.getItem("token"));
+    const [user, setUser] = useState(null);
+    const [role, setRole] = useState("");
 
     useEffect(() => {
         if (token) {
@@ -33,8 +34,12 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-            const userData = await ApiGateway.getUserById();
+            const [userData, userRole] = await Promise.all([
+                ApiGateway.getUserById(),
+                ApiGateway.getRole()
+            ]);
             setUser(userData);
+            setRole(userRole);
         } catch (error) {
             console.error("Failed to fetch user:", error);
         }
@@ -42,13 +47,14 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem("token");
-        setToken(null);
+        setToken("");
         setUser(null);
+        setRole("");
         ApiGateway.setAuthToken(null); 
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, role, token, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

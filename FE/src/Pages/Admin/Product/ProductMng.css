@@ -4,7 +4,6 @@
 
 #product_mng .table-container {
     width: 100%;
-    max-width: 1200px;
     margin: auto;
     padding: 20px;
     background: #fff;
@@ -36,6 +35,14 @@
 #product_mng .product-table th:first-child,
 #product_mng .product-table td:first-child {
     text-align: center;
+}
+
+#product_mng .product-table > tbody > tr > td > .img-container {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background-color: #17a2b8;
 }
 
 #product_mng .product-table th {

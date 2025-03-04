@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../AuthContext/AuthContext'
 import './Header.css'
 
 const Header = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleLoginRedirect = () => {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+    };
 
     const { user, logout } = useAuth()
 
@@ -35,7 +40,7 @@ const Header = () => {
                     </div>
                 ) : (
                     <div className="user">
-                        <button onClick={() => navigate('/login')}>Login</button>
+                        <button onClick={handleLoginRedirect}>Login</button>
                         <button onClick={() => navigate('/register')}>Register</button>
                     </div>
                 )}

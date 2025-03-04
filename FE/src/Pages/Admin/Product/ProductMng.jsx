@@ -3,15 +3,15 @@ import DashboardLayoutComponent from "../DashBoardLayout/DashboardLayout";
 import "./ProductMng.css";
 
 const products = [
-  { id: 1, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 231, rating: "Perfect", status: true },
-  { id: 2, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Very Good", status: true },
-  { id: 3, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Good", status: true },
-  { id: 4, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Good", status: false },
-  { id: 5, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Very Good", status: true },
-  { id: 6, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Bad", status: false },
-  { id: 7, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Perfect", status: false },
-  { id: 8, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Very Good", status: true },
-  { id: 9, name: "Givench Sweater", buyers: 12990, price: 1234.82, stock: 432, rating: "Good", status: true },
+  { id: 1, name: "Givench Sweater", size: "Small", price: 1234000, stock: 231, rating: "Perfect", status: true },
+  { id: 2, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Very Good", status: true },
+  { id: 3, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Good", status: true },
+  { id: 4, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Good", status: false },
+  { id: 5, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Very Good", status: true },
+  { id: 6, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Bad", status: false },
+  { id: 7, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Perfect", status: false },
+  { id: 8, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Very Good", status: true },
+  { id: 9, name: "Givench Sweater", size: "Small", price: 1234000, stock: 432, rating: "Good", status: true },
 ];
 
 const ProductMng = () => {
@@ -48,10 +48,11 @@ const ProductMng = () => {
             <table className="product-table">
                 <thead>
                 <tr>
-                    <th>Rank</th>
+                    <th>No</th>
+                    <th>Image</th>
                     <th>Product</th>
-                    <th>Total Buyers</th>
-                    <th>Price</th>
+                    <th>Size</th>
+                    <th>Price (VNĐ)</th>
                     <th>Stock</th>
                     <th>Rating</th>
                     <th>Status</th>
@@ -60,24 +61,29 @@ const ProductMng = () => {
                 <tbody>
                 {filteredProducts.map((product, index) => (
                     <tr key={product.id}>
-                    <td>{index + 1}</td>
-                    <td>{product.name}</td>
-                    <td>{product.buyers}</td>
-                    <td>${product.price.toFixed(2)}</td>
-                    <td>{product.stock}</td>
-                    <td className={`rating ${product.rating.toLowerCase().replace(" ", "-")}`}>
-                        {product.rating}
-                    </td>
-                    <td>
-                        <label className="switch">
-                        <input
-                            type="checkbox"
-                            checked={product.status}
-                            onChange={() => toggleStatus(product.id)}
-                        />
-                        <span className="slider"></span>
-                        </label>
-                    </td>
+                      <td>{index + 1}</td>
+                      <td>
+                        <div className="img-container">
+                          {/* <img src="https://via.placeholder.com/150" alt="Product" /> */}
+                        </div>
+                      </td>
+                      <td>{product.name}</td>
+                      <td>{product.size}</td>
+                      <td>{new Intl.NumberFormat('vi-VN').format(product.price)}</td>
+                      <td>{product.stock}</td>
+                      <td className={`rating ${product.rating.toLowerCase().replace(" ", "-")}`}>
+                          {product.rating}
+                      </td>
+                      <td>
+                          <label className="switch">
+                          <input
+                              type="checkbox"
+                              checked={product.status}
+                              onChange={() => toggleStatus(product.id)}
+                          />
+                          <span className="slider"></span>
+                          </label>
+                      </td>
                     </tr>
                 ))}
                 </tbody>
