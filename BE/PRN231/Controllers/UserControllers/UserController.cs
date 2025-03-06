@@ -61,6 +61,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile(Guid userId, [FromBody] UserProfileDTO userProfile)
         {
             if (userProfile == null)
@@ -78,6 +79,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordDTO changePasswordDto)
         {
             if (changePasswordDto == null ||

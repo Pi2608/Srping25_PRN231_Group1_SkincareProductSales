@@ -1,0 +1,26 @@
+#change-password .content .table-container table tbody tr td {
+    padding: 5px 8px;
+}
+
+#change-password .content form {
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px;
+    gap: 10px;
+}
+
+#change-password .content button {
+    padding: 10px 15px;
+    color: white;
+    background-color: #454343;
+    border-radius: 10px;
+}
+
+#change-password .content button:hover {
+    background-color: #8c0f21;
+    cursor: pointer;
+}
+
+#change-password .error-text {
+    color: red;
+}

@@ -153,7 +153,7 @@ export const ProductsData = [
     },
     {
         id: 15,
-        name: 'Lightweight Perfecting Foundation',
+        name: 'Lightweight Foundation',
         detail: 'Fair Skin',
         price: '888000',
         img: prod15,

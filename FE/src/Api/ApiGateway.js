@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class ApiGateway {
-    static API_BASE = "https://localhost:7118/";
+    static API_BASE = "http://localhost:5276/";
 
     static axiosInstance = axios.create({
         baseURL: ApiGateway.API_BASE,
@@ -10,16 +10,20 @@ class ApiGateway {
         },
     });
 
+    static formDataAxiosInstance = axios.create({
+        baseURL: ApiGateway.API_BASE,
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    
+
     static setAuthToken(token) {
         ApiGateway.axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
     }
 
     static async register(newUser) {
         try {
-            // const formData = new FormData();
-            // formData.append("username", newUser.username);
-            // formData.append("email", newUser.email);
-            // formData.append("password", newUser.password);
             console.log(newUser);
             const response = await ApiGateway.axiosInstance.post("User/Register", newUser);
             console.log(response.data);
@@ -66,6 +70,17 @@ class ApiGateway {
             return response.data;
         } catch (error) {
             console.error("Get Role error:", error);
+            throw error;
+        }
+    }
+
+    static async getRoles() {
+        try {
+            const response = await ApiGateway.axiosInstance.get("/Role/GetAllRoles");
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Get Roles error:", error);
             throw error;
         }
     }

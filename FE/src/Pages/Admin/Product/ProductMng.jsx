@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import DashboardLayoutComponent from "../DashBoardLayout/DashboardLayout";
+import EditModal from '../../../Components/EditModal/EditModal'
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 import "./ProductMng.css";
 
 const products = [
@@ -16,7 +19,9 @@ const products = [
 
 const ProductMng = () => {
   const [search, setSearch] = useState("");
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState(products);  
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [thisProduct, setThisProduct] = useState();
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -34,17 +39,25 @@ const ProductMng = () => {
     product.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleEditProduct = (product) => {
+
+  }
+
   return (
     <DashboardLayoutComponent>
         <div id="product_mng">
           <div className="table-container">
-            <input
-                type="text"
-                placeholder="Search products"
-                value={search}
-                onChange={handleSearch}
-                className="search-bar"
-            />
+            <div className="action-bar">
+              <input
+                  type="text"
+                  placeholder="Search products"
+                  value={search}
+                  onChange={handleSearch}
+                  className="search-bar"
+              />
+              <button className="search"><SearchIcon/>Search</button>
+              <button className="add"><AddIcon/> Add Product</button>
+            </div>
             <table className="product-table">
                 <thead>
                 <tr>
@@ -60,7 +73,7 @@ const ProductMng = () => {
                 </thead>
                 <tbody>
                 {filteredProducts.map((product, index) => (
-                    <tr key={product.id}>
+                    <tr key={product.id} onClick={() => {setOpenEditModal(true); setThisProduct(product)}}>
                       <td>{index + 1}</td>
                       <td>
                         <div className="img-container">
@@ -89,6 +102,14 @@ const ProductMng = () => {
                 </tbody>
             </table>
           </div>
+          {openEditModal && (
+          <EditModal 
+            type="Product"
+            object={thisProduct}
+            onEdit={handleEditProduct} 
+            onClose={() => setOpenEditModal(false)} 
+          />
+        )}
         </div>
     </DashboardLayoutComponent>
   );

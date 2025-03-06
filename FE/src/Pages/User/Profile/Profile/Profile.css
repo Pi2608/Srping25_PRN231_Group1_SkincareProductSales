@@ -1,0 +1,26 @@
+#profile .content .table-container table {
+    width: 60%;
+}
+#profile .content .table-container table tbody tr td {
+    padding: 5px 8px;
+}
+
+#profile .content .table-container table tbody tr td:last-child {
+    width: 70%;
+}
+
+#profile .content .table-container button {
+    padding: 10px 15px;
+    color: white;
+    background-color: #454343;
+    border-radius: 10px;
+}
+
+#profile .content .table-container button:hover {
+    background-color: #8c0f21;
+    cursor: pointer;
+}
+
+#profile .error {
+    color: red;
+}
