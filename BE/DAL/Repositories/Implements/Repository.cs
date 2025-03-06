@@ -110,9 +110,10 @@ namespace DAL.Repositories.Implements
             return result.FirstOrDefaultAsync();
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
+            return entity;
         }
     }
 }

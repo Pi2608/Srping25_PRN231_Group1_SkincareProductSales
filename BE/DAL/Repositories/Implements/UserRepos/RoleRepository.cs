@@ -13,10 +13,18 @@ namespace DAL.Repositories.Implements.UserRepos
             _context = context;
         }
 
+        public async Task<IEnumerable<Role>> GetAllRoles()
+        {
+            IQueryable<Role> query = _dbSet;
+            return await query.ToListAsync();
+        }
+
         public async Task<Role> GetRoleId(string roleName)
         {
             IQueryable<Role> query = _dbSet;
             return await query.FirstAsync(r => r.RoleName == roleName);
         }
+        
+        
     }
 }

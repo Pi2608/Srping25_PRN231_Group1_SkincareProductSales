@@ -1,6 +1,7 @@
 ﻿using DAL.Context;
 using DAL.Models.UserModel;
 using DAL.Repositories.Interfaces.IUserRepos;
+using DTO.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories.Implements.UserRepos
@@ -42,6 +43,38 @@ namespace DAL.Repositories.Implements.UserRepos
         {
             IQueryable<User> query = _dbSet;
             return await query.ToListAsync();
+        }
+
+        public async Task<bool> UpdateUser(Guid userId, UserProfileDTO us)
+        {
+            User? user = await GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Account = us.Account;
+            user.Email = us.Email;
+            user.Address = us.Address;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
+        {
+            User? user = await GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            if (user.Password != oldPassword)
+            {
+                return false;
+            }
+            user.Password = newPassword;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

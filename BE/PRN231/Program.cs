@@ -88,12 +88,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
         ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ClockSkew = TimeSpan.Zero // Không trì hoãn thời gian hết hạn
     };
     options.Audience = "your_audience";
@@ -110,7 +110,13 @@ builder.Services.AddControllers()
         .AddRouteComponents("odata", GetEdmModel())
      ); // Define the OData route
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+					{
+						options.AddPolicy("Customer", policy =>
+							policy.RequireClaim("role", "Customer"));
+						options.AddPolicy("Admin", policy =>
+							policy.RequireClaim("role", "Admin"));
+					});
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();

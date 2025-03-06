@@ -82,5 +82,17 @@ namespace BLL.Services.Implements.UserServices
             }
             return true;
         }
+
+        public async Task<bool> UpdateProfile(Guid userId, UserProfileDTO us)
+        {
+            var success = await _unitOfWork.UserRepository.UpdateUser(userId, us);
+            return success;
+        }
+
+        public async Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword)
+        {
+            var success = await _unitOfWork.UserRepository.ChangePasswordAsync(userId, oldPassword, newPassword);
+            return success;
+        }
     }
 }

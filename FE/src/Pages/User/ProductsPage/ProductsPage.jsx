@@ -5,6 +5,7 @@ import Footer from '../../../Components/Footer/Footer';
 import { ProductsData } from '../../../data/products';
 import { useAuth } from '../../../AuthContext/AuthContext';
 import './ProductsPage.css';
+import CardProduct from '../../../Components/CardProduct/CardProduct';
 
 const ProductsPage = ()=>{
     const navigate = useNavigate();
@@ -35,27 +36,8 @@ const ProductsPage = ()=>{
         
                     <div className='items'>
                         {MenuProducts.map((product, i) => (
-                                <div className='item' onClick={() => navigate(`/product/${product.id}`)}>
-                                    <div className="img-container">
-                                        <img 
-                                            src={product.img} 
-                                            alt=""
-                                            />
-                                    </div>
-
-                                    <div className='info-container'>
-                                        <div className='product-info'>
-                                            <span className='name'>{product.name} <br></br></span>
-                                            <span className='details'>{product.detail}</span>
-                                        </div>
-                                        <span className='price'>{product.price}$</span>
-                                        <div className='buy-btn' onClick={(e) => {
-                                            e.stopPropagation(); 
-                                            user ? {} : handleLoginRedirect();
-                                        }}>Buy Now</div>
-                                    </div>
-                                </div>
-                            ))
+                            <CardProduct product={product}/>
+                        ))
                         }
                     </div>
                 </div>

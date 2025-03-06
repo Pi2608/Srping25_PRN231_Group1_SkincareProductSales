@@ -36,24 +36,9 @@ const Login = () => {
 
         try {
             setLoading(true);
-            // const response = await fetch(
-            //     "",
-            //     {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify({ username, password }),
-            //     }
-            // );
 
             const response = await login(username, password);
             const data = await response;
-            // if (!response.ok) {
-            //     const errorData = await response;
-            //     toast.error(errorData.message || t("LoginFailed"));
-            //     return;
-            // }
 
             if (!data) {
                 toast.error(t("LoginFailed"));

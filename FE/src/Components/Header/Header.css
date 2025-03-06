@@ -1,10 +1,15 @@
 .home-header {
-    background-color: #f8f9fa;
+    background-color: white;
     padding: 12px 25px;
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-family: Arial, sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 .home-header p {

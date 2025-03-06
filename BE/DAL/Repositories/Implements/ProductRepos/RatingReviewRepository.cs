@@ -9,5 +9,30 @@ namespace DAL.Repositories.Implements.ProductRepos
         public RatingReviewRepository(AppDbContext context) : base(context)
         {
         }
+
+        public Task<bool> CreateFeedbackAsync(RatingReview feedback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteFeedbackAsync(string feedbackId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> EditFeedbackAsync(string feedbackId, RatingReview feedback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RatingReview>> GetAllFeedbackAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<RatingReview>> GetProdFeedbackAsync(Guid prodId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -1,0 +1,23 @@
+#orders {
+    min-height: 70vh;
+}
+
+#orders .order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#orders .order-table th, .order-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#orders .order-table th {
+    background-color: #f4f4f4;
+}
+
+#orders .error-text {
+    color: red;
+}

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import DashboardLayoutComponent from "../DashBoardLayout/DashboardLayout";
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 import "./VoucherMng.css";
 
 const vouchers = [
@@ -25,29 +27,33 @@ const VoucherMng = () => {
     <DashboardLayoutComponent>
         <div id="voucher_mng">
             <div className="table-container">
-                <input
+              <div className="action-bar">
+                  <input
                     type="text"
                     placeholder="Search vouchers by code"
                     value={search}
                     onChange={handleSearch}
                     className="search-bar"
-                />
+                  />
+                <button className="search"><SearchIcon/>Search</button>
+                <button className="add"><AddIcon/> Add Voucher</button>
+              </div>
                 <table className="product-table">
                     <thead>
-                    <tr>
+                      <tr>
                         <th>Voucher ID</th>
                         <th>Code</th>
                         <th>Discount %</th>
                         <th>Expired Date</th>
-                    </tr>
+                      </tr>
                     </thead>
                     <tbody>
                     {filteredVouchers.map((voucher) => (
                         <tr key={voucher.id}>
-                        <td>{voucher.id}</td>
-                        <td>{voucher.code}</td>
-                        <td>{voucher.discountPercentage}%</td>
-                        <td>{voucher.expiredDate}</td>
+                          <td>{voucher.id}</td>
+                          <td>{voucher.code}</td>
+                          <td>{voucher.discountPercentage}%</td>
+                          <td>{voucher.expiredDate}</td>
                         </tr>
                     ))}
                     </tbody>

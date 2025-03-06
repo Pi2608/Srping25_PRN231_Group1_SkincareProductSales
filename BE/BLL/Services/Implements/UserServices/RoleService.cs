@@ -13,6 +13,11 @@ namespace BLL.Services.Implements.UserServices
             _unitOfWork = unitOfWork;
         }
 
+        public Task<IEnumerable<Role>> GetAllRoles()
+        {
+            return _unitOfWork.RoleRepository.GetAllRoles();
+        }
+
         public Task<Role> GetRoleId(string roleName)
         {
             return _unitOfWork.RoleRepository.GetRoleId(roleName);

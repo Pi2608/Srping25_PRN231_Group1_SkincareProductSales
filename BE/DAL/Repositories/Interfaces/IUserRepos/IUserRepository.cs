@@ -1,4 +1,5 @@
 ﻿using DAL.Models.UserModel;
+using DTO.User;
 
 namespace DAL.Repositories.Interfaces.IUserRepos
 {
@@ -9,5 +10,7 @@ namespace DAL.Repositories.Interfaces.IUserRepos
         Task<User?> GetUserByEmail(string email);
         Task<IEnumerable<User>> GetUsers();
         Task<User> CreateUser(User user);
+        Task<bool> UpdateUser(Guid userId, UserProfileDTO User);
+        Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
     }
 }

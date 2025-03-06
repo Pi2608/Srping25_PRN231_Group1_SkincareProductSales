@@ -1,0 +1,12 @@
+#vouchers {
+    padding: 20px;
+}
+
+#vouchers .error-text {
+    color: red;
+    font-weight: bold;
+}
+
+#vouchers .content {
+    margin-top: 20px;
+}

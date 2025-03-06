@@ -6,7 +6,7 @@
     position: relative;
 }
 
-.sidebar {
+.dashboard-container .sidebar {
     width: 250px;
     background: #2c3e50;
     color: white;
@@ -16,37 +16,39 @@
     top: 0;
 }
 
-.sidebar h2 {
+.dashboard-container .sidebar h2 {
     margin-bottom: 20px;
     text-align: center;
+    font-weight: 600;
+    font-size: 24px;
 }
 
-.sidebar ul {
+.dashboard-container .sidebar ul {
     list-style: none;
     padding: 0;
 }
 
-.sidebar li {
+.dashboard-container .sidebar li {
     padding: 10px 25px;
     cursor: pointer;
 }
 
-.sidebar li:hover {
+.dashboard-container .sidebar li:hover {
     background-color: #3d5770;
 }
 
-.main-content {
+.dashboard-container .main-content {
     flex: 1;
     background: #ecf0f1;
 }
 
-.top-nav {
+.dashboard-container .top-nav {
     background: white;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.active {
+.dashboard-container .active {
     font-weight: bold;
     background-color: #2c3f50; /* Change to your preferred active color */
 }

@@ -6,6 +6,10 @@ import Login from './Components/Login/Login.jsx'
 import Register from './Components/Register/Register.jsx'
 import Cart from './Pages/User/Cart/Cart.jsx'
 import ProductDetail from './Pages/User/ProductDetail/ProductDetail.jsx'
+import Profile from './Pages/User/Profile/Profile/Profile.jsx'
+import Order from './Pages/User/Profile/Order/Order.jsx'
+import ChangePwd from './Pages/User/Profile/ChangePwd/ChangePwd.jsx'
+import Voucher from './Pages/User/Profile/Voucher/Voucher.jsx'
 import Dashboard from './Pages/Admin/Dashboard/Dashboard.jsx'
 import ProductMng from './Pages/Admin/Product/ProductMng.jsx'
 import UserMng from './Pages/Admin/User/UserMng.jsx'
@@ -22,6 +26,12 @@ function App() {
           <Route path='/register' element={<Register/>}/>
           <Route path='/cart' element={<Cart />} />
           <Route path='/product/:productId' element={<ProductDetail />} />
+          <Route path='/profile'>
+            <Route index element={<Profile/>} />
+            <Route path='orders' element={<Order/>} />
+            <Route path='vouchers' element={<Voucher/>} />
+            <Route path='change-pwd' element={<ChangePwd/>} />
+          </Route>
         </Route>
 
         <Route path='/dashboard'>
