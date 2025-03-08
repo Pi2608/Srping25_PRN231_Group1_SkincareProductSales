@@ -8,4 +8,10 @@
         public required int StockQuantity { get; set; }
         public required string Description { get; set; }
     }
+    public class CategoryDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public List<Guid> ProductCategoryIds { get; set; } = new();
+    }
 }

@@ -26,6 +26,11 @@ namespace BLL.Services.Implements.ProductServices
             throw new Exception("Add fail");
         }
 
+        public Task<bool> DeleteProductDetail(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> DeleteProductDtail(Guid id)
         {
             var productdetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
@@ -36,6 +41,11 @@ namespace BLL.Services.Implements.ProductServices
             productdetail.DeletedAt = DateTime.UtcNow;
             await _unitOfWork.ProductDetailRepository.DeleteAsync(productdetail);
             return true;
+        }
+
+        public Task<List<ProductDetail>> GetAllProductDetails()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<ProductDetail>> GetAllProductsDetail()
@@ -56,6 +66,11 @@ namespace BLL.Services.Implements.ProductServices
                 throw new Exception("Product is null");
             }
             return productproductdetail;
+        }
+
+        public Task<ProductDetail> GetProductDetailById(Guid id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ProductDetail> UpdateProductDetail(Guid id, ProductDetail updatedProductDetail)

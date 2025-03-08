@@ -7,4 +7,5 @@
         public required Guid CategoryId { get; set; }
         public required Category Category { get; set; }
     }
+
 }
