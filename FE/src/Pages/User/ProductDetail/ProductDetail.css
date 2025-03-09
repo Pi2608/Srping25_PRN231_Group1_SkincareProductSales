@@ -1,3 +1,25 @@
+#product-detail .redirect-bar {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+}
+
+#product-detail .redirect-bar button {
+    display: flex;
+    justify-content: center;    
+    align-items: center;
+    padding: 8px 16px;
+    color: #fff;
+    background-color: #3b3b3b;
+    border-radius: 5px;
+}
+
+#product-detail .redirect-bar button:hover {
+    background-color: #222;
+}
+
 #product-detail .product-container {
     min-height: 100vh;
     display: flex;
@@ -123,7 +145,8 @@
     font-size: 18px;
 }
 
-#product-detail .product-container .add-to-cart {
+#product-detail .product-container .add-to-cart,
+#product-detail .product-container .buy-now {
     background: #3b3b3b;
     color: white;
     border: none;
@@ -132,9 +155,22 @@
     border-radius: 5px;
 }
 
+#product-detail .product-container .add-to-cart {
+    background: #3b3b3b;
+}
+
 #product-detail .product-container .add-to-cart:hover {
     background: #222;
 }
+
+#product-detail .product-container .buy-now {
+    background: #ffa883;
+}
+
+#product-detail .product-container .buy-now:hover {
+    background: #fd8d65;
+}
+
 
 #product-detail .product-container .shipping-info {
     font-size: 14px;
@@ -147,4 +183,44 @@
     gap: 10px;
     font-size: 14px;
     margin-top: 10px;
+}
+
+.toast-message {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast-message div {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    gap: 5px;
+}
+
+.toast-message button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toast-message .login-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.toast-message .login-btn:hover {
+    background-color: #388E3C;
+}
+
+.toast-message .close-btn {
+    color: black;
+}
+
+.toast-message .close-btn:hover {
+    background-color: #ccc;
 }
