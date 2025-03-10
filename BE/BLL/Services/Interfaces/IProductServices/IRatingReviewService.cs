@@ -8,7 +8,8 @@ namespace BLL.Services.Interfaces.IProductServices
         Task<bool> CreateFeedbackAsync(RatingReview feedback);
         Task<IEnumerable<RatingReviewDTO>> GetAllFeedbackAsync();
         Task<IEnumerable<RatingReview>> GetProdFeedbackAsync(Guid prodId);
-        Task<bool> EditFeedbackAsync(string feedbackId, RatingReview feedback);
-        Task<bool> DeleteFeedbackAsync(string feedbackId);
+        Task<RatingReview?> GetFeedbackByIdAsync(Guid feedbackId); 
+        Task<bool> EditFeedbackAsync(Guid feedbackId, RatingReview feedback);
+        Task<bool> DeleteFeedbackAsync(Guid feedbackId);
     }
 }

@@ -17,13 +17,13 @@ namespace DAL.Repositories.Implements.ProductRepos
 
         public async Task<bool> CreateFeedbackAsync(RatingReview feedback)
         {
-            if (feedback == null) return false;
+            if (feedback == null || feedback.UserId == Guid.Empty) return false;
 
             await _context.RatingReviews.AddAsync(feedback);
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> DeleteFeedbackAsync(string feedbackId)
+        public async Task<bool> DeleteFeedbackAsync(Guid feedbackId)
         {
             var feedback = await _context.RatingReviews.FindAsync(feedbackId);
             if (feedback == null) return false;
@@ -32,7 +32,7 @@ namespace DAL.Repositories.Implements.ProductRepos
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> EditFeedbackAsync(string feedbackId, RatingReview feedback)
+        public async Task<bool> EditFeedbackAsync(Guid feedbackId, RatingReview feedback)
         {
             var existingFeedback = await _context.RatingReviews.FindAsync(feedbackId);
             if (existingFeedback == null) return false;
@@ -57,6 +57,11 @@ namespace DAL.Repositories.Implements.ProductRepos
                         Review = r.Review,
                         IsDeleted = r.IsDeleted,
                     }).ToListAsync();
+        }
+
+        public async Task<RatingReview?> GetFeedbackByIdAsync(Guid feedBackId)
+        {
+            return await _context.RatingReviews.FirstOrDefaultAsync(r => r.Id == feedBackId);
         }
 
         public async Task<IEnumerable<RatingReview>> GetProdFeedbackAsync(Guid prodId)

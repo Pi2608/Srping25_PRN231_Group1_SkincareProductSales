@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace PRN231.Controllers.UserControllers
 {
@@ -62,12 +63,20 @@ namespace PRN231.Controllers.UserControllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile(Guid userId, [FromBody] UserProfileDTO userProfile)
+        public async Task<IActionResult> UpdateProfile([FromBody] UserProfileDTO userProfile)
         {
             if (userProfile == null)
             {
                 return BadRequest("Invalid profile data.");
             }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            Guid userId = Guid.Parse(userIdClaim.Value);
 
             bool success = await _userService.UpdateProfile(userId, userProfile);
             if (!success)
@@ -80,7 +89,7 @@ namespace PRN231.Controllers.UserControllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(Guid userId, [FromBody] ChangePasswordDTO changePasswordDto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO changePasswordDto)
         {
             if (changePasswordDto == null ||
                 string.IsNullOrWhiteSpace(changePasswordDto.OldPassword) ||
@@ -88,6 +97,14 @@ namespace PRN231.Controllers.UserControllers
             {
                 return BadRequest("Invalid password data.");
             }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            Guid userId = Guid.Parse(User.Claims.First(c => c.Type == "userId").Value);
 
             bool success = await _userService.ChangePassword(userId, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
             if (!success)

@@ -32,16 +32,21 @@ namespace BLL.Services.Implements.ProductServices
             return await _unitOfWork.RatingReviewRepository.GetProdFeedbackAsync(prodId);
         }
 
-        public async Task<bool> EditFeedbackAsync(string feedbackId, RatingReview feedback)
+        public async Task<bool> EditFeedbackAsync(Guid feedbackId, RatingReview feedback)
         {
             var result = await _unitOfWork.RatingReviewRepository.EditFeedbackAsync(feedbackId, feedback);
             return result;
         }
 
-        public async Task<bool> DeleteFeedbackAsync(string feedbackId)
+        public async Task<bool> DeleteFeedbackAsync(Guid feedbackId)
         {
             var result = await _unitOfWork.RatingReviewRepository.DeleteFeedbackAsync(feedbackId);
             return result;
+        }
+
+        public async Task<RatingReview?> GetFeedbackByIdAsync(Guid feedbackId)
+        {
+            return await _unitOfWork.RatingReviewRepository.GetFeedbackByIdAsync(feedbackId);
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using BLL.Services.Interfaces.IProductServices;
+﻿using System.Security.Claims;
+using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
+using DTO.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,11 +21,7 @@ namespace PRN231.Controllers.ProductControllers
         public async Task<IActionResult> GetAllFeedback()
         {
             var feedbacks = await _ratingReviewService.GetAllFeedbackAsync();
-            if (feedbacks == null)
-            {
-                return NotFound("NoFeedback Found.");
-            }
-            return Ok(feedbacks);
+            return Ok(feedbacks ?? new List<RatingReviewDTO>());
         }
 
         [HttpGet("{productId}")]
@@ -31,7 +29,7 @@ namespace PRN231.Controllers.ProductControllers
         public async Task<IActionResult> GetFeedbackByProduct(Guid productId)
         {
             var feedbacks = await _ratingReviewService.GetProdFeedbackAsync(productId);
-            return Ok(feedbacks);
+            return Ok(feedbacks ?? new List<RatingReview>());
         }
 
         [HttpPost]
@@ -39,6 +37,11 @@ namespace PRN231.Controllers.ProductControllers
         public async Task<IActionResult> CreateFeedback([FromBody] RatingReview feedback)
         {
             if (feedback == null) return BadRequest("Invalid feedback data");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized("User ID not found.");
+
+            feedback.UserId = Guid.Parse(userIdClaim.Value);
 
             var result = await _ratingReviewService.CreateFeedbackAsync(feedback);
             if (!result) return StatusCode(500, "Failed to create feedback");
@@ -48,18 +51,38 @@ namespace PRN231.Controllers.ProductControllers
 
         [HttpPut("{feedbackId}")]
         [Authorize]
-        public async Task<IActionResult> UpdateFeedback(string feedbackId, [FromBody] RatingReview feedback)
-        {
-            var result = await _ratingReviewService.EditFeedbackAsync(feedbackId, feedback);
-            if (!result) return NotFound("Feedback not found or update failed");
+        public async Task<IActionResult> UpdateFeedback(Guid feedbackId, [FromBody] RatingReview feedback)
+    {
+        if (feedback == null) return BadRequest("Invalid feedback data");
 
-            return Ok(new { message = "Feedback updated successfully!" });
-        }
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null) return Unauthorized("User ID not found.");
 
-        [HttpDelete("{feedbackId}")]
+        var userId = Guid.Parse(userIdClaim.Value);
+
+        var existingFeedback = await _ratingReviewService.GetFeedbackByIdAsync(feedbackId);
+        if (existingFeedback == null || existingFeedback.UserId != userId)
+            return Forbid("You can only edit your own feedback");
+
+        var result = await _ratingReviewService.EditFeedbackAsync(feedbackId, feedback);
+        if (!result) return NotFound("Feedback not found or update failed");
+
+        return Ok(new { message = "Feedback updated successfully!" });
+    }
+
+        [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteFeedback(string feedbackId)
+        public async Task<IActionResult> DeleteFeedback(Guid feedbackId)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized("User ID not found.");
+
+            var userId = Guid.Parse(userIdClaim.Value);
+
+            var existingFeedback = await _ratingReviewService.GetFeedbackByIdAsync(feedbackId);
+            if (existingFeedback == null || existingFeedback.UserId != userId)
+                return Forbid("You can only delete your own feedback");
+
             var result = await _ratingReviewService.DeleteFeedbackAsync(feedbackId);
             if (!result) return NotFound("Feedback not found or deletion failed");
 
