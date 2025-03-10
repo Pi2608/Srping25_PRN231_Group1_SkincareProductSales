@@ -50,7 +50,7 @@ const ChangePwd = () => {
     const confirmPasswordChange = async () => {
         setLoading(true);
         try {
-            await ApiGateway.changePassword(user.id, formData.currentPassword, formData.newPassword);
+            await ApiGateway.changePassword(formData.currentPassword, formData.newPassword);
             alert('Password changed successfully!');
             setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error) {

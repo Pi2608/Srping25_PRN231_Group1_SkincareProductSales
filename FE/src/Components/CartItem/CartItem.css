@@ -1,9 +1,9 @@
-
 #cart_item {
     display: flex;
     align-items: center;
     padding: 15px;
     border-bottom: 1px solid #ddd;
+    gap: 8px;
 }
 
 #cart_item .cart-item-image {
@@ -42,8 +42,8 @@
 }
 
 #cart_item .cart-item-quantity button {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     border: none;
     background: #ddd;
     font-size: 16px;
