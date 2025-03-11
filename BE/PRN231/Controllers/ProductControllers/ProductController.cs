@@ -27,7 +27,7 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             try
             {

@@ -31,14 +31,13 @@
 
 #product-detail .product-container .product-image {
     position: relative;
-    object-fit: contain;
-    width: 250px;
-    height: auto;
+    height: 250px;
 }
 
-#product-detail .product-container .product-image .img {
-    width: 250px;
+#product-detail .product-container .product-image img {
+    height: 100%;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 #product-detail .product-container .badge {

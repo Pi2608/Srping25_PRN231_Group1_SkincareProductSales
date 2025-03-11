@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ProductsData } from '../../../../data/products'
+import ApiGateway from '../../../../Api/ApiGateway'
 import CardProduct from '../../../../Components/CardProduct/CardProduct'
 import './Product.css'
 
@@ -14,7 +15,7 @@ const Products = () => {
 
     useEffect(() => {
         fetchAllProducts().then((products) => {
-            // setMenuProducts(products);
+            setMenuProducts(products);
             console.log(products);
         });
     }, []);

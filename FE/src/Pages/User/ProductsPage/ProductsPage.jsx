@@ -4,8 +4,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
+import ApiGateway from '../../../Api/ApiGateway';
 import CardProduct from '../../../Components/CardProduct/CardProduct';
-import { useAuth } from '../../../AuthContext/AuthContext';
 import { ProductsData } from '../../../data/products';
 import './ProductsPage.css';
 
@@ -17,8 +17,8 @@ const ProductsPage = ()=>{
     
     useEffect(() => {
         fetchAllProducts().then((products) => {
-            // setMenuProducts(products);
-            console.log(products);
+            setMenuProducts(products);
+            // console.log(products);
         });
     }, []);
 

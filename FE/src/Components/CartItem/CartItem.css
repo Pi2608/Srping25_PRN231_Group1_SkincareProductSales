@@ -6,13 +6,17 @@
     gap: 8px;
 }
 
-#cart_item .cart-item-image {
-    width: 60px;
+#cart_item .image-container {
     height: 60px;
-    object-fit: cover;
+    width: 60px;
+}
+
+#cart_item .cart-item-image {
+    height: 100%;
     border-radius: 8px;
     margin-left: 10px;
     margin-right: 15px;
+    object-fit: cover;
 }
 
 #cart_item .cart-item-details {

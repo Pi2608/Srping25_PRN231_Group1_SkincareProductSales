@@ -30,7 +30,7 @@ const CardProduct = ({ product, handleLoginRedirect }) => {
         <div id='card_product' onClick={() => navigate(`/product/${product.id}`)}>
             <div className="img-container">
                 <img 
-                    src={product.img} 
+                    src={product.image} 
                     alt=""
                 />
             </div>
