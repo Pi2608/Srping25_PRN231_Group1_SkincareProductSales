@@ -45,8 +45,10 @@ namespace BLL.Services.Implements.UserServices
                 return null;
             }
 
-            AuthService auth = new AuthService(_configuration);
-            string token = auth.GenerateJwtToken(newUser);
+            var secretKey = _configuration["JwtSettings:SecretKey"];
+            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtSettings:Audience"];
+            string token = AuthService.GenerateJwtToken(newUser, secretKey, 1000000, issuer, audience);
             return token;
         }
 
@@ -54,8 +56,10 @@ namespace BLL.Services.Implements.UserServices
         {
             var user = await _unitOfWork.UserRepository.Login(email, password);
             if (user == null) return null;
-            AuthService auth = new AuthService(_configuration);
-            string token = auth.GenerateJwtToken(user);
+            var secretKey = _configuration["JwtSettings:SecretKey"];
+            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtSettings:Audience"];
+            string token = AuthService.GenerateJwtToken(user, secretKey, 1000000, issuer, audience);
             return token;
         }
         public async Task<IEnumerable<User>> GetAllUsers()

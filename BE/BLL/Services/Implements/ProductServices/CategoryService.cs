@@ -24,6 +24,11 @@ namespace BLL.Services.Implements.ProductServices
             throw new Exception("Add fail");
         }
 
+        public Task<Category> CreateCategory(Category category)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Category> CreateProductDetail(Category category)
         {
             var newCategory = await _unitOfWork.CategoryRepository.AddAsync(category);

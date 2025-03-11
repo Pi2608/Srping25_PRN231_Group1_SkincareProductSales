@@ -1,7 +1,8 @@
 ﻿using BLL.Services.Interfaces.IOrderServices;
-using DAL.Models.OrderModel;
+using DTO.Order;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using PRN231.Helper;
 
 namespace PRN231.Controllers.OrderControllers
 {
@@ -42,11 +43,12 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrUpdateOrder order)
         {
             try
             {
-                var result = await _orderService.CreateOrder(order);
+                var userId = this.GetUserId();
+                var result = await _orderService.CreateOrder(order, userId);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,7 +58,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateOrder([FromRoute] Guid id, [FromBody] Order order)
+        public async Task<IActionResult> UpdateOrder([FromRoute] Guid id, [FromBody] CreateOrUpdateOrder order)
         {
             try
             {

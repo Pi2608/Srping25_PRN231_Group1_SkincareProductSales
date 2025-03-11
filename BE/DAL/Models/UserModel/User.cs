@@ -1,4 +1,6 @@
-﻿namespace DAL.Models.UserModel
+﻿using DAL.Models.OrderModel;
+
+namespace DAL.Models.UserModel
 {
     public class User : BaseEntity
     {
@@ -8,5 +10,6 @@
         public required string Email { get; set; }
         public required Guid RoleId { get; set; }
         public required Role Role { get; set; }
+        public IEnumerable<Order> Orders { get; set; }
     }
 }

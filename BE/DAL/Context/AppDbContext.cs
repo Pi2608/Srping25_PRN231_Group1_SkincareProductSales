@@ -72,6 +72,11 @@ namespace DAL.Context
                         .WithMany(voucher => voucher.OrderVouchers)
                         .HasForeignKey(ov => ov.VoucherId).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<OrderVoucher>().HasKey(ov => new { ov.OrderId, ov.VoucherId });
+
+            modelBuilder.Entity<Order>()
+                        .HasOne(o => o.User)
+                        .WithMany(u => u.Orders)
+                        .HasForeignKey(o => o.UserId).OnDelete(DeleteBehavior.NoAction);
         }
 
         public static void SeedData(AppDbContext context)

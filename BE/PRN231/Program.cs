@@ -115,12 +115,12 @@ builder.Services.AddControllers()
      ); // Define the OData route
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization(options =>
-					{
-						options.AddPolicy("Customer", policy =>
-							policy.RequireClaim("role", "Customer"));
-						options.AddPolicy("Admin", policy =>
-							policy.RequireClaim("role", "Admin"));
-					});
+                    {
+                        options.AddPolicy("Customer", policy =>
+                            policy.RequireClaim("role", "Customer"));
+                        options.AddPolicy("Admin", policy =>
+                            policy.RequireClaim("role", "Admin"));
+                    });
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
