@@ -1,10 +1,7 @@
-﻿using BLL.Services.Implements.UserServices;
-using BLL.Services.Interfaces.IUserServices;
-using DAL.Models.UserModel;
+﻿using BLL.Services.Interfaces.IUserServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
+using PRN231.Helper;
 
 namespace PRN231.Controllers.UserControllers
 {
@@ -18,9 +15,9 @@ namespace PRN231.Controllers.UserControllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetUserRole()
+        public async Task<IActionResult> GetCurrentUserRole()
         {
-            var roleClaim = User.Claims.FirstOrDefault(c => c.Type == "role").Value;
+            var roleClaim = this.GetUserRole();
             Console.WriteLine(roleClaim);
             if (roleClaim == null || string.IsNullOrEmpty(roleClaim))
                 return Unauthorized("Role not found.");

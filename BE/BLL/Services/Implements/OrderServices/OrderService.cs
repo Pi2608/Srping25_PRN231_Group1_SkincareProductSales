@@ -1,84 +1,89 @@
-﻿using BLL.Services.Interfaces.IOrderServices;
+﻿using AutoMapper;
+using BLL.Services.Interfaces.IOrderServices;
 using DAL.Models.OrderModel;
 using DAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using DTO.Order;
 
 namespace BLL.Services.Implements.OrderServices
 {
     public class OrderService : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public OrderService(IUnitOfWork unitOfWork)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Order> CreateOrder(Order order)
+        public async Task<OrderViewDTO> CreateOrder(CreateOrUpdateOrder order, Guid userId)
         {
-            var newOrder = await _unitOfWork.OrderRepository.AddAsync(order);
+            var newOrder = _mapper.Map<Order>(order);
+            newOrder.UserId = userId;
+            newOrder.CreatedAt = DateTime.Now;
+            newOrder.CreatedBy = userId;
+            var addOrderResult = await _unitOfWork.OrderRepository.AddAsync(newOrder);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return newOrder;
+                var viewOrder = _mapper.Map<OrderViewDTO>(addOrderResult);
+                return viewOrder;
             }
             throw new Exception("Add fail");
-
         }
 
         public async Task<bool> DeleteOrder(Guid id)
         {
+            var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(id);
+            if (existingOrder is not null)
+            {
+                existingOrder.IsDeleted = true;
+                existingOrder.DeletedAt = DateTime.UtcNow;
+                var deleteOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
+                var process = await _unitOfWork.SaveChangeAsync();
+                if (process > 0)
+                {
+                    return true;
+                }
+            }
+            throw new Exception("Update fail");
+        }
+
+        public async Task<List<OrderViewDTO>> GetAllOrder()
+        {
+            var orders = await _unitOfWork.OrderRepository.GetAllAsync(o => o.IsDeleted == false, true, "OrderDetails");
+
+            var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
+
+            return viewOrder;
+        }
+
+        public async Task<OrderViewDTO> GetOrderById(Guid id)
+        {
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(id);
-            if (order is null)
+            if (order is not null)
             {
-                throw new Exception("Delete fail");
+                var result = _mapper.Map<OrderViewDTO>(order);
+                return result;
             }
-            order.DeletedAt = DateTime.UtcNow;
-            await _unitOfWork.OrderRepository.DeleteAsync(order);
-            return true;
-
+            throw new Exception("Not Found");
         }
 
-        public async Task<List<Order>> GetAllOrder()
+        public async Task<OrderViewDTO> UpdateOrder(Guid id, CreateOrUpdateOrder order)
         {
-            var orders = await _unitOfWork.OrderRepository.GetAllAsync(null, true);
-            if (orders.IsNullOrEmpty())
+            var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(id);
+            if (existingOrder is not null)
             {
-                throw new Exception("Orders is empty");
-            }
-
-            return await orders.ToListAsync();
-        }
-
-        public async Task<Order> GetOrderById(Guid id)
-        {
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(id);
-            if (order is null)
-            {
-                throw new Exception("Order is null");
-            }
-            return order;
-        }
-
-        public async Task<Order> UpdateOrder(Guid id, Order order)
-        {
-            var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(id, true);
-            if (existingOrder is null)
-            {
-                throw new Exception("Order is null");
-            }
-            existingOrder.TotalPrice = order.TotalPrice;
-            existingOrder.Status = order.Status;
-            existingOrder.OrderVouchers = order.OrderVouchers;
-            existingOrder.OrderDetails = order.OrderDetails;
-            existingOrder.UpdateAt = DateTime.Now;
-
-            await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
-            var process = await _unitOfWork.SaveChangeAsync();
-            if(process > 0)
-            {
-                return existingOrder;
+                var updateOrder = _mapper.Map<Order>(order);
+                existingOrder.UpdateAt = DateTime.Now;
+                existingOrder.IsDeleted = updateOrder.IsDeleted;
+                var result = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
+                var process = await _unitOfWork.SaveChangeAsync();
+                if (process > 0)
+                {
+                    return _mapper.Map<OrderViewDTO>(result); ;
+                }
             }
             throw new Exception("Update fail");
         }

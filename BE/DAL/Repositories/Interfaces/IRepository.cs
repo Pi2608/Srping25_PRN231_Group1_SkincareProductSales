@@ -9,7 +9,7 @@ namespace DAL.Repositories.Interfaces
         Task<T> GetWithConditionAsync(Expression<Func<T, bool>>? expression, bool noTracked = false, params string[] includeProperties);
         Task<T> GetByIdAsync(Guid Id, bool noTracked = false, params string[] includeProperties);
         Task<T> AddAsync(T entity);
-        Task AddRangeAsync(IEnumerable<T> values);
+        Task<List<T>> AddRangeAsync(IEnumerable<T> values);
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity, bool isHardDelete = false);
     }

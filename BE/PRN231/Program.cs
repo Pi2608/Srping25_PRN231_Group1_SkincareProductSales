@@ -18,6 +18,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using BLL.Helper;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -37,7 +38,11 @@ builder.Services.AddCors(options =>
                                 .AllowAnyHeader();
                       });
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    });
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -111,13 +116,16 @@ builder.Services.AddControllers()
      ); // Define the OData route
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization(options =>
-					{
-						options.AddPolicy("Customer", policy =>
-							policy.RequireClaim("role", "Customer"));
-						options.AddPolicy("Admin", policy =>
-							policy.RequireClaim("role", "Admin"));
-					});
+                    {
+                        options.AddPolicy("Customer", policy =>
+                            policy.RequireClaim("role", "Customer"));
+                        options.AddPolicy("Admin", policy =>
+                            policy.RequireClaim("role", "Admin"));
+                    });
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
