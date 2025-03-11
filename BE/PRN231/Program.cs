@@ -18,6 +18,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using BLL.Helper;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -122,6 +123,9 @@ builder.Services.AddAuthorization(options =>
                             policy.RequireClaim("role", "Admin"));
                     });
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
