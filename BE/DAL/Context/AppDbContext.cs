@@ -1,4 +1,5 @@
-﻿using DAL.Models.OrderModel;
+﻿using DAL.Models;
+using DAL.Models.OrderModel;
 using DAL.Models.ProductModel;
 using DAL.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,13 @@ namespace DAL.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<BaseEntity>(entity => {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.UpdateAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.DeletedAt).IsRequired(false);
+                entity.Property(e => e.CreatedBy).IsRequired(false);
+                entity.Property(e => e.UpdatedBy).IsRequired(false);
+            });
             //UserModel
             modelBuilder.Entity<User>()
                         .HasOne(user => user.Role)

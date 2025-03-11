@@ -25,7 +25,21 @@ const ProductDetail = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        if (productId) {
+            fetchProductById(productId).then((product) => {
+                // setMenuProducts(products);
+                console.log(product);
+            });
+        }
     }, []);
+
+    const fetchProductById = async (id) => {
+        try {
+            return await ApiGateway.getProductById(id);
+        } catch (error) {
+            console.error(`Failed to fetch product ${id}:`, error);
+        }
+    };
 
     const handleLoginRedirect = () => {
         navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
@@ -49,7 +63,7 @@ const ProductDetail = () => {
 
     const displayMsg = () => {
         toast(<Msg handleLoginRedirect={handleLoginRedirect} />);
-      };
+    };
 
     return (
         <div id="product-detail">

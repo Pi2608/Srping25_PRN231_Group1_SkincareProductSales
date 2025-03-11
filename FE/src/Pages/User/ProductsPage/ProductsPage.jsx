@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,12 +13,26 @@ const ProductsPage = ()=>{
     const navigate = useNavigate();
     const location = useLocation();
 
+    const [MenuProducts, setMenuProducts] = useState(ProductsData)
+    
+    useEffect(() => {
+        fetchAllProducts().then((products) => {
+            // setMenuProducts(products);
+            console.log(products);
+        });
+    }, []);
+
+    const fetchAllProducts = async () => {
+        try {
+            return await ApiGateway.getAllProducts();
+        } catch (error) {
+            console.error("Failed to fetch products:", error);
+        }
+    };
+
     const handleLoginRedirect = () => {
         navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
     };
-
-    const { user } = useAuth();
-    const [MenuProducts, setMenuProducts] = useState(ProductsData)
     
     const filter = (type) => {
         setMenuProducts(ProductsData.filter((product)=>product.type === type))
