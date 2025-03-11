@@ -26,7 +26,7 @@ namespace PRN231.Controllers.UserControllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _roleService.GetAllRoles();

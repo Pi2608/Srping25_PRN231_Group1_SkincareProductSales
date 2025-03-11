@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
             ]);
             setUser(userData);
             setRole(userRole);
+            console.log("User data fetched:", userData);
         } catch (error) {
             console.error("Failed to fetch user:", error);
         }

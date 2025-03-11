@@ -1,4 +1,5 @@
-﻿using DAL.Models.OrderModel;
+﻿using DAL.Models;
+using DAL.Models.OrderModel;
 using DAL.Models.ProductModel;
 using DAL.Models.UserModel;
 using Microsoft.EntityFrameworkCore;

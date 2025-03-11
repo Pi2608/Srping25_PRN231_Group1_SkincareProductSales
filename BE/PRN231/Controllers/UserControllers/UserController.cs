@@ -37,7 +37,7 @@ namespace PRN231.Controllers.UserControllers
         [Authorize]
         public async Task<IActionResult> GetUser()
         {
-            Guid userId = Guid.Parse(User.Claims.First(c => c.Type == "userId").Value);
+            Guid userId = Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var user = await _userService.GetUserById(userId);
             if (user == null) return NotFound("User not found.");
             return Ok(user);

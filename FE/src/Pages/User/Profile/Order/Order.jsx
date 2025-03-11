@@ -69,7 +69,7 @@ const Order = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await ApiGateway.getOrdersByUserId(user.id);
+            const response = await ApiGateway.getOrderById(user.id);
             setOrders(response);
         } catch (error) {
             console.error('Error fetching orders:', error);

@@ -17,7 +17,7 @@ namespace BLL.Services.Implements.UserServices
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.RoleName.ToString())
             };
 
             var token = new JwtSecurityToken
@@ -31,6 +31,10 @@ namespace BLL.Services.Implements.UserServices
 
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = jwtTokenHandler.WriteToken(token);
+            foreach (var claim in token.Claims)
+            {
+                Console.WriteLine($"{claim.Type}: {claim.Value}");
+            }
             return jwtToken;
         }
     }

@@ -93,7 +93,7 @@ class ApiGateway {
 
     static async getRole() {
         try {
-            const response = await ApiGateway.axiosInstance.get("/Role/GetUserRole");
+            const response = await ApiGateway.axiosInstance.get("/Role/GetCurrentUserRole");
             return response.data;
         } catch (error) {
             console.error("Get Role error:", error);
@@ -178,7 +178,7 @@ class ApiGateway {
 
     static async getProductById(id) {
         try {
-            const response = await this.axiosInstance.get(`/Product/GetById/${id}`);
+            const response = await this.axiosInstance.get(`/Product/GetById?id=${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching product ${id}:`, error);

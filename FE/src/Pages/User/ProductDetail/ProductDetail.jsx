@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../../Components/Header/Header";
 import Footer from "../../../Components/Footer/Footer";
+import Rating from '@mui/material/Rating';
+import ApiGateway from "../../../Api/ApiGateway";
 import { useAuth } from "../../../AuthContext/AuthContext";
 import { ProductsData } from '../../../data/products';
 import { ToastContainer, toast } from "react-toastify";
@@ -11,21 +13,31 @@ import "./ProductDetail.css";
 const ProductDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    
+    const { productId } = useParams();
+    const { user } = useAuth();
 
+    const [product, setProduct] = useState({});
+    const [productDetail, setProductDetail] = useState({});
     const [selectedSize, setSelectedSize] = useState("100ml");
     const [quantity, setQuantity] = useState(1);
 
-    const { productId } = useParams();
-    const { user } = useAuth();
-    const product = ProductsData.find(p => p.id == productId);
-
-    if (!product) {
-        return <div>Product not found.</div>;
-    }
-
     useEffect(() => {
         window.scrollTo(0, 0);
+        if (productId) {
+            fetchProductById(productId).then((product) => {
+                setProduct(product);
+            });
+        }
     }, []);
+
+    const fetchProductById = async (id) => {
+        try {
+            return await ApiGateway.getProductById(id);
+        } catch (error) {
+            console.error(`Failed to fetch product ${id}:`, error);
+        }
+    };
 
     const handleLoginRedirect = () => {
         navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
@@ -47,9 +59,26 @@ const ProductDetail = () => {
         toast.success(`${quantity}x ${product.name} (${selectedSize}) has been added to your cart!`);
     };
 
+    const buyNow = () => {
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+        const existingProduct = cart.find((item) => item.id === product.id && item.size === selectedSize);
+        
+        if (existingProduct) {
+            existingProduct.quantity += quantity;
+        } else {
+            cart.push({ ...product, size: selectedSize, quantity });
+        }
+
+        sessionStorage.setItem('cart', JSON.stringify(cart));
+
+        toast.success(`${quantity}x ${product.name} (${selectedSize}) has been added to your cart!`);
+        navigate('/cart');
+    };
+
     const displayMsg = () => {
         toast(<Msg handleLoginRedirect={handleLoginRedirect} />);
-      };
+    };
 
     return (
         <div id="product-detail">
@@ -63,20 +92,21 @@ const ProductDetail = () => {
             </div>
             <div className="product-container">
                 <div className="product-image">
-                    <img src={product.img} alt={product.name} />
+                    <img src={product.image} alt={product.name} />
                 </div>
 
                 <div className="product-details">
                     <h4 className="brand">{product.detail}</h4>
                     <h1 className="title">{product.name}</h1>
                     <div className="rating">
-                        ⭐⭐⭐⭐⭐ <span>214 reviews</span>
+                        <Rating name="read-only" value={5} readOnly />
+                        <span>214 reviews</span>
                     </div>
                     <div className="price">
                         <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product.price)} VND</span>
                     </div>
                     <p className="description">
-                        A reliable bodyguard for your skin, with secret uses. This lightweight, long-lasting SPF50 sunscreen lotion protects against UV exposure.
+                        {product.shortDescription}
                     </p>
 
                     <div className="size-selector">
@@ -94,7 +124,7 @@ const ProductDetail = () => {
                             <button onClick={() => setQuantity(quantity + 1)}>+</button>
                         </div>
                         <button className="add-to-cart" onClick={() =>user ? addToCart() : displayMsg() }>Add to Cart</button>
-                        <button className="buy-now" onClick={() =>user ? addToCart() : displayMsg() }>Buy now</button>
+                        <button className="buy-now" onClick={() =>user ? buyNow() : displayMsg() }>Buy now</button>
                     </div>
                 </div>
             </div>

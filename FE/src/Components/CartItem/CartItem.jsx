@@ -1,11 +1,13 @@
 import React from 'react';
 import './CartItem.css';
 
-const CartItem = ({ id, img, name, type, category, price, quantity, updateQuantity, removeItem, toggleSelectItem, isSelected }) => {
+const CartItem = ({ id, image, name, type, category, price, quantity, updateQuantity, removeItem, toggleSelectItem, isSelected }) => {
   return (
     <div id="cart_item">
         <input type="checkbox" checked={isSelected} onChange={() => toggleSelectItem(id)} />
-        <img src={img} className="cart-item-image" alt={name} />
+        <div className="image-container">
+          <img src={image} className="cart-item-image" alt={name} />
+        </div>
         <div className="cart-item-details">
             <h2>{name}</h2>
             <p>{type} - {category}</p>
