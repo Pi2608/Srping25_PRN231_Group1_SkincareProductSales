@@ -1,11 +1,7 @@
-﻿using BLL.Services.Implements.UserServices;
-using BLL.Services.Interfaces.IUserServices;
-using DAL.Models.UserModel;
+﻿using BLL.Services.Interfaces.IUserServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using PRN231.Helper;
-using System.Security.Claims;
 
 namespace PRN231.Controllers.UserControllers
 {

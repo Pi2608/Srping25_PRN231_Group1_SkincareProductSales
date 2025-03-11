@@ -1,14 +1,13 @@
-﻿using DAL.Models.OrderModel;
-using DTO.Order;
+﻿using DTO.Order;
 
 namespace BLL.Services.Interfaces.IOrderServices
 {
     public interface IOrderDetailService
     {
-        Task<List<OrderDetailViewDto>> GetAllOrder();
-        Task<OrderDetailViewDto> GetOrderById(Guid id);
-        Task<OrderDetailViewDto> CreateOrder(Order order);
-        Task<OrderDetailViewDto> UpdateOrder(Guid id, OrderDetail order);
-        Task<bool> DeleteOrder(Guid id);
+        Task<List<OrderDetailViewDto>> GetAllOrderDetail();
+        Task<OrderDetailViewDto> GetOrderDetailById(Guid id);
+        Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, List<CreateOrUpdateOrderDetail> order);
+        Task<OrderDetailViewDto> UpdateOrderDetail(Guid id, CreateOrUpdateOrderDetail order);
+        Task<bool> DeleteOrderDetail(Guid id);
     }
 }

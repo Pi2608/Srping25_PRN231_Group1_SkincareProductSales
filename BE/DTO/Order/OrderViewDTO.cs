@@ -4,6 +4,6 @@
     {
         public Guid Id { get; set; }
         public decimal TotalPrice { get; set; }
-        public List<OrderDetailViewDto> MyProperty { get; set; }
+        public List<OrderDetailViewDto> OrderDetails { get; set; }
     }
 }

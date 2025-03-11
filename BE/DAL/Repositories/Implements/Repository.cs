@@ -21,12 +21,13 @@ namespace DAL.Repositories.Implements
             return entity;
         }
 
-        public async Task AddRangeAsync(IEnumerable<T> values)
+        public async Task<List<T>> AddRangeAsync(IEnumerable<T> values)
         {
             foreach (var item in values)
             {
                 _dbSet.Add(item);
             }
+            return values.ToList();
         }
 
         public async Task DeleteAsync(T entity, bool isHardDelete = false)

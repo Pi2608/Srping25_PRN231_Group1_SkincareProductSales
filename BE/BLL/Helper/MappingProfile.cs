@@ -3,12 +3,6 @@ using DAL.Models.OrderModel;
 using DAL.Models.UserModel;
 using DTO.Order;
 using DTO.User;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Helper
 {
@@ -19,9 +13,10 @@ namespace BLL.Helper
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => "No Address")).ReverseMap();
 
-            CreateMap<OrderDetailViewDto, OrderDetail>().ReverseMap();
             CreateMap<OrderViewDTO, Order>().ReverseMap();
             CreateMap<CreateOrUpdateOrder, Order>().ReverseMap();
+            CreateMap<CreateOrUpdateOrderDetail, OrderDetail>().ReverseMap();
+            CreateMap<OrderDetailViewDto, OrderDetail>().ReverseMap();
         }
     }
 }

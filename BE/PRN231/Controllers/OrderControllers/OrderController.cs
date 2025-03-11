@@ -29,7 +29,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateOrder([FromRoute] Guid id, [FromBody] CreateOrUpdateOrder order)
+        public async Task<IActionResult> UpdateOrder([FromQuery] Guid id, [FromBody] CreateOrUpdateOrder order)
         {
             try
             {
@@ -72,12 +72,12 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteOrder([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteOrder([FromQuery] Guid id)
         {
             try
             {
                 var result = await _orderService.DeleteOrder(id);
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
