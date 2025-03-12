@@ -59,6 +59,14 @@ namespace BLL.Services.Implements.OrderServices
             return viewOrder;
         }
 
+        public async Task<List<OrderViewDTO>> GetOrderByCurrentUserId(Guid id)
+        {
+            var orders = await _unitOfWork.OrderRepository.GetAllAsync(o => o.IsDeleted == false && o.UserId == id, true, "OrderDetails");
+
+            var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
+            return viewOrder;
+        }
+
         public async Task<OrderViewDTO> GetOrderById(Guid id)
         {
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(id);

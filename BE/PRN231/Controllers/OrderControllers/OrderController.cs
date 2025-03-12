@@ -28,6 +28,22 @@ namespace PRN231.Controllers.OrderControllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrderByCurrentUserId()
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var orders = await _orderService.GetOrderByCurrentUserId(userId);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
