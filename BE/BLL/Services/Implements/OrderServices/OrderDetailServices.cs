@@ -23,14 +23,18 @@ namespace BLL.Services.Implements.OrderServices
             if (existingOrder is not null)
             {
                 var orderDetails = _mapper.Map<List<OrderDetail>>(order);
-                foreach (var item in orderDetails)
+                foreach (var orderItem in orderDetails)
                 {
-                    var product = await _unitOfWork.ProductRepository.GetByIdAsync(item.ProductId);
-                    if (product is not null) 
+                    var product = await _unitOfWork.ProductRepository.GetByIdAsync(orderItem.ProductId);
+                    if (product is not null)
                     {
-                        item.OrderId = orderId;
-                        item.TotalPrice = item.Quantity * product.Price;
-                        existingOrder.TotalPrice += item.TotalPrice;
+                        var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == orderItem.Size);
+                        if (productDetail is not null)
+                        {
+                            orderItem.OrderId = orderId;
+                            orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
+                            existingOrder.TotalPrice += orderItem.TotalPrice;
+                        }
                     }
                 }
 
@@ -74,7 +78,7 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<OrderDetailViewDto> GetOrderDetailById(Guid id)
         {
-            var existingOrderDetail = await _unitOfWork.OrderDetailRepository.GetByIdAsync(id);
+            var existingOrderDetail = await _unitOfWork.OrderDetailRepository.GetWithConditionAsync(od => od.IsDeleted == false && od.Id == id);
 
             if (existingOrderDetail is not null)
             {
@@ -90,9 +94,10 @@ namespace BLL.Services.Implements.OrderServices
             if (existingOrder is not null)
             {
                 var product = await _unitOfWork.ProductRepository.GetByIdAsync(order.ProductId);
+                var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == order.Size);
                 var updateOrder = _mapper.Map<OrderDetail>(order);
                 existingOrder.Quantity = updateOrder.Quantity;
-                existingOrder.TotalPrice = updateOrder.Quantity * product.Price;
+                existingOrder.TotalPrice = updateOrder.Quantity * productDetail.Price;
                 existingOrder.UpdateAt = DateTime.Now;
                 var result = await _unitOfWork.OrderDetailRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();

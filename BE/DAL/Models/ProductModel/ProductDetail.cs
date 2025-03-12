@@ -7,6 +7,7 @@
         public required int Size { get; set; }
         public required int StockQuantity { get; set; }
         public required string Description { get; set; }
+        public required decimal Price { get; set; }
     }
     public class CategoryDto
     {

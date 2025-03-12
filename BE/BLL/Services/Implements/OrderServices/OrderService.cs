@@ -35,7 +35,7 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<bool> DeleteOrder(Guid id)
         {
-            var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(id);
+            var existingOrder = await _unitOfWork.OrderRepository.GetWithConditionAsync(od => od.IsDeleted == false && od.Id == id);
             if (existingOrder is not null)
             {
                 existingOrder.IsDeleted = true;

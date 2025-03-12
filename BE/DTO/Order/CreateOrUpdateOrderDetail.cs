@@ -5,5 +5,6 @@
         public int Quantity { get; set; }
         public Guid ProductId { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public int Size { get; set; }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using BLL.Services.Interfaces.IUserServices;
 using DTO.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace PRN231.Controllers.UserControllers

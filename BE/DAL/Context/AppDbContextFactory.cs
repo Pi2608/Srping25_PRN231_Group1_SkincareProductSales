@@ -9,26 +9,26 @@ using Microsoft.Extensions.Configuration;
 
 namespace DAL.Context
 {
-    public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
-    {
-        public AppDbContext CreateDbContext(string[] args)
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
+    //public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+    //{
+    //    public AppDbContext CreateDbContext(string[] args)
+    //    {
+    //        var config = new ConfigurationBuilder()
+    //            .SetBasePath(Directory.GetCurrentDirectory())
+    //            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    //            .Build();
 
-            var connectionString = config.GetConnectionString("DefaultConnection");
+    //        var connectionString = config.GetConnectionString("DefaultConnection");
 
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            }
+    //        if (string.IsNullOrEmpty(connectionString))
+    //        {
+    //            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    //        }
 
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+    //        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    //        optionsBuilder.UseSqlServer(connectionString);
 
-            return new AppDbContext(optionsBuilder.Options);
-        }
-    }
+    //        return new AppDbContext(optionsBuilder.Options);
+    //    }
+    //}
 }
