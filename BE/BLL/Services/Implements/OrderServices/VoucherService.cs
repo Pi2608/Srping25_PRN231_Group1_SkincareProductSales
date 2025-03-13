@@ -40,7 +40,7 @@ namespace BLL.Services.Implements.OrderServices
 
         }
 
-        public async Task<List<Voucher>> GetAllVoucher()
+        public async Task<List<Voucher>> GetAllVouchers()
         {
             var vouchers = await _unitOfWork.VoucherRepository.GetAllAsync(null, true);
             if (vouchers.IsNullOrEmpty())
