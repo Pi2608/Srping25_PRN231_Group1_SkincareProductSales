@@ -5,7 +5,7 @@ namespace DAL.Repositories.Interfaces.IProductRepos
 {
     public interface IRatingReviewRepository : IRepository<RatingReview>
     {
-        Task<bool> CreateFeedbackAsync(RatingReview feedback);
+        Task<(bool success, string message, RatingReview review)> CreateRatingReviewAsync(RatingReview ratingReview);
         Task<IEnumerable<RatingReviewDTO>> GetAllFeedbackAsync();
         Task<IEnumerable<RatingReview>> GetProdFeedbackAsync(Guid prodId);
         Task<RatingReview?> GetFeedbackByIdAsync(Guid feedBackId);

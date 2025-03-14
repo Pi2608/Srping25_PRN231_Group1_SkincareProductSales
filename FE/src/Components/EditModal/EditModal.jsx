@@ -2,12 +2,18 @@ import React,{ useState, useEffect } from 'react'
 import { TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, Select, MenuItem } from '@mui/material';
 import ApiGateway from '../../Api/ApiGateway';
 
-const EditModal = ({ type, object, onEdit, onClose }) => {
-    const [formData, setFormData] = useState({});
+const EditModal = ({ type, object, open, onEdit, onClose }) => {
+    const [formData, setFormData] = useState({
+        account: object.account,
+        email: object.email,
+        address: object.address,
+        roleId: object.roleId
+    });
     const [roles, setRoles] = useState([]);
 
     useEffect(() => {
         fetchRoles();
+        console.log(formData)
     }, []);
 
     const fetchRoles = async () => {
@@ -17,6 +23,7 @@ const EditModal = ({ type, object, onEdit, onClose }) => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        console.log(formData)
     };
 
     const allowedFields = ["account", "email", "address", "roleId"];
@@ -28,7 +35,7 @@ const EditModal = ({ type, object, onEdit, onClose }) => {
                 name: key,
                 type: key === "email" ? "email" : key === "roleId" ? "select" : "text",
                 placeholder: key.charAt(0).toUpperCase() + key.slice(1),
-                value: object[key] || "",
+                // value: object[key] || "",
                 options: key === "roleId" ? roles.map(role => ({ value: role.id, label: role.roleName })) : null
             }))
     : [];
@@ -68,7 +75,7 @@ const EditModal = ({ type, object, onEdit, onClose }) => {
             >
                 {userFields.map((field, i) =>(
                     field.type === "select" ? (
-                        <Select key={i} name={field.name} value={field.value} onChange={handleChange} size='small'>
+                        <Select key={i} name={field.name} value={formData.roleId} onChange={handleChange} size='small'>
                             {field.options?.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                             ))}
@@ -76,12 +83,13 @@ const EditModal = ({ type, object, onEdit, onClose }) => {
                     ) : (
                         <TextField
                             key={i}
+                            required
                             name={field.name}
                             label={field.placeholder}
                             type={field.type}
                             size="small"
                             variant="outlined"
-                            value={field.value}
+                            value={formData[field.name]}
                             onChange={handleChange}
                             slotProps={{
                                 inputLabel: {

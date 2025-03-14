@@ -39,8 +39,8 @@ namespace BLL.Services.Implements.UserServices
             }
 
             var newUser = await _unitOfWork.UserRepository.CreateUser(userdto);
-            
-            if (newUser == null)
+
+            if (!newUser.success)
             {
                 return null;
             }
@@ -48,7 +48,7 @@ namespace BLL.Services.Implements.UserServices
             var secretKey = _configuration["JwtSettings:SecretKey"];
             var issuer = _configuration["JwtSettings:Issuer"];
             var audience = _configuration["JwtSettings:Audience"];
-            string token = AuthService.GenerateJwtToken(newUser, secretKey, 1000000, issuer, audience);
+            string token = AuthService.GenerateJwtToken(newUser.user, secretKey, 1000000, issuer, audience);
             return token;
         }
 
@@ -87,6 +87,30 @@ namespace BLL.Services.Implements.UserServices
             return true;
         }
 
+        public async Task<(bool success, string message, User user)> CreateUser(CreateUserDTO user)
+        {
+            var existingUser = await _unitOfWork.UserRepository.GetUserByEmail(user.Email);
+            if (existingUser != null)
+            {
+                return (false, "User already exists", existingUser);
+            }
+
+            var userdto = _mapper.Map<User>(user);
+
+            userdto.CreatedAt = DateTime.Now;
+            userdto.UpdateAt = DateTime.Now;
+            userdto.IsDeleted = false;
+
+            var result = await _unitOfWork.UserRepository.CreateUser(userdto);
+
+            if (!result.success)
+            {
+                return (result.success, result.message, null);
+            }
+
+            return (true, "User created successfully", userdto);
+        }
+
         public async Task<bool> UpdateProfile(Guid userId, UserProfileDTO us)
         {
             var success = await _unitOfWork.UserRepository.UpdateUser(userId, us);
@@ -98,5 +122,6 @@ namespace BLL.Services.Implements.UserServices
             var success = await _unitOfWork.UserRepository.ChangePasswordAsync(userId, oldPassword, newPassword);
             return success;
         }
+
     }
 }

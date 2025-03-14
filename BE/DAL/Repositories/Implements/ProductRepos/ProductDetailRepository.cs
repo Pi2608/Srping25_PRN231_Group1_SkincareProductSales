@@ -9,5 +9,6 @@ namespace DAL.Repositories.Implements.ProductRepos
         public ProductDetailRepository(AppDbContext context) : base(context)
         {
         }
+        
     }
 }

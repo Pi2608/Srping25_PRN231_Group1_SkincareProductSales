@@ -14,11 +14,11 @@ namespace BLL.Services.Implements.ProductServices
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateFeedbackAsync(RatingReview feedback)
+        public async Task<(bool success, string message, RatingReview ratingReview)> CreateFeedbackAsync(RatingReview feedback)
         {
-            if (feedback == null) return false;
+            if (feedback == null) return new ValueTuple<bool, string, RatingReview>(false, "Rating review cannot be null", null);
 
-            var result = await _unitOfWork.RatingReviewRepository.CreateFeedbackAsync(feedback);
+            var result = await _unitOfWork.RatingReviewRepository.CreateRatingReviewAsync(feedback);
             return result;
         }
 

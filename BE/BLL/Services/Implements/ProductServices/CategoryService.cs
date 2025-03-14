@@ -39,5 +39,10 @@ namespace BLL.Services.Implements.ProductServices
             }
             throw new Exception("Add fail");
         }
+
+        public async Task<IEnumerable<Category>> GetAllCategory()
+        {
+            return await _unitOfWork.CategoryRepository.GetAllAsync();
+        }
     }
 }

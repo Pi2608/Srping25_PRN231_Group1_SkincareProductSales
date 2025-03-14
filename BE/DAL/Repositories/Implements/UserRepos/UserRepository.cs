@@ -14,11 +14,15 @@ namespace DAL.Repositories.Implements.UserRepos
             _context = context;
         }
 
-        public async Task<User> CreateUser(User user)
+        public async Task<(bool success, string message, User user)> CreateUser(User user)
         {
             await base.AddAsync(user);
-            await _context.SaveChangesAsync();
-            return user;
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                return (true, "Create User Successfully", user);
+            }
+            return (false, "Create User UnSuccessfully", user);
         }
 
         public async Task<User?> GetUserByEmail(string email)
@@ -56,8 +60,8 @@ namespace DAL.Repositories.Implements.UserRepos
             user.Email = us.Email;
             user.Address = us.Address;
 
-            await _context.SaveChangesAsync();
-            return true;
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
         public async Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
@@ -73,8 +77,8 @@ namespace DAL.Repositories.Implements.UserRepos
             }
             user.Password = newPassword;
 
-            await _context.SaveChangesAsync();
-            return true;
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

@@ -3,6 +3,8 @@ using DAL.Models.OrderModel;
 using DAL.Models.ProductModel;
 using DAL.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace DAL.Context
 {
@@ -26,6 +28,24 @@ namespace DAL.Context
         public AppDbContext(DbContextOptions<AppDbContext> context) : base(context)
         {
 
+        }
+
+        public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+        {
+            public AppDbContext CreateDbContext(string[] args)
+            {
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.Development.json")
+                    .Build();
+
+                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+                var connectionString = config.GetConnectionString("DefaultConnection");
+
+                optionsBuilder.UseSqlServer(connectionString);
+
+                return new AppDbContext(optionsBuilder.Options);
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
