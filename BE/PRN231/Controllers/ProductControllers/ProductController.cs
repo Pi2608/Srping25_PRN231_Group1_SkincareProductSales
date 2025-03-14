@@ -1,5 +1,5 @@
 ﻿using BLL.Services.Interfaces.IProductServices;
-using DAL.Models.ProductModel;
+using DTO.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PRN231.Controllers.ProductControllers
@@ -27,7 +27,7 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetById([FromQuery] Guid id)
+        public async Task<IActionResult> GetProductById([FromQuery] Guid id)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct([FromBody] CreatProductDTO product)
         {
             try
             {
@@ -55,11 +55,11 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct([FromQuery] Guid id, [FromBody] CreatProductDTO productDto)
         {
             try
             {
-                var result = await _productService.UpdateProduct(id, product);
+                var result = await _productService.UpdateProduct(id, productDto);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -69,16 +69,16 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {
             try
             {
                 var result = await _productService.DeleteProduct(id);
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -1,84 +1,80 @@
-﻿using BLL.Services.Interfaces.IProductServices;
+﻿using AutoMapper;
+using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
 using DAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using DTO.Product;
 
 namespace BLL.Services.Implements.ProductServices
 {
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProductService(IUnitOfWork unitOfWork)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Product> CreateProduct(Product product)
+        public async Task<ProductViewDTO> CreateProduct(CreatProductDTO productDto)
         {
-            var newProduct = await _unitOfWork.ProductRepository.AddAsync(product);
+            var newProduct = _mapper.Map<Product>(productDto);
+            newProduct.CreatedAt = DateTime.Now;
+            var addProductResult = await _unitOfWork.ProductRepository.AddAsync(newProduct);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return newProduct;
+                return _mapper.Map<ProductViewDTO>(addProductResult);
             }
             throw new Exception("Add fail");
         }
 
         public async Task<bool> DeleteProduct(Guid id)
         {
-            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-            if (product is null)
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (existingProduct != null)
             {
-                throw new Exception("Delete fail");
+                existingProduct.IsDeleted = true;
+                existingProduct.DeletedAt = DateTime.UtcNow;
+                var deleteProduct = await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
+                var process = await _unitOfWork.SaveChangeAsync();
+                return process > 0;
             }
-            product.DeletedAt = DateTime.UtcNow;
-            await _unitOfWork.ProductRepository.DeleteAsync(product);
-            return true;
+            throw new Exception("Delete fail");
         }
 
-        public async Task<List<Product>> GetAllProducts()
+        public async Task<List<ProductViewDTO>> GetAllProducts()
         {
-            var products = await _unitOfWork.ProductRepository.GetAllAsync(null, true);
-            if (products.IsNullOrEmpty())
-            {
-                throw new Exception("Products is empty");
-            }
-            return await products.ToListAsync();
+            var products = await _unitOfWork.ProductRepository
+                .GetAllAsync(p => p.IsDeleted == false, true, "ProductDetails", "ProductCategories.Category");
+
+            var productList = products.ToList(); // Chuyển từ IQueryable thành List
+            return _mapper.Map<List<ProductViewDTO>>(productList);
         }
 
-        public async Task<Product> GetProductById(Guid id)
+
+        public async Task<ProductViewDTO> GetProductById(Guid id)
         {
-            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
-            if (product is null)
+            var product = await _unitOfWork.ProductRepository
+                .GetWithConditionAsync(p => p.IsDeleted == false, true, "ProductDetails", "ProductCategories.Category");
+            if (product != null)
             {
-                throw new Exception("Product is null");
+                return _mapper.Map<ProductViewDTO>(product);
             }
-            return product;
+            throw new Exception("Not Found");
         }
 
-        public async Task<Product> UpdateProduct(Guid id, Product product)
+        public async Task<ProductViewDTO> UpdateProduct(Guid id, CreatProductDTO productDto)
         {
-            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id, true);
-            if (existingProduct is null)
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (existingProduct != null)
             {
-                throw new Exception("Product is null");
-            }
-            existingProduct.Name = product.Name;
-            existingProduct.Image = product.Image;
-            existingProduct.ShortDescription = product.ShortDescription;
-            existingProduct.ProductDetails = product.ProductDetails;
-            existingProduct.RatingReviews = product.RatingReviews;
-            existingProduct.ProductCategories = product.ProductCategories;
-            existingProduct.OrderDetails = product.OrderDetails;
-            existingProduct.UpdateAt = DateTime.Now;
-
-            await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
-            var process = await _unitOfWork.SaveChangeAsync();
-            if (process > 0)
-            {
-                return existingProduct;
+                _mapper.Map(productDto, existingProduct);
+                existingProduct.UpdateAt = DateTime.Now;
+                var updatedProduct = await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
+                var process = await _unitOfWork.SaveChangeAsync();
+                return _mapper.Map<ProductViewDTO>(updatedProduct);
             }
             throw new Exception("Update fail");
         }
