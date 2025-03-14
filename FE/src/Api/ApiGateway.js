@@ -65,6 +65,26 @@ class ApiGateway {
             throw error;
         }
     }
+
+    static async createUser(user) {
+        try {
+            const newUser = {
+                account: user.account,
+                email: user.email,
+                address: user.address,
+                password: user.password,
+                roleId: user.roleId,
+                createdBy:'',
+                updatedBy:'',
+            }
+            const response = await ApiGateway.axiosInstance.post("User/CreateUser", user);
+            return response.data;
+        } catch (error) {
+            console.error("Create User error:", error);
+            throw error;
+        }
+    }
+
     static async changePassword(oldPwd, newPwd) {
         try {
             const password = {
@@ -164,6 +184,18 @@ class ApiGateway {
         }
     }
 
+    //Category APIs
+
+    static async getAllCategories() {
+        try {
+            const response = await this.axiosInstance.get("/Category/GetAllCategory");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all categories:", error);
+            throw error;
+        }
+    }
+
     //Product APIs
 
     static async getAllProducts() {
@@ -216,6 +248,68 @@ class ApiGateway {
         }
     }
 
+    //ProductDetail APIs
+
+    static async getAllProductDetails() {
+        try {
+          const response = await this.axiosInstance.get("/");
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching product details:", error);
+          throw error;
+        }
+    };
+    
+    static async getProductDetailById(id) {
+        try {
+            const response = await this.axiosInstance.get(`/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching product detail by ID:", error);
+            throw error;
+        }
+    };
+    
+    static async getProductDetailByProductId(productId) {
+        try {
+            const response = await this.axiosInstance.get(`ProductDetail/GetProductDetailByProductId?productId=${productId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching product details by ProductId:", error);
+            throw error;
+        }
+    };
+    
+    static async createProductDetail(productDetail) {
+        try {
+            const response = await this.axiosInstance.post("/", productDetail);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating product detail:", error);
+            throw error;
+        }
+    };
+    
+    static async updateProductDetail(id, updatedProductDetail) {
+        try {
+            const response = await this.axiosInstance.put(`/${id}`, updatedProductDetail);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating product detail:", error);
+            throw error;
+        }
+    };
+    
+    static async deleteProductDetail(id) {
+        try {
+            const response = await this.axiosInstance.delete(`/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error deleting product detail:", error);
+            throw error;
+        }
+    };
+    
     //Order APIs
 
      static async getAllOrders() {
@@ -238,8 +332,19 @@ class ApiGateway {
         }
     }
 
-    static async createOrder(order) {/*{ userId: string; items: any[]; totalPrice: number }*/
+    static async getOrderByUserId() {
         try {
+            const response = await this.axiosInstance.get(`/Order/GetAllOrderByCurrentUserId`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching order ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async createOrder() {
+        try {
+            var order = {  isDeleted :  false };
             const response = await this.axiosInstance.post("/Order/CreateOrder", order);
             return response.data;
         } catch (error) {
@@ -265,6 +370,48 @@ class ApiGateway {
             return response.data;
         } catch (error) {
             console.error(`Error deleting order ${id}:`, error);
+            throw error;
+        }
+    }
+
+    //OrderDetail APIs
+
+    static async getOrderDetails(orderId) {
+        try {
+            const response = await this.axiosInstance.get(`/OrderDetail/GetOrderDetail?orderId=${orderId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all order details:", error);
+            throw error;
+        }
+    }
+
+    static async createOrderDetail(orderId, orderDetail) {
+        try {
+            const response = await this.axiosInstance.post(`/OrderDetail/CreateOrderDetail?orderId=${orderId}`, orderDetail);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating order detail:", error);
+            throw error;
+        }
+    }
+
+    static async updateOrderDetail(orderId, orderDetail) {
+        try {
+            const response = await this.axiosInstance.put(`/OrderDetail/UpdateOrderDetail?orderId=${orderId}`, orderDetail);
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating order detail ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async deleteOrderDetail(orderId) {
+        try {
+            const response = await this.axiosInstance.delete(`/OrderDetail/DeleteOrderDetail?orderId=${orderId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting order detail ${id}:`, error);
             throw error;
         }
     }

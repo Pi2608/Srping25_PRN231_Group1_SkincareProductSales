@@ -1,19 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import CartItem from '../../../Components/CartItem/CartItem';
+import ApiGateway from '../../../Api/ApiGateway';
 import './Cart.css';
 
 const Cart = () => {
+
+    const navigate = useNavigate();
+
     const [cart, setCart] = useState([]);
-    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [selectedItems, setSelectedItems] = useState([]);
 
     useEffect(() => {
         const storedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
         setCart(storedCart);
     }, []);
+
+    const createOrder = async () => {
+        try {
+            const response = await ApiGateway.createOrder();
+            const orderId = response.id;
+            console.log(response);
+            console.log(selectedItems);
+            await ApiGateway.createOrderDetail(orderId, selectedItems);
+            toast.success('Order placed successfully! Your order ID is ' + response.id, {
+                autoClose: 500,
+            });
+            setTimeout(() => {
+                navigate('/profile/orders');
+            }, 1000);
+        } catch (error) {
+            toast.error('Failed to place order. Please try again later.');
+        }
+    }
 
     const updateQuantity = (id, change) => {
         const updatedCart = cart.map((item) =>
@@ -27,27 +50,29 @@ const Cart = () => {
         if (window.confirm(`Are you sure you want to remove "${name}" from your cart?`)) {
             const updatedCart = cart.filter((item) => item.id !== id);
             setCart(updatedCart);
-            setSelectedItems((prev) => {
-                const newSelected = new Set(prev);
-                newSelected.delete(id);
-                return newSelected;
-            });
             sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+
+            setSelectedItems((prev) => prev.filter((item) => item.id !== id));
+
             toast.success(`"${name}" removed from cart!`);
         }
     };
 
-    const toggleSelectItem = (id) => {
+    const toggleSelectItem = (id, quantity, size) => {
         setSelectedItems((prev) => {
-            const newSelected = new Set(prev);
-            newSelected.has(id) ? newSelected.delete(id) : newSelected.add(id);
-            return newSelected;
+            const exists = prev.some(item => item.productId === id);
+            
+            if (exists) {
+                return prev.filter(item => item.productId !== id);
+            } else {
+                return [...prev, { productId: id, quantity, size, isDeleted: false }];
+            }
         });
     };
 
     const selectedSubtotal = cart
-        .filter((item) => selectedItems.has(item.id))
-        .reduce((acc, item) => acc + item.price * item.quantity, 0);
+        .filter((item) => selectedItems.some(selected => selected.productId === item.id))
+        .reduce((acc, item) => acc + (item.details?.price || 0) * item.quantity, 0);
 
     return (
         <div id='cart'>
@@ -57,14 +82,14 @@ const Cart = () => {
                 <div className="all-items">
                     <div className="items">
                         {cart.length > 0 ? (
-                            cart.map((item) => (
+                            cart.map((item, i) => (
                                 <CartItem 
-                                    key={item.id}
+                                    key={i}
                                     {...item}
                                     updateQuantity={updateQuantity}
                                     removeItem={removeItem}
                                     toggleSelectItem={toggleSelectItem}
-                                    isSelected={selectedItems.has(item.id)}
+                                    isSelected={selectedItems.some(selected => selected.productId === item.id)}
                                 />
                             ))
                         ) : (
@@ -73,9 +98,13 @@ const Cart = () => {
                     </div>
                     <div className="cart-summary">
                         <h2>Summary Order</h2>
-                        <p>Subtotal: {new Intl.NumberFormat('vi-VN').format(selectedSubtotal)} VND</p>
-                        <button className="cart-checkout" disabled={selectedItems.size === 0}>
-                            Buy Now ({selectedItems.size})
+                        <p>Subtotal: {new Intl.NumberFormat('vi-VN').format(selectedSubtotal * 1000)} VND</p>
+                        <button 
+                            className="cart-checkout" 
+                            disabled={selectedItems.length === 0}
+                            onClick={() => createOrder()}
+                        >
+                            Buy Now ({selectedItems.length})
                         </button>
                     </div>
                 </div>

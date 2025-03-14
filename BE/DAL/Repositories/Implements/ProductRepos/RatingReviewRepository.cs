@@ -15,13 +15,43 @@ namespace DAL.Repositories.Implements.ProductRepos
             _context = context;
         }
 
-        public async Task<bool> CreateFeedbackAsync(RatingReview feedback)
+        public async Task<(bool success, string message, RatingReview review)> CreateRatingReviewAsync(RatingReview ratingReview)
         {
-            if (feedback == null || feedback.UserId == Guid.Empty) return false;
+            if (ratingReview == null)
+                return (false, "Rating review cannot be null", null);
 
-            await _context.RatingReviews.AddAsync(feedback);
-            return await _context.SaveChangesAsync() > 0;
+            bool hasExistingReview = await _context.RatingReviews
+                .AnyAsync(r => r.UserId == ratingReview.UserId && 
+                            r.ProductId == ratingReview.ProductId && 
+                            !r.IsDeleted);
+
+            if (hasExistingReview)
+                return (false, "You have already reviewed this product", null);
+
+            bool hasPurchasedAndReceived = await _context.Orders
+                .Where(o => o.UserId == ratingReview.UserId && 
+                        o.Status == Models.OrderModel.Status.Completed && 
+                        !o.IsDeleted)
+                .Join(_context.OrderDetails,
+                    order => order.Id,
+                    orderDetail => orderDetail.OrderId,
+                    (order, orderDetail) => new { order, orderDetail })
+                .AnyAsync(x => x.orderDetail.ProductId == ratingReview.ProductId && 
+                            !x.orderDetail.IsDeleted);
+
+            if (!hasPurchasedAndReceived)
+                return (false, "You can only review products you have purchased and received", null);
+
+            ratingReview.CreatedAt = DateTime.UtcNow;
+            ratingReview.CreatedBy = ratingReview.UserId;
+            ratingReview.IsDeleted = false;
+
+            _context.RatingReviews.Add(ratingReview);
+            await _context.SaveChangesAsync();
+
+            return (true, "Review submitted successfully", ratingReview);
         }
+
 
         public async Task<bool> DeleteFeedbackAsync(Guid feedbackId)
         {

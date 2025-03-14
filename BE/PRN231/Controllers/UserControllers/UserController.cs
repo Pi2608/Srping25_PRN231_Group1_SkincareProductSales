@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Interfaces.IUserServices;
+using DAL.Models.UserModel;
 using DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace PRN231.Controllers.UserControllers
         public async Task<IActionResult> Login([FromQuery] string email, [FromQuery] string password)
         {
             string? token = await _userService.Login(email, password);
-            if (string.IsNullOrEmpty(token)) return Unauthorized();
+            // if (string.IsNullOrEmpty(token)) return Unauthorized();
             return Ok(token);
         }
 
@@ -57,6 +58,35 @@ namespace PRN231.Controllers.UserControllers
             }
 
             return Ok(token);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDTO newUser)
+        {
+            if (string.IsNullOrWhiteSpace(newUser.Email) || string.IsNullOrWhiteSpace(newUser.Password))
+            {
+                return BadRequest("Email and Password are required.");
+            }
+
+            Guid userId = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            newUser.CreatedBy = userId;
+            newUser.UpdatedBy = userId;
+            Console.WriteLine(newUser);
+
+            var (success, message, user) = await _userService.CreateUser(newUser);
+
+            if (!success)
+            {
+                return BadRequest(new { success, message });
+            }
+
+            return Ok(new
+            {
+                success,
+                message,
+                user
+            });
         }
 
         [HttpPut]

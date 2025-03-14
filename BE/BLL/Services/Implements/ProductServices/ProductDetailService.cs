@@ -26,12 +26,7 @@ namespace BLL.Services.Implements.ProductServices
             throw new Exception("Add fail");
         }
 
-        public Task<bool> DeleteProductDetail(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> DeleteProductDtail(Guid id)
+        public async Task<bool> DeleteProductDetail(Guid id)
         {
             var productdetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
             if (productdetail is null)
@@ -43,12 +38,7 @@ namespace BLL.Services.Implements.ProductServices
             return true;
         }
 
-        public Task<List<ProductDetail>> GetAllProductDetails()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<ProductDetail>> GetAllProductsDetail()
+        public async Task<List<ProductDetail>> GetAllProductDetails()
         {
             var productdetails = await _unitOfWork.ProductDetailRepository.GetAllAsync(null, true);
             if (productdetails.IsNullOrEmpty())
@@ -58,7 +48,7 @@ namespace BLL.Services.Implements.ProductServices
             return await productdetails.ToListAsync();
         }
 
-        public async Task<ProductDetail> GetProductById(Guid id)
+        public async Task<ProductDetail> GetProductDetailById(Guid id)
         {
             var productproductdetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
             if (productproductdetail is null)
@@ -68,9 +58,17 @@ namespace BLL.Services.Implements.ProductServices
             return productproductdetail;
         }
 
-        public Task<ProductDetail> GetProductDetailById(Guid id)
+        public async Task<ProductDetail> GetProductDetailByProductId(Guid productId)
         {
-            throw new NotImplementedException();
+            var productDetails = await _unitOfWork.ProductDetailRepository
+                .GetAllAsync(p => p.ProductId == productId, true);
+
+            if (productDetails.IsNullOrEmpty())
+            {
+                throw new Exception("No product details found for this productId");
+            }
+
+            return productDetails.FirstOrDefault();
         }
 
         public async Task<ProductDetail> UpdateProductDetail(Guid id, ProductDetail updatedProductDetail)

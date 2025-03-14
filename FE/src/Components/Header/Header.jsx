@@ -27,7 +27,7 @@ const Header = () => {
             <div className="ult">
                 {user ? (
                     <div className='ult-item'>
-                        <div style={{ display: 'flex', alignItems: 'center'}}>
+                        <div style={{ display: 'flex', alignItems: 'center'}} onClick={() => navigate('/profile')}>
                             <p style={{ fontSize: '1.2rem', fontWeight: 600, marginRight: '5px' }}>{user.account}</p>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
                         </div>

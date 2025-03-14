@@ -6,6 +6,7 @@ namespace BLL.Services.Interfaces.IProductServices
     {
         Task<List<ProductDetail>> GetAllProductDetails();
         Task<ProductDetail> GetProductDetailById(Guid id);
+        Task<ProductDetail> GetProductDetailByProductId(Guid productId);
         Task<ProductDetail> CreateProductDetail(ProductDetail productDetail);
         Task<ProductDetail> UpdateProductDetail(Guid id, ProductDetail updatedProductDetail);
         Task<bool> DeleteProductDetail(Guid id);

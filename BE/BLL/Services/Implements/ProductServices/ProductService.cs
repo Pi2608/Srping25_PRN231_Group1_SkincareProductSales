@@ -22,13 +22,27 @@ namespace BLL.Services.Implements.ProductServices
             var newProduct = _mapper.Map<Product>(productDto);
             newProduct.CreatedAt = DateTime.Now;
             var addProductResult = await _unitOfWork.ProductRepository.AddAsync(newProduct);
-            var process = await _unitOfWork.SaveChangeAsync();
-            if (process > 0)
+            await _unitOfWork.SaveChangeAsync();
+            if (productDto.ProductCategory != null && productDto.ProductCategory.Any())
             {
-                return _mapper.Map<ProductViewDTO>(addProductResult);
+                foreach (var categoryId in productDto.ProductCategory)
+                {
+                    var productCategory = new ProductCategory
+                    {
+                        ProductId = newProduct.Id,
+                        CategoryId = categoryId,
+                        Product = newProduct,
+                        Category = await _unitOfWork.CategoryRepository.GetByIdAsync(categoryId) // Lấy Category từ DB
+                    };
+
+                    await _unitOfWork.ProductCategoryRepository.AddAsync(productCategory);
+                }
+                await _unitOfWork.SaveChangeAsync();
             }
-            throw new Exception("Add fail");
+
+            return _mapper.Map<ProductViewDTO>(addProductResult);
         }
+
 
         public async Task<bool> DeleteProduct(Guid id)
         {
@@ -47,11 +61,11 @@ namespace BLL.Services.Implements.ProductServices
         public async Task<List<ProductViewDTO>> GetAllProducts()
         {
             var products = await _unitOfWork.ProductRepository
-                .GetAllAsync(p => p.IsDeleted == false, true, "ProductDetails", "ProductCategories.Category");
+                .GetAllAsync(p => !p.IsDeleted, true, "ProductDetails", "ProductCategories.Category");
 
-            var productList = products.ToList(); // Chuyển từ IQueryable thành List
-            return _mapper.Map<List<ProductViewDTO>>(productList);
+            return _mapper.Map<List<ProductViewDTO>>(products);
         }
+
 
 
         public async Task<ProductViewDTO> GetProductById(Guid id)

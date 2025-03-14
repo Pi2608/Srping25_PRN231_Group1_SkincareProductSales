@@ -4,15 +4,27 @@ using DAL.Models.ProductModel;
 
 namespace PRN231.Controllers.ProductControllers
 {
-    //[ApiController]
-    //[Route("api/[controller]")]
-    public class CategoryController : ControllerBase
+    public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
 
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategory()
+        {
+            try
+            {
+                var categories = await _categoryService.GetAllCategory();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         //    [HttpPost]

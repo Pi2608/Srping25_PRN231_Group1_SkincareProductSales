@@ -18,7 +18,6 @@ const ProductDetail = () => {
     const { user } = useAuth();
 
     const [product, setProduct] = useState({});
-    const [productDetail, setProductDetail] = useState({});
     const [selectedSize, setSelectedSize] = useState("100ml");
     const [quantity, setQuantity] = useState(1);
 
@@ -27,13 +26,17 @@ const ProductDetail = () => {
         if (productId) {
             fetchProductById(productId).then((product) => {
                 setProduct(product);
+                setSelectedSize(product.details?.size);
+                console.log(product);
             });
         }
     }, []);
 
     const fetchProductById = async (id) => {
         try {
-            return await ApiGateway.getProductById(id);
+            const product = await ApiGateway.getProductById(id);
+            const details = await ApiGateway.getProductDetailByProductId(product.id);
+            return { ...product, details };
         } catch (error) {
             console.error(`Failed to fetch product ${id}:`, error);
         }
@@ -103,7 +106,7 @@ const ProductDetail = () => {
                         <span>214 reviews</span>
                     </div>
                     <div className="price">
-                        <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product.price)} VND</span>
+                        <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product.details?.price*1000)} VND</span>
                     </div>
                     <p className="description">
                         {product.shortDescription}
@@ -111,10 +114,8 @@ const ProductDetail = () => {
 
                     <div className="size-selector">
                         <span>Size:</span>
-                        <button className={selectedSize === "50ml" ? "selected" : ""}
-                            onClick={() => setSelectedSize("50ml")}>50ml</button>
-                        <button className={selectedSize === "100ml" ? "selected" : ""}
-                            onClick={() => setSelectedSize("100ml")}>100ml</button>
+                        <button className={selectedSize === product.details?.size ? "selected" : ""}
+                            onClick={() => setSelectedSize(product.details?.size)}>{product.details?.size}ml</button>
                     </div>
 
                     <div className="cart-options">
