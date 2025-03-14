@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using DAL.Models.OrderModel;
+using DAL.Models.ProductModel;
 using DAL.Models.UserModel;
 using DTO.Order;
+using DTO.Product;
 using DTO.User;
 
 namespace BLL.Helper
@@ -10,6 +12,7 @@ namespace BLL.Helper
     {
         public MappingProfile()
         {
+            //order
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => "No Address")).ReverseMap();
 
@@ -17,6 +20,12 @@ namespace BLL.Helper
             CreateMap<CreateOrUpdateOrder, Order>().ReverseMap();
             CreateMap<CreateOrUpdateOrderDetail, OrderDetail>().ReverseMap();
             CreateMap<OrderDetailViewDto, OrderDetail>().ReverseMap();
+
+            //product
+            CreateMap<Product, ProductViewDTO>();
+            CreateMap<ProductDetail, ProductDetailViewDto>();
+            CreateMap<ProductCategory, ProductCategoryViewDto>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
         }
     }
 }

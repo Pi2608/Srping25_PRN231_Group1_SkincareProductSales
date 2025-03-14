@@ -9,10 +9,4 @@
         public required string Description { get; set; }
         public required decimal Price { get; set; }
     }
-    public class CategoryDto
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public List<Guid> ProductCategoryIds { get; set; } = new();
-    }
 }

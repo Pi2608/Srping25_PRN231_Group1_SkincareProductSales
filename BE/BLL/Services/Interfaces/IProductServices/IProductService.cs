@@ -1,13 +1,14 @@
 ﻿using DAL.Models.ProductModel;
+using DTO.Product;
 
 namespace BLL.Services.Interfaces.IProductServices
 {
     public interface IProductService
     {
-        Task<List<Product>> GetAllProducts();
-        Task<Product> GetProductById(Guid id);
-        Task<Product> CreateProduct(Product product);
-        Task<Product> UpdateProduct(Guid id, Product product);
+        Task<List<ProductViewDTO>> GetAllProducts();
+        Task<ProductViewDTO> GetProductById(Guid id);
+        Task<ProductViewDTO> CreateProduct(CreatProductDTO productDto);
+        Task<ProductViewDTO> UpdateProduct(Guid id, CreatProductDTO productDto);
         Task<bool> DeleteProduct(Guid id);
     }
 }
