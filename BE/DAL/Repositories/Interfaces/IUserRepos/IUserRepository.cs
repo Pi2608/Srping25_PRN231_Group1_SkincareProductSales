@@ -12,5 +12,6 @@ namespace DAL.Repositories.Interfaces.IUserRepos
         Task<(bool success, string message, User user)> CreateUser(User user);
         Task<bool> UpdateUser(Guid userId, UserProfileDTO User);
         Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
+        Task<bool> EditUser(Guid userId, EditUserDTO us, Guid byAdmin);
     }
 }

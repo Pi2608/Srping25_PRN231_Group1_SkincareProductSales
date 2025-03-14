@@ -109,6 +109,36 @@ class ApiGateway {
         }
     }
 
+    static async editUser(userId, user) {
+        try {
+            const response = await ApiGateway.axiosInstance.put(`/User/EditUser?id=${userId}`, user);
+            return response.data;
+        } catch (error) {
+            console.error("Edit User error:", error);
+            throw error;
+        }
+    }
+
+    static async restoreUser(userId) {
+        try {
+            const response = await ApiGateway.axiosInstance.put(`/User/RestoreUser?id=${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Restore User error:", error);
+            throw error;
+        }
+    }
+
+    static async deleteUser(userId) {
+        try {
+            const response = await ApiGateway.axiosInstance.delete(`/User/DeleteUser?id=${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Delete User error:", error);
+            throw error;
+        }
+    }
+
     //Role APIs
 
     static async getRole() {
@@ -353,6 +383,26 @@ class ApiGateway {
         }
     }
 
+    static async processOrder(id) {
+        try {
+            const response = await this.axiosInstance.post(`/Order/ProcessOrder?id=${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating order detail:", error);
+            throw error;
+        }
+    }
+
+    static async completeOrder(id) {
+        try {
+            const response = await this.axiosInstance.post(`/Order/CompleteOrder?id=${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating order detail:", error);
+            throw error;
+        }
+    }
+
     static async updateOrder(id, order) {/*{ items: any[]; totalPrice: number }*/
         try {
             const response = await this.axiosInstance.put(`/Order/UpdateOrder/${id}`, order);
@@ -362,7 +412,6 @@ class ApiGateway {
             throw error;
         }
     }
-
 
     static async deleteOrder(id) {
         try {
