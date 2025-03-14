@@ -94,6 +94,33 @@ namespace DAL.Repositories.Implements
             return entity;
         }
 
+        public IQueryable<T> GetQuery(bool noTracked = false)
+        {
+            IQueryable<T> query;
+            if (noTracked)
+            {
+                query = _dbSet.AsNoTracking();
+            }
+            else
+            {
+                query = _dbSet;
+            }
+
+            return query;
+        }
+
+        public IQueryable<T> GetQueryById(Guid Id, bool noTracked = false)
+        {
+
+            IQueryable<T> query;
+            if (noTracked is true)
+            {
+                query = _dbSet.AsNoTracking();
+            }
+            query = _dbSet.Where(x => x.Id == Id);
+            return query;
+        }
+
         public Task<T> GetWithConditionAsync(Expression<Func<T, bool>>? expression, bool noTracked = false, params string[] includeProperties)
         {
             var result = _dbSet.Where(expression);
