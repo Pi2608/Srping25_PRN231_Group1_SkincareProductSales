@@ -12,6 +12,7 @@ namespace BLL.Helper
         {
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => "No Address")).ReverseMap();
+            CreateMap<CreateUserDTO, User>().ReverseMap();
 
             CreateMap<OrderViewDTO, Order>().ReverseMap();
             CreateMap<CreateOrUpdateOrder, Order>().ReverseMap();

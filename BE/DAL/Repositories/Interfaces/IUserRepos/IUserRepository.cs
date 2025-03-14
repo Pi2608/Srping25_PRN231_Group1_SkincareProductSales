@@ -9,7 +9,7 @@ namespace DAL.Repositories.Interfaces.IUserRepos
         Task<User?> GetUserById(Guid id);
         Task<User?> GetUserByEmail(string email);
         Task<IEnumerable<User>> GetUsers();
-        Task<User> CreateUser(User user);
+        Task<(bool success, string message, User user)> CreateUser(User user);
         Task<bool> UpdateUser(Guid userId, UserProfileDTO User);
         Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword);
     }

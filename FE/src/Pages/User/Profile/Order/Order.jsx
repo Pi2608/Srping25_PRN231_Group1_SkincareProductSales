@@ -69,7 +69,7 @@ const Order = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await ApiGateway.getOrderById(user.id);
+            const response = await ApiGateway.getOrderByUserId();
             setOrders(response);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -87,7 +87,7 @@ const Order = () => {
     const cancelOrder = async () => {
         setLoading(true);
         try {
-            await ApiGateway.cancelOrder(selectedOrderId);
+            await ApiGateway.deleteOrder(selectedOrderId);
             setOrders((prevOrders) =>
                 prevOrders.map((order) =>
                     order.id === selectedOrderId ? { ...order, status: Status.Canceled } : order
@@ -136,13 +136,13 @@ const Order = () => {
                                                     {order.orderDetails.map((detail) => (
                                                         <li key={detail.id}>
                                                             {detail.productName} - {detail.quantity} -{' '}
-                                                            {new Intl.NumberFormat('vi-VN').format(detail.totalPrice)}VND
+                                                            {new Intl.NumberFormat('vi-VN').format(detail.totalPrice * 1000)}VND
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </TableCell>
                                             <TableCell>
-                                                {order.orderVouchers.length > 0 ? (
+                                                {order.orderVouchers?.length > 0 ? (
                                                     <ul>
                                                         {order.orderVouchers.map((voucher) => (
                                                             <li key={voucher.id}>
@@ -155,7 +155,7 @@ const Order = () => {
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                {new Intl.NumberFormat('vi-VN').format(order.totalPrice)}VND
+                                                {new Intl.NumberFormat('vi-VN').format(order.totalPrice * 1000)}VND
                                             </TableCell>
                                             <TableCell>{order.status}</TableCell>
                                             <TableCell>

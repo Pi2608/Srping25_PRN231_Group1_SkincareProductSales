@@ -43,32 +43,32 @@ namespace PRN231.Controllers.ProductControllers
 
             feedback.UserId = Guid.Parse(userIdClaim.Value);
 
-            var result = await _ratingReviewService.CreateFeedbackAsync(feedback);
-            if (!result) return StatusCode(500, "Failed to create feedback");
+            var (success, message, ratingReview) = await _ratingReviewService.CreateFeedbackAsync(feedback);
+            if (!success) return StatusCode(500, message);
 
-            return Ok(new { message = "Feedback added successfully!" });
+            return Ok(message);
         }
 
         [HttpPut("{feedbackId}")]
         [Authorize]
         public async Task<IActionResult> UpdateFeedback(Guid feedbackId, [FromBody] RatingReview feedback)
-    {
-        if (feedback == null) return BadRequest("Invalid feedback data");
+        {
+            if (feedback == null) return BadRequest("Invalid feedback data");
 
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null) return Unauthorized("User ID not found.");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized("User ID not found.");
 
-        var userId = Guid.Parse(userIdClaim.Value);
+            var userId = Guid.Parse(userIdClaim.Value);
 
-        var existingFeedback = await _ratingReviewService.GetFeedbackByIdAsync(feedbackId);
-        if (existingFeedback == null || existingFeedback.UserId != userId)
-            return Forbid("You can only edit your own feedback");
+            var existingFeedback = await _ratingReviewService.GetFeedbackByIdAsync(feedbackId);
+            if (existingFeedback == null || existingFeedback.UserId != userId)
+                return Forbid("You can only edit your own feedback");
 
-        var result = await _ratingReviewService.EditFeedbackAsync(feedbackId, feedback);
-        if (!result) return NotFound("Feedback not found or update failed");
+            var result = await _ratingReviewService.EditFeedbackAsync(feedbackId, feedback);
+            if (!result) return NotFound("Feedback not found or update failed");
 
-        return Ok(new { message = "Feedback updated successfully!" });
-    }
+            return Ok(new { message = "Feedback updated successfully!" });
+        }
 
         [HttpDelete]
         [Authorize]

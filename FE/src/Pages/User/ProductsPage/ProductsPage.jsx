@@ -13,18 +13,29 @@ const ProductsPage = ()=>{
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [MenuProducts, setMenuProducts] = useState(ProductsData)
+    const [MenuProducts, setMenuProducts] = useState([])
     
     useEffect(() => {
         fetchAllProducts().then((products) => {
             setMenuProducts(products);
-            // console.log(products);
+            console.log(products);
         });
     }, []);
 
     const fetchAllProducts = async () => {
         try {
-            return await ApiGateway.getAllProducts();
+            const products = await ApiGateway.getAllProducts();
+            
+            console.log(products);
+
+            const productsWithDetails = await Promise.all(
+                products.map(async (product) => {
+                    const details = await ApiGateway.getProductDetailByProductId(product.id);
+                    return { ...product, details };
+                })
+            );
+
+            return productsWithDetails;
         } catch (error) {
             console.error("Failed to fetch products:", error);
         }
@@ -44,7 +55,7 @@ const ProductsPage = ()=>{
             <ToastContainer />
             <div className='product-container'>
                 <ul className='type'>
-                    <li onClick={() => setMenuProducts(ProductsData)} className='menu'>All</li>
+                    <li onClick={() => setMenuProducts(MenuProducts)} className='menu'>All</li>
                     <li onClick={() => filter("skin care")} className='menu'>Skin Care</li>
                     <li onClick={() => filter("conditioner")} className='menu'>Conditioners</li>
                     <li onClick={() => filter("foundation")} className='menu'>Foundations</li>

@@ -28,7 +28,7 @@ namespace PRN231.Controllers.ProductControllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetById([FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromQuery] Guid id)
     {
         try
         {
@@ -39,6 +39,13 @@ namespace PRN231.Controllers.ProductControllers
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetProductDetailByProductId([FromQuery]Guid productId)
+    {
+        var result = await _productDetailService.GetProductDetailByProductId(productId);
+        return Ok(result);
     }
 
     [HttpPost]

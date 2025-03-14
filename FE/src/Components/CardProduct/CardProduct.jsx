@@ -40,7 +40,7 @@ const CardProduct = ({ product, handleLoginRedirect }) => {
                     <span className='name'>{product.name} <br></br></span>
                     <span className='details'>{product.detail}</span>
                 </div>
-                <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.price)}VND</span>
+                <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.details.price*1000)}VND</span>
                 <div className='buy-btn' onClick={(e) => {
                     e.stopPropagation(); 
                     // user ?  {} : handleLoginRedirect();
