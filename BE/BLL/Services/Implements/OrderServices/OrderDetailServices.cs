@@ -78,7 +78,7 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<OrderDetailViewDto> GetOrderDetailById(Guid id)
         {
-            var existingOrderDetail = await _unitOfWork.OrderDetailRepository.GetWithConditionAsync(od => od.IsDeleted == false && od.Id == id);
+            var existingOrderDetail = await _unitOfWork.OrderDetailRepository.GetWithConditionAsync(od => od.IsDeleted == false && od.Id == id, true, "Product");
 
             if (existingOrderDetail is not null)
             {

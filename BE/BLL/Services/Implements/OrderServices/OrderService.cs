@@ -3,6 +3,7 @@ using BLL.Services.Interfaces.IOrderServices;
 using DAL.Models.OrderModel;
 using DAL.Repositories.Interfaces;
 using DTO.Order;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.Implements.OrderServices
 {
@@ -17,12 +18,32 @@ namespace BLL.Services.Implements.OrderServices
             _mapper = mapper;
         }
 
+        public async Task<OrderViewDTO> CompleteOrder(Guid id, Guid userId)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(id, false, "OrderDetails");
+            if (order is not null)
+            {
+                order.Status = Status.Completed;
+                order.UpdateAt = DateTime.Now;
+                order.UpdatedBy = userId;
+                var process = await _unitOfWork.SaveChangeAsync();
+                if (process > 0)
+                {
+                    var result = _mapper.Map<OrderViewDTO>(order);
+                    return result;
+                }
+                throw new Exception("Completed fail");
+            }
+            throw new Exception("Can not found order");
+        }
+
         public async Task<OrderViewDTO> CreateOrder(CreateOrUpdateOrder order, Guid userId)
         {
             var newOrder = _mapper.Map<Order>(order);
             newOrder.UserId = userId;
             newOrder.CreatedAt = DateTime.Now;
             newOrder.CreatedBy = userId;
+            newOrder.Status = Status.Pending;
             var addOrderResult = await _unitOfWork.OrderRepository.AddAsync(newOrder);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
@@ -39,6 +60,7 @@ namespace BLL.Services.Implements.OrderServices
             if (existingOrder is not null)
             {
                 existingOrder.IsDeleted = true;
+                existingOrder.Status = Status.Canceled;
                 existingOrder.DeletedAt = DateTime.UtcNow;
                 var deleteOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
@@ -52,7 +74,9 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<List<OrderViewDTO>> GetAllOrder()
         {
-            var orders = await _unitOfWork.OrderRepository.GetAllAsync(o => o.IsDeleted == false, true, "OrderDetails");
+            var orders = await _unitOfWork.OrderRepository.GetQuery(true).Where(e => e.IsDeleted == false)
+                .Include(o => o.OrderDetails.Where(od => od.IsDeleted == false))
+                .ThenInclude(od => od.Product).Where(o => o.OrderDetails.All(od => od.Product.IsDeleted == false)).ToListAsync();
 
             var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
 
@@ -61,7 +85,9 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<List<OrderViewDTO>> GetOrderByCurrentUserId(Guid id)
         {
-            var orders = await _unitOfWork.OrderRepository.GetAllAsync(o => o.IsDeleted == false && o.UserId == id, true, "OrderDetails");
+            var orders = await _unitOfWork.OrderRepository.GetQuery(true).Where(e => e.IsDeleted == false && e.UserId == id)
+                .Include(o => o.OrderDetails.Where(od => od.IsDeleted == false))
+                .ThenInclude(od => od.Product).Where(o => o.OrderDetails.All(od => od.Product.IsDeleted == false)).ToListAsync();
 
             var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
             return viewOrder;
@@ -76,6 +102,25 @@ namespace BLL.Services.Implements.OrderServices
                 return result;
             }
             throw new Exception("Not Found");
+        }
+
+        public async Task<OrderViewDTO> ProcessingOrder(Guid id, Guid userId)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(id, false, "OrderDetails");
+            if (order is not null)
+            {
+                order.Status = Status.Processing;
+                order.UpdateAt = DateTime.Now;
+                order.UpdatedBy = userId;
+                var process = await _unitOfWork.SaveChangeAsync();
+                if (process > 0)
+                {
+                    var result = _mapper.Map<OrderViewDTO>(order);
+                    return result;
+                }
+                throw new Exception("Completed fail");
+            }
+            throw new Exception("Can not found order");
         }
 
         public async Task<OrderViewDTO> UpdateOrder(Guid id, CreateOrUpdateOrder order)

@@ -1,6 +1,5 @@
 ﻿using BLL.Services.Interfaces.IOrderServices;
 using DTO.Order;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN231.Helper;
 
@@ -50,6 +49,36 @@ namespace PRN231.Controllers.OrderControllers
             try
             {
                 var order = await _orderService.GetOrderById(id);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteOrder([FromQuery] Guid id)
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var order = await _orderService.CompleteOrder(id, userId);
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessOrder([FromQuery] Guid id)
+        {
+            try
+            {
+                var userId = this.GetUserId();
+                var order = await _orderService.ProcessingOrder(id, userId);
                 return Ok(order);
             }
             catch (Exception ex)
