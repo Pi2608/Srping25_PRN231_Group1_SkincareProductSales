@@ -1,61 +1,56 @@
-﻿using BLL.Services.Interfaces.IProductServices;
+﻿using AutoMapper;
+using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
 using DAL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using DTO.Product;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BLL.Services.Implements.ProductServices
 {
     public class ProductDetailService : IProductDetailService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProductDetailService(IUnitOfWork unitOfWork)
+        public ProductDetailService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<ProductDetail> CreateProductDetail(ProductDetail productDetail)
+        public async Task<List<ProductDetailViewDto>> GetAllProductDetails()
         {
-            var newProductDetail = await _unitOfWork.ProductDetailRepository.AddAsync(productDetail);
-            var process = await _unitOfWork.SaveChangeAsync();
-            if (process > 0)
-            {
-                return newProductDetail;
-            }
-            throw new Exception("Add fail");
+            var productDetails = await _unitOfWork.ProductDetailRepository.GetAllAsync();
+            return _mapper.Map<List<ProductDetailViewDto>>(productDetails);
         }
 
-        public async Task<bool> DeleteProductDetail(Guid id)
+        public async Task<ProductDetailViewDto> GetProductDetailById(Guid id)
         {
-            var productdetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
-            if (productdetail is null)
-            {
-                throw new Exception("Delete fail");
-            }
-            productdetail.DeletedAt = DateTime.UtcNow;
-            await _unitOfWork.ProductDetailRepository.DeleteAsync(productdetail);
-            return true;
+            var productDetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
+            if (productDetail == null) throw new Exception("Product Detail not found");
+            return _mapper.Map<ProductDetailViewDto>(productDetail);
         }
 
-        public async Task<List<ProductDetail>> GetAllProductDetails()
+        public async Task<ProductDetailViewDto> CreateProductDetail(CreateProductDetailDTO productDetail)
         {
-            var productdetails = await _unitOfWork.ProductDetailRepository.GetAllAsync(null, true);
-            if (productdetails.IsNullOrEmpty())
-            {
-                throw new Exception("Products is empty");
-            }
-            return await productdetails.ToListAsync();
+            var entity = _mapper.Map<ProductDetail>(productDetail);
+            var addedEntity = await _unitOfWork.ProductDetailRepository.AddAsync(entity);
+            await _unitOfWork.SaveChangeAsync();
+            return _mapper.Map<ProductDetailViewDto>(addedEntity);
         }
 
-        public async Task<ProductDetail> GetProductDetailById(Guid id)
+        public async Task<ProductDetailViewDto> UpdateProductDetail(Guid id, CreateProductDetailDTO productDetail)
         {
-            var productproductdetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
-            if (productproductdetail is null)
-            {
-                throw new Exception("Product is null");
-            }
-            return productproductdetail;
+            var existingDetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
+            if (existingDetail == null) throw new Exception("Product Detail not found");
+
+            _mapper.Map(productDetail, existingDetail);
+            await _unitOfWork.ProductDetailRepository.UpdateAsync(existingDetail);
+            await _unitOfWork.SaveChangeAsync();
+            return _mapper.Map<ProductDetailViewDto>(existingDetail);
         }
 
         public async Task<ProductDetail> GetProductDetailByProductId(Guid productId)
@@ -71,29 +66,15 @@ namespace BLL.Services.Implements.ProductServices
             return productDetails.FirstOrDefault();
         }
 
-        public async Task<ProductDetail> UpdateProductDetail(Guid id, ProductDetail updatedProductDetail)
+        public async Task<bool> DeleteProductDetail(Guid id)
         {
-            var existingProductDetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id, true);
-            if (existingProductDetail is null)
-            {
-                throw new Exception("ProductDetail not found");
-            }
+            var existingDetail = await _unitOfWork.ProductDetailRepository.GetByIdAsync(id);
+            if (existingDetail == null) throw new Exception("Product Detail not found");
 
-            existingProductDetail.ProductId = updatedProductDetail.ProductId;
-            existingProductDetail.Product = updatedProductDetail.Product;
-            existingProductDetail.Size = updatedProductDetail.Size;
-            existingProductDetail.StockQuantity = updatedProductDetail.StockQuantity;
-            existingProductDetail.Description = updatedProductDetail.Description;
-            existingProductDetail.UpdateAt = DateTime.Now;
-
-            await _unitOfWork.ProductDetailRepository.UpdateAsync(existingProductDetail);
-            var process = await _unitOfWork.SaveChangeAsync();
-            if (process > 0)
-            {
-                return existingProductDetail;
-            }
-            throw new Exception("Update failed");
+            existingDetail.IsDeleted = true;
+            await _unitOfWork.ProductDetailRepository.UpdateAsync(existingDetail);
+            await _unitOfWork.SaveChangeAsync();
+            return true;
         }
-
     }
 }

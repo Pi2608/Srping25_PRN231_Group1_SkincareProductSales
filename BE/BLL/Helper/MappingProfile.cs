@@ -30,6 +30,9 @@ namespace BLL.Helper
             CreateMap<ProductDetail, ProductDetailViewDto>();
             CreateMap<ProductCategory, ProductCategoryViewDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+
+            CreateMap<ProductDetail, ProductDetailViewDto>();
+            CreateMap<CreateProductDetailDTO, ProductDetail>();
         }
     }
 }
