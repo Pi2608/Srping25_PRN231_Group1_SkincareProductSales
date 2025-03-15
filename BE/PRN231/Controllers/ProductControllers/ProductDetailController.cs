@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Implements.ProductServices;
 using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
+using DTO.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PRN231.Controllers.ProductControllers
@@ -18,8 +19,8 @@ namespace PRN231.Controllers.ProductControllers
     {
         try
         {
-            var products = await _productDetailService.GetAllProductDetails();
-            return Ok(products);
+            var productDetails = await _productDetailService.GetAllProductDetails();
+            return Ok(productDetails);
         }
         catch (Exception ex)
         {
@@ -28,12 +29,12 @@ namespace PRN231.Controllers.ProductControllers
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetById([FromQuery] Guid id)
+    public async Task<IActionResult> GetProductDetailById([FromQuery] Guid id)
     {
         try
         {
-            var product = await _productDetailService.GetProductDetailById(id);
-            return Ok(product);
+            var productDetail = await _productDetailService.GetProductDetailById(id);
+            return Ok(productDetail);
         }
         catch (Exception ex)
         {
@@ -41,53 +42,53 @@ namespace PRN231.Controllers.ProductControllers
         }
     }
 
-    [HttpGet]
+        [HttpGet]
     public async Task<IActionResult> GetProductDetailByProductId([FromQuery]Guid productId)
     {
         var result = await _productDetailService.GetProductDetailByProductId(productId);
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProductDetail([FromBody] ProductDetail product)
-    {
-        try
+        [HttpPost]
+        public async Task<IActionResult> CreateProductDetail([FromBody] CreateProductDetailDTO productDetailDto)
         {
-            var result = await _productDetailService.CreateProductDetail(product);
-            return Ok(result);
+            try
+            {
+                var result = await _productDetailService.CreateProductDetail(productDetailDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateProductDetail([FromRoute] Guid id, [FromBody] ProductDetail product)
-    {
-        try
+        [HttpPut]
+        public async Task<IActionResult> UpdateProductDetail([FromQuery] Guid id, [FromBody] CreateProductDetailDTO productDetailDto)
         {
-            var result = await _productDetailService.UpdateProductDetail(id, product);
-            return Ok(result);
+            try
+            {
+                var result = await _productDetailService.UpdateProductDetail(id, productDetailDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteProductDetail([FromRoute] Guid id)
-    {
-        try
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProductDetail([FromQuery] Guid id)
         {
-            var result = await _productDetailService.DeleteProductDetail(id);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest();
+            try
+            {
+                var result = await _productDetailService.DeleteProductDetail(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
-}
 }
