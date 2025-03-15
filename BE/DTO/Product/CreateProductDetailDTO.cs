@@ -1,9 +1,7 @@
-﻿
-namespace DTO.Product
+﻿namespace DTO.Product
 {
-    public class ProductDetailViewDto
+    public class CreateProductDetailDTO
     {
-        public Guid Id { get; set; }
         public Guid ProductId { get; set; }
         public int Size { get; set; }
         public int StockQuantity { get; set; }
