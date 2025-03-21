@@ -4,6 +4,7 @@ using DAL.Models.OrderModel;
 using DAL.Repositories.Interfaces;
 using DTO.Order;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Services.Implements.OrderServices
 {
@@ -39,11 +40,19 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<OrderViewDTO> CreateOrder(CreateOrUpdateOrder order, Guid userId)
         {
-            var newOrder = _mapper.Map<Order>(order);
-            newOrder.UserId = userId;
-            newOrder.CreatedAt = DateTime.Now;
-            newOrder.CreatedBy = userId;
-            newOrder.Status = Status.Pending;
+            if (order.OrderDetails.IsNullOrEmpty())
+            {
+                throw new Exception("Order details is empty");
+            }
+            var newOrder = new Order
+            {
+                UserId = userId,
+                CreatedAt = DateTime.Now,
+                CreatedBy = userId,
+                Status = Status.Pending,
+                TotalPrice = 0,
+                OrderDetails = null
+            };
             var addOrderResult = await _unitOfWork.OrderRepository.AddAsync(newOrder);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
