@@ -25,7 +25,7 @@ namespace BLL.Services.Implements.OrderServices
             if (order is not null)
             {
                 order.Status = Status.Completed;
-                order.UpdateAt = DateTime.Now;
+                order.UpdatedAt = DateTime.Now;
                 order.UpdatedBy = userId;
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
@@ -131,7 +131,7 @@ namespace BLL.Services.Implements.OrderServices
             if (order is not null)
             {
                 order.Status = Status.Processing;
-                order.UpdateAt = DateTime.Now;
+                order.UpdatedAt = DateTime.Now;
                 order.UpdatedBy = userId;
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
@@ -150,7 +150,7 @@ namespace BLL.Services.Implements.OrderServices
             if (existingOrder is not null)
             {
                 var updateOrder = _mapper.Map<Order>(order);
-                existingOrder.UpdateAt = DateTime.Now;
+                existingOrder.UpdatedAt = DateTime.Now;
                 existingOrder.IsDeleted = updateOrder.IsDeleted;
                 var result = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
@@ -161,5 +161,55 @@ namespace BLL.Services.Implements.OrderServices
             }
             throw new Exception("Update fail");
         }
+
+        public async Task<OrderViewDTO> ApplyVoucherToOrder(Guid orderId, string voucherCode, Guid userId)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId, false, "OrderDetails", "OrderVouchers");
+            if (order == null)
+            {
+                throw new Exception("Order not found");
+            }
+
+            var voucher = await _unitOfWork.VoucherRepository.GetWithConditionAsync(v => v.Code == voucherCode && v.ExpiredDate > DateTime.Now);
+            if (voucher == null)
+            {
+                throw new Exception("Voucher not found or expired");
+            }
+
+            if (order.TotalPrice < voucher.MinimumOrderTotalPrice)
+            {
+                throw new Exception("Order total does not meet the minimum requirement for this voucher");
+            }
+
+            var orderVoucher = new OrderVoucher
+            {
+                Order = order,
+                OrderId = order.Id,
+                VoucherId = voucher.Id,
+                Voucher = voucher
+            };
+
+            var orderVoucherToAdd = _unitOfWork.OrderVoucherRepository.AddAsync(orderVoucher);
+
+            if (orderVoucherToAdd == null)
+            {
+                throw new Exception("Failed to apply voucher");
+            }
+
+            order.TotalPrice -= (decimal)(order.TotalPrice * (voucher.DiscountPercentage / 100));
+            order.UpdatedAt = DateTime.Now;
+            order.UpdatedBy = userId;
+
+            var updateOrderResult = await _unitOfWork.OrderRepository.UpdateAsync(order);
+            var process = await _unitOfWork.SaveChangeAsync();
+            if (process > 0)
+            {
+                var result = _mapper.Map<OrderViewDTO>(updateOrderResult);
+                return result;
+            }
+
+            throw new Exception("Failed to apply voucher");
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Interfaces.IOrderServices;
+using DAL.Models.OrderModel;
 using DAL.Repositories.Interfaces;
 
 namespace BLL.Services.Implements.OrderServices

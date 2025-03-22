@@ -117,7 +117,7 @@ namespace BLL.Services.Implements.OrderServices
                 }
                 existingOrder.Quantity = updateOrder.Quantity;
                 existingOrder.TotalPrice = updateOrder.Quantity * productDetail.Price;
-                existingOrder.UpdateAt = DateTime.Now;
+                existingOrder.UpdatedAt = DateTime.Now;
                 var result = await _unitOfWork.OrderDetailRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
