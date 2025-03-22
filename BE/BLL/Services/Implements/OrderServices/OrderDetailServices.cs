@@ -101,9 +101,19 @@ namespace BLL.Services.Implements.OrderServices
                 var product = await _unitOfWork.ProductRepository.GetByIdAsync(order.ProductId);
                 var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == order.Size);
                 var updateOrder = _mapper.Map<OrderDetail>(order);
-                if(product is  null || productDetail is null || productDetail.StockQuantity < updateOrder.Quantity)
+                if (product is null || productDetail is null || productDetail.StockQuantity < updateOrder.Quantity)
                 {
                     throw new Exception("Not Found or out of stock");
+                }
+                if (order.Quantity > existingOrder.Quantity)
+                {
+                    int stock = order.Quantity - existingOrder.Quantity;
+                    productDetail.StockQuantity -= stock;
+                }
+                else
+                {
+                    int stock = existingOrder.Quantity - order.Quantity;
+                    productDetail.StockQuantity += stock;
                 }
                 existingOrder.Quantity = updateOrder.Quantity;
                 existingOrder.TotalPrice = updateOrder.Quantity * productDetail.Price;
