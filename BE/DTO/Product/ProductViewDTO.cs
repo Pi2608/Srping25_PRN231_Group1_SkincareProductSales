@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Image { get; set; }
         public string ShortDescription { get; set; }
+        public bool IsDeleted { get; set; }
         public List<CategoryViewDTO> Categories { get; set; }
     }
 
