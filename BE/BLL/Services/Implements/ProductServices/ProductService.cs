@@ -61,7 +61,7 @@ namespace BLL.Services.Implements.ProductServices
         public async Task<List<ProductViewDTO>> GetAllProducts()
         {
             var products = await _unitOfWork.ProductRepository
-                .GetAllAsync(p => !p.IsDeleted, true, "ProductDetails", "ProductCategories.Category");
+                .GetAllAsync(null, true, "ProductDetails", "ProductCategories.Category");
 
             return _mapper.Map<List<ProductViewDTO>>(products);
         }
@@ -71,7 +71,7 @@ namespace BLL.Services.Implements.ProductServices
         public async Task<ProductViewDTO> GetProductById(Guid id)
         {
             var product = await _unitOfWork.ProductRepository
-                .GetWithConditionAsync(p => p.IsDeleted == false && p.Id == id, true, "ProductDetails", "ProductCategories.Category");
+                .GetWithConditionAsync(p => p.Id == id, true, "ProductDetails", "ProductCategories.Category");
 
             if (product != null)
             {
