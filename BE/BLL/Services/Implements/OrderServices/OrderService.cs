@@ -65,9 +65,21 @@ namespace BLL.Services.Implements.OrderServices
 
         public async Task<bool> DeleteOrder(Guid id)
         {
-            var existingOrder = await _unitOfWork.OrderRepository.GetWithConditionAsync(od => od.IsDeleted == false && od.Id == id);
+            var existingOrder = await _unitOfWork.OrderRepository.GetQuery().Where(od => od.IsDeleted == false && od.Id == id).Include(o => o.OrderDetails).FirstOrDefaultAsync();
             if (existingOrder is not null)
             {
+                foreach (var item in existingOrder.OrderDetails)
+                {
+                    var product = await _unitOfWork.ProductDetailRepository.GetQuery().Where(p => p.ProductId == item.ProductId && p.Size == item.Size).FirstOrDefaultAsync();
+                    if (product is null)
+                    {
+                        throw new Exception("Not found product");
+                    }
+                    item.IsDeleted = true;
+                    product.StockQuantity += item.Quantity;
+                    await _unitOfWork.OrderDetailRepository.UpdateAsync(item);
+                    await _unitOfWork.ProductDetailRepository.UpdateAsync(product);
+                }
                 existingOrder.IsDeleted = true;
                 existingOrder.Status = Status.Canceled;
                 existingOrder.DeletedAt = DateTime.UtcNow;
