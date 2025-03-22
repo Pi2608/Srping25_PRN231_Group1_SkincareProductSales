@@ -29,12 +29,17 @@ namespace BLL.Services.Implements.OrderServices
                     if (product is not null)
                     {
                         var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == orderItem.Size);
-                        if (productDetail is not null)
+                        if (productDetail is null || productDetail.StockQuantity < orderItem.Quantity)
                         {
-                            orderItem.OrderId = orderId;
-                            orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
-                            existingOrder.TotalPrice += orderItem.TotalPrice;
+                            await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
+                            await _unitOfWork.SaveChangeAsync();
+                            throw new Exception("Not Found or out of stock");
                         }
+                        orderItem.OrderId = orderId;
+                        orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
+                        existingOrder.TotalPrice += orderItem.TotalPrice;
+                        productDetail.StockQuantity -= orderItem.Quantity;
+                        await _unitOfWork.ProductDetailRepository.UpdateAsync(productDetail);
                     }
                 }
 
@@ -96,6 +101,10 @@ namespace BLL.Services.Implements.OrderServices
                 var product = await _unitOfWork.ProductRepository.GetByIdAsync(order.ProductId);
                 var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == order.Size);
                 var updateOrder = _mapper.Map<OrderDetail>(order);
+                if(product is  null || productDetail is null || productDetail.StockQuantity < updateOrder.Quantity)
+                {
+                    throw new Exception("Not Found or out of stock");
+                }
                 existingOrder.Quantity = updateOrder.Quantity;
                 existingOrder.TotalPrice = updateOrder.Quantity * productDetail.Price;
                 existingOrder.UpdateAt = DateTime.Now;

@@ -8,9 +8,11 @@ namespace PRN231.Controllers.OrderControllers
     public class OrderController : BaseController
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IOrderDetailService _orderDetailService;
+        public OrderController(IOrderService orderService, IOrderDetailService orderDetailService)
         {
             _orderService = orderService;
+            _orderDetailService = orderDetailService;
         }
 
         [HttpGet]
@@ -93,8 +95,10 @@ namespace PRN231.Controllers.OrderControllers
             try
             {
                 var userId = this.GetUserId();
-                var result = await _orderService.CreateOrder(order, userId);
-                return Ok(result);
+                var orderResult = await _orderService.CreateOrder(order, userId);
+                var orderDetail = await _orderDetailService.CreateOrderDetail(orderResult.Id, order.OrderDetails);
+                var orderView = await _orderService.GetOrderById(orderResult.Id);
+                return Ok(orderView);
             }
             catch (Exception ex)
             {
@@ -107,8 +111,8 @@ namespace PRN231.Controllers.OrderControllers
         {
             try
             {
-                var result = await _orderService.UpdateOrder(id, order);
-                return Ok(result);
+                var orderResult = await _orderService.UpdateOrder(id, order);
+                return Ok(orderResult);
             }
             catch (Exception ex)
             {
