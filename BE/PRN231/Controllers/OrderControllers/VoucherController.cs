@@ -59,7 +59,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateVoucher([FromQuery] Guid id, [FromBody] Voucher voucher)
+        public async Task<IActionResult> UpdateVoucher([FromQuery] Guid id, [FromBody] CreateOrUpdateVoucher voucher)
         {
             try
             {

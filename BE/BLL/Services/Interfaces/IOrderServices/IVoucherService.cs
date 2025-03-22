@@ -9,7 +9,7 @@ namespace BLL.Services.Interfaces.IOrderServices
         Task<List<Voucher>> GetAllVouchers();
         Task<Voucher> GetVoucherById(Guid id);
         Task<Voucher> CreateVoucher(CreateOrUpdateVoucher voucher, Guid userId);
-        Task<Voucher> UpdateVoucher(Guid id, Voucher voucher);
+        Task<Voucher> UpdateVoucher(Guid id, CreateOrUpdateVoucher voucher);
         Task<bool> DeleteVoucher(Guid id);
     }
 }

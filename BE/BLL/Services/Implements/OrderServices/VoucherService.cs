@@ -79,24 +79,21 @@ namespace BLL.Services.Implements.OrderServices
             return voucher;
         }
 
-        public async Task<Voucher> UpdateVoucher(Guid id, Voucher voucher)
+        public async Task<Voucher> UpdateVoucher(Guid id, CreateOrUpdateVoucher voucher)
         {
             var existingVoucher = await _unitOfWork.VoucherRepository.GetByIdAsync(id, true);
             if (existingVoucher is null)
             {
                 throw new Exception("Order is null");
             }
-            existingVoucher.Code = voucher.Code;
-            existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
-            existingVoucher.ExpiredDate = voucher.ExpiredDate;
-            existingVoucher.CreatedBy = voucher.CreatedBy;
+            var updateOrder = _mapper.Map<Voucher>(voucher);
             existingVoucher.UpdatedAt = DateTime.Now;
-
-            await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
+            existingVoucher.IsDeleted = updateOrder.IsDeleted;
+            var result = await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return existingVoucher;
+                return _mapper.Map<Voucher>(voucher); ;
             }
             throw new Exception("Update fail");
         }
