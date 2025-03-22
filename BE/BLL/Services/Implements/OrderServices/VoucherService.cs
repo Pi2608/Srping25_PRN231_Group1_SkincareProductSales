@@ -26,7 +26,7 @@ namespace BLL.Services.Implements.OrderServices
             {
                 Code = voucher.Code,
                 DiscountPercentage = voucher.DiscountPercentage,
-                ExpiredDate = voucher.ExpiredDate,
+                ExpiredDate =  DateTime.Now.AddDays(5),
                 MinimumOrderTotalPrice = voucher.MinimumOrderTotalPrice,
                 CreatedAt = DateTime.Now,
                 CreatedBy = userId,
@@ -93,7 +93,7 @@ namespace BLL.Services.Implements.OrderServices
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return _mapper.Map<Voucher>(voucher); ;
+                return _mapper.Map<Voucher>(result); ;
             }
             throw new Exception("Update fail");
         }
