@@ -20,7 +20,6 @@ const DashboardLayoutComponent = ({children}) => {
           <li className={isActive('/dashboard/mng-product')} onClick={() => navigate('/dashboard/mng-product')}>Products</li>
           <li className={isActive('/dashboard/mng-voucher')} onClick={() => navigate('/dashboard/mng-voucher')}>Voucher</li>
           <li className={isActive('/dashboard/mng-order')} onClick={() => navigate('/dashboard/mng-order')}>Orders</li>
-          <li className={isActive('/dashboard/mng-transaction')} onClick={() => navigate('/dashboard/mng-transaction')}>Transactions</li>
         </ul>
       </aside>
       <main className="main-content">

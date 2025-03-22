@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
 using DAL.Repositories.Interfaces;
+using DTO.Product;
 
 namespace BLL.Services.Implements.ProductServices
 {
@@ -40,9 +41,15 @@ namespace BLL.Services.Implements.ProductServices
             throw new Exception("Add fail");
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategory()
+        public async Task<IEnumerable<CategoryDTO>> GetAllCategory()
         {
-            return await _unitOfWork.CategoryRepository.GetAllAsync();
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+
+            return categories.Select(c => new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name,
+            });
         }
     }
 }

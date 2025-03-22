@@ -240,7 +240,7 @@ class ApiGateway {
 
     static async getProductById(id) {
         try {
-            const response = await this.axiosInstance.get(`/Product/GetById?id=${id}`);
+            const response = await this.axiosInstance.get(`/Product/GetProductById?id=${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching product ${id}:`, error);
@@ -415,7 +415,7 @@ class ApiGateway {
 
     static async deleteOrder(id) {
         try {
-            const response = await this.axiosInstance.delete(`/Order/DeleteOrder/${id}`);
+            const response = await this.axiosInstance.delete(`Order/DeleteOrder?id=${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting order ${id}:`, error);
@@ -461,6 +461,67 @@ class ApiGateway {
             return response.data;
         } catch (error) {
             console.error(`Error deleting order detail ${id}:`, error);
+            throw error;
+        }
+    }
+
+    // Voucher APIs
+    static async getAllVouchers() {
+        try {
+            const response = await this.axiosInstance.get("/Voucher/GetAllVouchers");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all vouchers:", error);
+            throw error;
+        }
+    }
+
+    static async getVoucherById(id) {
+        try {
+            const response = await this.axiosInstance.get(`/Voucher/GetVoucherById?id=${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching voucher ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async createVoucher(code, discount, expiryDate ) {
+        try {
+            const voucher = {
+                code: code,
+                discount: discount,
+                expiryDate: expiryDate,
+            };
+            const response = await this.axiosInstance.post("/Voucher/CreateVoucher", voucher);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating voucher:", error);
+            throw error;
+        }
+    }
+
+    static async updateVoucher(id, code, discount, expiryDate) {
+        try {
+            const voucher = {
+                code: code,
+                discount: discount,
+                expiryDate: expiryDate,
+            };
+            const response = await this.axiosInstance.post(`/Voucher/UpdateVoucher?id=${id}`, voucher);
+            return response.data;
+        } catch (error) {
+            console.error(`Error updating voucher ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async deleteVoucher(id) {
+        try {
+            const response = await this.axiosInstance.delete(`/Voucher/DeleteVoucher/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting voucher ${id}:`, error);
             throw error;
         }
     }

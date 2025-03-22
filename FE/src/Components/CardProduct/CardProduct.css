@@ -10,6 +10,7 @@
     border-radius: 0.75rem;
     gap: 2.25rem;
     transition: all 0.25s ease-in-out;
+    cursor: pointer;
 }
 
 #card_product:hover {

@@ -3,6 +3,8 @@ import ProfileLayout from '../ProfileLayout/ProfileLayout';
 import ConfirmModal from '../../../../Components/ConfirmModal/ConfirmModal.jsx';
 import Status from '../../../../Enum/Status.js';
 import ApiGateway from '../../../../Api/ApiGateway';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../../../../AuthContext/AuthContext';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import './Order.css';
@@ -93,10 +95,10 @@ const Order = () => {
                     order.id === selectedOrderId ? { ...order, status: Status.Canceled } : order
                 )
             );
-            alert('Order canceled successfully.');
+            toast.success('Order canceled successfully.');
         } catch (error) {
             console.error('Error canceling order:', error);
-            alert('Failed to cancel order.');
+            toast.error('Failed to cancel order.');
         } finally {
             setLoading(false);
             setIsModalOpen(false);

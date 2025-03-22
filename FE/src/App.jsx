@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useParams } from 'react-router-dom'
 import './App.css'
 import Home from './Pages/User/Home/Home.jsx'
 import ProductsPage from './Pages/User/ProductsPage/ProductsPage.jsx'
@@ -17,6 +17,9 @@ import OrderMng from './Pages/Admin/Order/OrderMng.jsx'
 import VoucherMng from './Pages/Admin/Voucher/VoucherMng.jsx'
 
 function App() {
+
+  const { productId } = useParams();
+  
   return (
     <Routes>
 				<Route path='/'>
@@ -25,7 +28,7 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/cart' element={<Cart />} />
-          <Route path='/product/:productId' element={<ProductDetail />} />
+          <Route path="/product/:productId" element={<ProductDetail key={productId} />} />
           <Route path='/profile'>
             <Route index element={<Profile/>} />
             <Route path='orders' element={<Order/>} />
