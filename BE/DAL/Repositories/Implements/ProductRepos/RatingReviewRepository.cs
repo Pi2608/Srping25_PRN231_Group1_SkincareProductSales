@@ -69,7 +69,7 @@ namespace DAL.Repositories.Implements.ProductRepos
 
             existingFeedback.Review = feedback.Review;
             existingFeedback.Rating = feedback.Rating;
-            existingFeedback.UpdateAt = DateTime.UtcNow;
+            existingFeedback.UpdatedAt = DateTime.UtcNow;
 
             return await _context.SaveChangesAsync() > 0;
         }

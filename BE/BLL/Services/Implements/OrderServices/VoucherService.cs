@@ -72,7 +72,7 @@ namespace BLL.Services.Implements.OrderServices
             existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
             existingVoucher.ExpiredDate = voucher.ExpiredDate;
             existingVoucher.CreatedBy = voucher.CreatedBy;
-            existingVoucher.UpdateAt = DateTime.Now;
+            existingVoucher.UpdatedAt = DateTime.Now;
 
             await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
             var process = await _unitOfWork.SaveChangeAsync();

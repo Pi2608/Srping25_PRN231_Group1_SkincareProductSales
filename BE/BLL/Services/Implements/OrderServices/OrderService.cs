@@ -25,7 +25,7 @@ namespace BLL.Services.Implements.OrderServices
             if (order is not null)
             {
                 order.Status = Status.Completed;
-                order.UpdateAt = DateTime.Now;
+                order.UpdatedAt = DateTime.Now;
                 order.UpdatedBy = userId;
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
@@ -131,7 +131,7 @@ namespace BLL.Services.Implements.OrderServices
             if (order is not null)
             {
                 order.Status = Status.Processing;
-                order.UpdateAt = DateTime.Now;
+                order.UpdatedAt = DateTime.Now;
                 order.UpdatedBy = userId;
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
@@ -150,7 +150,7 @@ namespace BLL.Services.Implements.OrderServices
             if (existingOrder is not null)
             {
                 var updateOrder = _mapper.Map<Order>(order);
-                existingOrder.UpdateAt = DateTime.Now;
+                existingOrder.UpdatedAt = DateTime.Now;
                 existingOrder.IsDeleted = updateOrder.IsDeleted;
                 var result = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
@@ -197,7 +197,7 @@ namespace BLL.Services.Implements.OrderServices
             }
 
             order.TotalPrice -= (decimal)(order.TotalPrice * (voucher.DiscountPercentage / 100));
-            order.UpdateAt = DateTime.Now;
+            order.UpdatedAt = DateTime.Now;
             order.UpdatedBy = userId;
 
             var updateOrderResult = await _unitOfWork.OrderRepository.UpdateAsync(order);
