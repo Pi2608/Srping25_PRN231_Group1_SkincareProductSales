@@ -66,6 +66,7 @@ namespace BLL.Services.Implements.OrderServices
         public async Task<bool> DeleteOrder(Guid id)
         {
             var existingOrder = await _unitOfWork.OrderRepository.GetQuery().Where(od => od.IsDeleted == false && od.Id == id).Include(o => o.OrderDetails).FirstOrDefaultAsync();
+            var user = await _unitOfWork.UserRepository.GetUserById(existingOrder.UserId);
             if (existingOrder is not null)
             {
                 foreach (var item in existingOrder.OrderDetails)
@@ -80,10 +81,12 @@ namespace BLL.Services.Implements.OrderServices
                     await _unitOfWork.OrderDetailRepository.UpdateAsync(item);
                     await _unitOfWork.ProductDetailRepository.UpdateAsync(product);
                 }
+                user.MoneyAmount += existingOrder.TotalPrice;
                 existingOrder.IsDeleted = true;
                 existingOrder.Status = Status.Canceled;
                 existingOrder.DeletedAt = DateTime.UtcNow;
                 var deleteOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
+                var updateUser = await _unitOfWork.UserRepository.UpdateAsync(user);
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)
                 {

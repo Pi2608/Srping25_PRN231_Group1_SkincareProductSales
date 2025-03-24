@@ -10,6 +10,7 @@ namespace DAL.Models.UserModel
         public required string Email { get; set; }
         public required Guid RoleId { get; set; }
         public required Role Role { get; set; }
+        public decimal MoneyAmount { get; set; }
         public IEnumerable<Order> Orders { get; set; }
     }
 }
