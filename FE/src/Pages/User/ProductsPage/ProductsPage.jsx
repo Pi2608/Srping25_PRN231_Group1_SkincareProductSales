@@ -6,7 +6,7 @@ import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import ApiGateway from '../../../Api/ApiGateway';
 import CardProduct from '../../../Components/CardProduct/CardProduct';
-import { ProductsData } from '../../../data/products';
+import SearchBox from '../../../Components/SearchBox/SearchBox';
 import './ProductsPage.css';
 
 const ProductsPage = ()=>{
@@ -50,11 +50,25 @@ const ProductsPage = ()=>{
         setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
     }
 
+    const handleSearchChange = (value) => {
+        if (value === '') {
+            setMenuProducts(allProducts);
+        } else {
+            const filtered = allProducts.filter(product =>
+                product.name.toLowerCase().includes(value.toLowerCase())
+            );
+            setMenuProducts(filtered);
+        }
+    };
+
     return(
         <div id='product-page'>
             <Header/>
             <ToastContainer />
+
             <div className='product-container'>
+                <SearchBox handleSearchChange={handleSearchChange}/>
+
                 <ul className='type'>
                     <li onClick={() => setMenuProducts(allProducts)} className='menu'>All</li>
                     <li onClick={() => filter("Moisturizers")} className='menu'>Moisturizers</li>

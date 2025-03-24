@@ -28,12 +28,18 @@ namespace BLL.Services.Implements.OrderServices
                     var product = await _unitOfWork.ProductRepository.GetByIdAsync(orderItem.ProductId);
                     if (product is not null)
                     {
-                        var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == orderItem.Size);
-                        if (productDetail is null || productDetail.StockQuantity < orderItem.Quantity)
+                        var productDetail = await _unitOfWork.ProductDetailRepository.FindProduct(product.Id, orderItem.Size);
+                        if (productDetail is null)
                         {
                             await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
                             await _unitOfWork.SaveChangeAsync();
-                            throw new Exception("Not Found or out of stock");
+                            throw new Exception("Product Not Found In Service");
+                        }
+                        else if (productDetail.StockQuantity < orderItem.Quantity)
+                        {
+                            await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
+                            await _unitOfWork.SaveChangeAsync();
+                            throw new Exception("Out of stock");
                         }
                         orderItem.OrderId = orderId;
                         orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
@@ -101,7 +107,7 @@ namespace BLL.Services.Implements.OrderServices
                 var product = await _unitOfWork.ProductRepository.GetByIdAsync(order.ProductId);
                 var productDetail = await _unitOfWork.ProductDetailRepository.GetWithConditionAsync(pd => pd.ProductId == product.Id && pd.Size == order.Size);
                 var updateOrder = _mapper.Map<OrderDetail>(order);
-                if(product is  null || productDetail is null || productDetail.StockQuantity < updateOrder.Quantity)
+                if (product is null || productDetail is null || productDetail.StockQuantity < updateOrder.Quantity)
                 {
                     throw new Exception("Not Found or out of stock");
                 }

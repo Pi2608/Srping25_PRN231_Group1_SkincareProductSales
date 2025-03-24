@@ -372,9 +372,18 @@ class ApiGateway {
         }
     }
 
-    static async createOrder() {
+    static async createOrder(orderDetails) {
         try {
-            var order = {  isDeleted :  false };
+            var order = {  
+                isDeleted :  false,
+                orderDetails: orderDetails.map(detail => ({
+                    productId: detail.productId,
+                    quantity: detail.quantity,
+                    isDeleted: false,
+                    size: detail.size
+                }))
+            };
+            console.log(order);
             const response = await this.axiosInstance.post("/Order/CreateOrder", order);
             return response.data;
         } catch (error) {

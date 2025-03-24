@@ -26,15 +26,15 @@ const Cart = () => {
     useEffect(() => {
         const fetchVouchers = async () => {
             try {
-                const response = await ApiGateway.getAllVouchers();
-                setVouchers(response);
+                // const response = await ApiGateway.getAllVouchers();
+                // setVouchers(response);
                 
                 // Mock vouchers for testing
-                // setVouchers([
-                //     { id: 1, code: 'WELCOME10', discount: 10, description: '10% off your first order' },
-                //     { id: 2, code: 'FREESHIP', discount: 15, description: 'Free shipping on orders over 200,000 VND' },
-                //     { id: 3, code: 'SALE20', discount: 20, description: '20% off selected items' }
-                // ]);
+                setVouchers([
+                    { id: 1, code: 'WELCOME10', discount: 10, description: '10% off your first order' },
+                    { id: 2, code: 'FREESHIP', discount: 15, description: 'Free shipping on orders over 200,000 VND' },
+                    { id: 3, code: 'SALE20', discount: 20, description: '20% off selected items' }
+                ]);
             } catch (error) {
                 console.error('Failed to fetch vouchers:', error);
             }
@@ -45,11 +45,10 @@ const Cart = () => {
 
     const createOrder = async () => {
         try {
-            const response = await ApiGateway.createOrder();
-            const orderId = response.id;
+            console.log(selectedItems)
+            const response = await ApiGateway.createOrder(selectedItems);
             console.log(response);
             console.log(selectedItems);
-            await ApiGateway.createOrderDetail(orderId, selectedItems);
             if (selectedVoucher) {
                 // await ApiGateway.applyVoucher(orderId, selectedVoucher.id);
                 toast.success(`Voucher ${selectedVoucher.code} applied to your order!`, {
