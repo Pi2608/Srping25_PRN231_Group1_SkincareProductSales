@@ -1,6 +1,8 @@
 ﻿using BLL.Services.Interfaces.IOrderServices;
 using DAL.Models.OrderModel;
+using DTO.Order;
 using Microsoft.AspNetCore.Mvc;
+using PRN231.Helper;
 
 namespace PRN231.Controllers.OrderControllers
 {
@@ -42,11 +44,12 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateVoucher([FromBody] Voucher voucher)
+        public async Task<IActionResult> CreateVoucher([FromBody] CreateOrUpdateVoucher voucher)
         {
             try
             {
-                var result = await _voucherService.CreateVoucher(voucher);
+                var userId = this.GetUserId();
+                var result = await _voucherService.CreateVoucher(voucher, userId);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,7 +59,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateVoucher([FromQuery] Guid id, [FromBody] Voucher voucher)
+        public async Task<IActionResult> UpdateVoucher([FromQuery] Guid id, [FromBody] CreateOrUpdateVoucher voucher)
         {
             try
             {

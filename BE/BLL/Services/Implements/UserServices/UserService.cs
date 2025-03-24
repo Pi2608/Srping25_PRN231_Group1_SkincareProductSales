@@ -99,7 +99,7 @@ namespace BLL.Services.Implements.UserServices
             var userdto = _mapper.Map<User>(user);
 
             userdto.CreatedAt = DateTime.Now;
-            userdto.UpdateAt = DateTime.Now;
+            userdto.UpdatedAt = DateTime.Now;
             userdto.IsDeleted = false;
 
             var result = await _unitOfWork.UserRepository.CreateUser(userdto);

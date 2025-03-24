@@ -1,6 +1,9 @@
-﻿using BLL.Services.Interfaces.IOrderServices;
+﻿using AutoMapper;
+using BLL.Services.Interfaces.IOrderServices;
 using DAL.Models.OrderModel;
+using DAL.Models.UserModel;
 using DAL.Repositories.Interfaces;
+using DTO.Order;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,21 +12,36 @@ namespace BLL.Services.Implements.OrderServices
     public class VoucherService : IVoucherService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public VoucherService(IUnitOfWork unitOfWork)
+        public VoucherService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<Voucher> CreateVoucher(Voucher voucher)
+        public async Task<Voucher> CreateVoucher(CreateOrUpdateVoucher voucher, Guid userId)
         {
-            var newVoucher = await _unitOfWork.VoucherRepository.AddAsync(voucher);
+            var newVoucher = new Voucher
+            {
+                Code = voucher.Code,
+                DiscountPercentage = voucher.DiscountPercentage,
+                ExpiredDate =  DateTime.Now.AddDays(5),
+                MinimumOrderTotalPrice = voucher.MinimumOrderTotalPrice,
+                CreatedAt = DateTime.Now,
+                CreatedBy = userId,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = null
+            };
+
+            var addVoucher = await _unitOfWork.VoucherRepository.AddAsync(newVoucher);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return newVoucher;
+                var viewVoucher = _mapper.Map<Voucher>(addVoucher);
+                return viewVoucher;
             }
-            throw new Exception("Add fail");
+            throw new Exception("Add voucher fail");
 
         }
 
@@ -61,24 +79,21 @@ namespace BLL.Services.Implements.OrderServices
             return voucher;
         }
 
-        public async Task<Voucher> UpdateVoucher(Guid id, Voucher voucher)
+        public async Task<Voucher> UpdateVoucher(Guid id, CreateOrUpdateVoucher voucher)
         {
             var existingVoucher = await _unitOfWork.VoucherRepository.GetByIdAsync(id, true);
             if (existingVoucher is null)
             {
                 throw new Exception("Order is null");
             }
-            existingVoucher.Code = voucher.Code;
-            existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
-            existingVoucher.ExpiredDate = voucher.ExpiredDate;
-            existingVoucher.CreatedBy = voucher.CreatedBy;
-            existingVoucher.UpdateAt = DateTime.Now;
-
-            await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
+            var updateOrder = _mapper.Map<Voucher>(voucher);
+            existingVoucher.UpdatedAt = DateTime.Now;
+            existingVoucher.IsDeleted = updateOrder.IsDeleted;
+            var result = await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)
             {
-                return existingVoucher;
+                return _mapper.Map<Voucher>(result); ;
             }
             throw new Exception("Update fail");
         }

@@ -86,7 +86,7 @@ namespace BLL.Services.Implements.ProductServices
             if (existingProduct != null)
             {
                 _mapper.Map(productDto, existingProduct);
-                existingProduct.UpdateAt = DateTime.Now;
+                existingProduct.UpdatedAt = DateTime.Now;
                 var updatedProduct = await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
                 var process = await _unitOfWork.SaveChangeAsync();
                 return _mapper.Map<ProductViewDTO>(updatedProduct);

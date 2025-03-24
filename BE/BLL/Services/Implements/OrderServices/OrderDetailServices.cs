@@ -20,6 +20,7 @@ namespace BLL.Services.Implements.OrderServices
         public async Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, List<CreateOrUpdateOrderDetail> order)
         {
             var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            var user = await _unitOfWork.UserRepository.GetUserById(existingOrder.UserId);
             if (existingOrder is not null)
             {
                 var orderDetails = _mapper.Map<List<OrderDetail>>(order);
@@ -44,6 +45,12 @@ namespace BLL.Services.Implements.OrderServices
                         orderItem.OrderId = orderId;
                         orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
                         existingOrder.TotalPrice += orderItem.TotalPrice;
+                        if (user.MoneyAmount < existingOrder.TotalPrice)
+                        {
+                            await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
+                            await _unitOfWork.SaveChangeAsync();
+                            throw new Exception("Not enough money");
+                        }
                         productDetail.StockQuantity -= orderItem.Quantity;
                         await _unitOfWork.ProductDetailRepository.UpdateAsync(productDetail);
                     }
@@ -51,6 +58,8 @@ namespace BLL.Services.Implements.OrderServices
 
                 var addOrderDetails = await _unitOfWork.OrderDetailRepository.AddRangeAsync(orderDetails);
                 var updateOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
+                user.MoneyAmount -= updateOrder.TotalPrice;
+                await _unitOfWork.UserRepository.UpdateAsync(user);
                 var process = await _unitOfWork.SaveChangeAsync();
 
                 if (process > 0)
@@ -111,9 +120,19 @@ namespace BLL.Services.Implements.OrderServices
                 {
                     throw new Exception("Not Found or out of stock");
                 }
+                if (order.Quantity > existingOrder.Quantity)
+                {
+                    int stock = order.Quantity - existingOrder.Quantity;
+                    productDetail.StockQuantity -= stock;
+                }
+                else
+                {
+                    int stock = existingOrder.Quantity - order.Quantity;
+                    productDetail.StockQuantity += stock;
+                }
                 existingOrder.Quantity = updateOrder.Quantity;
                 existingOrder.TotalPrice = updateOrder.Quantity * productDetail.Price;
-                existingOrder.UpdateAt = DateTime.Now;
+                existingOrder.UpdatedAt = DateTime.Now;
                 var result = await _unitOfWork.OrderDetailRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
                 if (process > 0)

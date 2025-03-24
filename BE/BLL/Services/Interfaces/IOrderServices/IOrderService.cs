@@ -13,5 +13,6 @@ namespace BLL.Services.Interfaces.IOrderServices
         Task<OrderViewDTO> ProcessingOrder(Guid id, Guid userId);
         Task<OrderViewDTO> CompleteOrder(Guid id, Guid userId);
         Task<bool> DeleteOrder(Guid id);
+        Task<OrderViewDTO> ApplyVoucherToOrder(Guid orderId, string voucherCode, Guid userId);
     }
 }
