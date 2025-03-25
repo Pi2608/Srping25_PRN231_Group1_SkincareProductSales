@@ -72,6 +72,10 @@ namespace BLL.Services.Implements.OrderServices
                 foreach (var item in existingOrder.OrderDetails)
                 {
                     var product = await _unitOfWork.ProductDetailRepository.GetQuery().Where(p => p.ProductId == item.ProductId && p.Size == item.Size).FirstOrDefaultAsync();
+                    if (existingOrder.Status == Status.Processing || existingOrder.Status == Status.Completed)
+                    {
+                        throw new Exception("Can not cancel");
+                    }
                     if (product is null)
                     {
                         throw new Exception("Not found product");
