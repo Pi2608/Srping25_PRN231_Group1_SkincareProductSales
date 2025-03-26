@@ -134,19 +134,19 @@ namespace PRN231.Controllers.OrderControllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ApplyVoucher([FromQuery] Guid orderId, [FromQuery] string voucherCode)
-        {
-            try
-            {
-                var userId = this.GetUserId();
-                var order = await _orderService.ApplyVoucherToOrder(orderId, voucherCode, userId);
-                return Ok(order);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        // [HttpPost]
+        // public async Task<IActionResult> ApplyVoucher([FromQuery] Guid orderId, [FromQuery] string voucherCode)
+        // {
+        //     try
+        //     {
+        //         var userId = this.GetUserId();
+        //         var order = await _orderService.ApplyVoucherToOrder(orderId, voucherCode, userId);
+        //         return Ok(order);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(ex.Message);
+        //     }
+        // }
     }
 }

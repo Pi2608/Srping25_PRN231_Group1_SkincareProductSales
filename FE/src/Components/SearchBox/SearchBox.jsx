@@ -18,23 +18,16 @@ const SearchBox = ({ onChange, onSearch }) => {
         }
     };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
-
     return (
         <div id="search_box">
             <input
                 type="text"
                 value={searchValue}
                 onChange={handleChange}
-                onKeyDown={handleKeyDown}
                 placeholder="Find Product"
                 className="search-input"
             />
-            <button onClick={handleSearch}>Search</button>
+            <button onClick={()=>handleSearch()}>Search</button>
         </div>
     );
 };

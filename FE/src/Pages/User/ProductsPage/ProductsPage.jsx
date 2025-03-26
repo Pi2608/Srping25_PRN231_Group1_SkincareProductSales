@@ -50,16 +50,25 @@ const ProductsPage = ()=>{
         setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
     }
 
-    const handleSearchChange = (value) => {
-        if (value === '') {
-            setMenuProducts(allProducts);
-        } else {
-            const filtered = allProducts.filter(product =>
-                product.name.toLowerCase().includes(value.toLowerCase())
-            );
-            setMenuProducts(filtered);
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    }
+    
+    const handleSearch = async () => {
+        try {
+        const data = await ApiGateway.searchProducts(search);
+        const productsWithDetails = await Promise.all(
+            data.map(async (product) => {
+                const details = await ApiGateway.getProductDetailByProductId(product.id);
+                return { ...product, details };
+            })
+        );
+        setMenuProducts(productsWithDetails);
+        console.log(data)
+        } catch (error) {
+            console.error("Error fetching products:", error);
         }
-    };
+    }
 
     return(
         <div id='product-page'>
@@ -67,7 +76,7 @@ const ProductsPage = ()=>{
             <ToastContainer />
 
             <div className='product-container'>
-                <SearchBox handleSearchChange={handleSearchChange}/>
+                <SearchBox handleSearchChange={handleSearchChange} handleSearch={handleSearch}/>
 
                 <ul className='type'>
                     <li onClick={() => setMenuProducts(allProducts)} className='menu'>All</li>

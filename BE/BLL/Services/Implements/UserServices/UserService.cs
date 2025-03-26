@@ -37,6 +37,7 @@ namespace BLL.Services.Implements.UserServices
             {
                 userdto.RoleId = defaultRole.Id;
             }
+            userdto.MoneyAmount = 1000;
 
             var newUser = await _unitOfWork.UserRepository.CreateUser(userdto);
 
@@ -100,6 +101,7 @@ namespace BLL.Services.Implements.UserServices
 
             userdto.CreatedAt = DateTime.Now;
             userdto.UpdatedAt = DateTime.Now;
+            userdto.MoneyAmount = 1000;
             userdto.IsDeleted = false;
 
             var result = await _unitOfWork.UserRepository.CreateUser(userdto);

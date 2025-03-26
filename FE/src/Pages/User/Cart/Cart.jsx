@@ -47,13 +47,7 @@ const Cart = () => {
 
     const createOrder = async () => {
         try {
-            const response = await ApiGateway.createOrder(selectedItems);
-            if (selectedVoucher) {
-                await ApiGateway.applyVoucher(response.id, selectedVoucher.code);
-                toast.success(`Voucher ${selectedVoucher.code} applied to your order!`, {
-                    autoClose: 500,
-                });
-            }
+            const response = await ApiGateway.createOrder(selectedItems, selectedVoucher.code);
             
             toast.success('Order placed successfully! Your order ID is ' + response.id, {
                 autoClose: 500,

@@ -13,11 +13,11 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrderDetail([FromQuery] Guid orderId, [FromBody] List<CreateOrUpdateOrderDetail> od)
+        public async Task<IActionResult> CreateOrderDetail([FromQuery] Guid orderId, [FromBody] COD od)
         {
             try
             {
-                var orderDetails = await _orderDetailService.CreateOrderDetail(orderId, od);
+                var orderDetails = await _orderDetailService.CreateOrderDetail(orderId, od.voucherCode, od.order);
                 return Ok(orderDetails);
             }
             catch (Exception ex)
@@ -68,4 +68,5 @@ namespace PRN231.Controllers.OrderControllers
             }
         }
     }
+    public sealed record COD(string voucherCode, List<CreateOrUpdateOrderDetail> order);
 }

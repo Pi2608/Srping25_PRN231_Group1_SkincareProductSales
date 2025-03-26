@@ -388,10 +388,12 @@ class ApiGateway {
         }
     }
 
-    static async createOrder(orderDetails) {
+    static async createOrder(orderDetails, voucherCode) {
         try {
+            console.log(orderDetails)
             var order = {  
                 isDeleted :  false,
+                voucherCode: voucherCode,
                 orderDetails: orderDetails.map(detail => ({
                     productId: detail.productId,
                     quantity: detail.quantity,
@@ -511,16 +513,16 @@ class ApiGateway {
         }
     }
 
-    static async applyVoucher(orderId, voucherCode) {
-        try {
-            console.log(orderId, voucherCode);
-            const response = await this.axiosInstance.post(`/Order/ApplyVoucher?orderId=${orderId}&voucherCode=${voucherCode}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error applying voucher:", error);
-            throw error;
-        }
-    }
+    // static async applyVoucher(orderId, voucherCode) {
+    //     try {
+    //         console.log(orderId, voucherCode);
+    //         const response = await this.axiosInstance.post(`/Order/ApplyVoucher?orderId=${orderId}&voucherCode=${voucherCode}`);
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Error applying voucher:", error);
+    //         throw error;
+    //     }
+    // }
 
     static async createVoucher(code, discount, expiryDate ) {
         try {

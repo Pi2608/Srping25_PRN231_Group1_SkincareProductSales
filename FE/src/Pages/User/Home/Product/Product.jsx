@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ApiGateway from '../../../../Api/ApiGateway'
 import CardProduct from '../../../../Components/CardProduct/CardProduct'
+import { ToastContainer } from 'react-toastify';
 import './Product.css'
 
 const Products = () => {
@@ -34,9 +35,15 @@ const Products = () => {
     const filter = (type) => {
         setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
     }
+    
+    const handleLoginRedirect = () => {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+    };
 
     return (
         <div id='product'>
+            <ToastContainer />
+            
             <h1 className='title'>Our Featured Products</h1>
 
             <div className='product-container'>
@@ -50,7 +57,11 @@ const Products = () => {
 
                 <div className='items'>
                     {MenuProducts?.map((product, i) => (
-                        <CardProduct key={i} product={product}/>
+                        <CardProduct
+                            key={i}
+                            product={product}
+                            handleLoginRedirect={handleLoginRedirect}
+                        />
                     ))}
                 </div>
             </div>
