@@ -45,7 +45,7 @@ const Login = () => {
                 return;
             }
             toast.success(data.message || t("LoginSuccess"));
-            navigate(redirectPath);
+            // navigate(redirectPath);
         } catch (error) {
             console.error("Login error:", error);
             toast.error(t("LoginFailed"));

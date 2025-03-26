@@ -64,6 +64,34 @@ namespace DAL.Repositories.Implements.UserRepos
             return result > 0;
         }
 
+        public async Task<bool> EditUser(Guid userId, EditUserDTO us, Guid byAdmin)
+        {
+            User? user = await GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            if (!string.IsNullOrEmpty(us.Account))
+                user.Account = us.Account;
+
+            if (!string.IsNullOrEmpty(us.Email))
+                user.Email = us.Email;
+
+            if (!string.IsNullOrEmpty(us.Address))
+                user.Address = us.Address;
+
+            if (!string.IsNullOrEmpty(us.Password))
+            {
+                user.Password = us.Password;
+            }
+            user.RoleId = us.RoleId;
+            user.UpdatedAt = DateTime.Now;
+            user.UpdatedBy = byAdmin;
+
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> ChangePasswordAsync(Guid userId, string oldPassword, string newPassword)
         {
             User? user = await GetUserById(userId);

@@ -6,7 +6,7 @@ import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import ApiGateway from '../../../Api/ApiGateway';
 import CardProduct from '../../../Components/CardProduct/CardProduct';
-import { ProductsData } from '../../../data/products';
+import SearchBox from '../../../Components/SearchBox/SearchBox';
 import './ProductsPage.css';
 
 const ProductsPage = ()=>{
@@ -14,11 +14,12 @@ const ProductsPage = ()=>{
     const location = useLocation();
 
     const [MenuProducts, setMenuProducts] = useState([])
+    const [allProducts, setAllProducts] = useState([])
     
     useEffect(() => {
         fetchAllProducts().then((products) => {
             setMenuProducts(products);
-            console.log(products);
+            setAllProducts(products);
         });
     }, []);
 
@@ -46,25 +47,49 @@ const ProductsPage = ()=>{
     };
     
     const filter = (type) => {
-        setMenuProducts(ProductsData.filter((product)=>product.type === type))
+        setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
+    }
+
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    }
+    
+    const handleSearch = async () => {
+        try {
+        const data = await ApiGateway.searchProducts(search);
+        const productsWithDetails = await Promise.all(
+            data.map(async (product) => {
+                const details = await ApiGateway.getProductDetailByProductId(product.id);
+                return { ...product, details };
+            })
+        );
+        setMenuProducts(productsWithDetails);
+        console.log(data)
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
     }
 
     return(
         <div id='product-page'>
             <Header/>
             <ToastContainer />
+
             <div className='product-container'>
+                <SearchBox handleSearchChange={handleSearchChange} handleSearch={handleSearch}/>
+
                 <ul className='type'>
-                    <li onClick={() => setMenuProducts(MenuProducts)} className='menu'>All</li>
-                    <li onClick={() => filter("skin care")} className='menu'>Skin Care</li>
-                    <li onClick={() => filter("conditioner")} className='menu'>Conditioners</li>
-                    <li onClick={() => filter("foundation")} className='menu'>Foundations</li>
+                    <li onClick={() => setMenuProducts(allProducts)} className='menu'>All</li>
+                    <li onClick={() => filter("Moisturizers")} className='menu'>Moisturizers</li>
+                    <li onClick={() => filter("Cleansers")} className='menu'>Cleansers</li>
+                    <li onClick={() => filter("Serums")} className='menu'>Serums</li>
                 </ul>
     
     
                 <div className='items'>
                     {MenuProducts.map((product, i) => (
                         <CardProduct 
+                            key={i}
                             product={product}
                             handleLoginRedirect={handleLoginRedirect}
                         />

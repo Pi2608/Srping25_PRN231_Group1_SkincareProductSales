@@ -13,6 +13,10 @@ namespace BLL.Services.Interfaces.IUserServices
         Task<string?> Login(string email, string password);
         Task<(bool success, string message, User user)> CreateUser(CreateUserDTO user);
         Task<bool> UpdateProfile(Guid userId, UserProfileDTO us);
+        Task<(bool success, string msg)> EditUser(Guid userId, EditUserDTO us, Guid byAdmin);
         Task<bool> ChangePassword(Guid userId, string oldPassword, string newPassword);
+        Task<(bool isSuccess, string message, decimal? newBalance)> TopUpAsync(Guid userId, TopUpRequestDTO request);
+        Task<(bool success, string msg)> DeleteUser(Guid userId, Guid byAdmin);
+        Task<(bool success, string msg)> RestoreUser(Guid userId, Guid byAdmin);
     }
 }

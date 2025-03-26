@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate  } from "react-router-dom";
 import ApiGateway from "../Api/ApiGateway.js";
 
 const AuthContext = createContext();
@@ -7,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(sessionStorage.getItem("token"));
     const [user, setUser] = useState(null);
     const [role, setRole] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
@@ -39,7 +41,8 @@ export const AuthProvider = ({ children }) => {
                 sessionStorage.setItem("token", newToken);
                 setToken(newToken);
                 ApiGateway.setAuthToken(newToken);
-                await fetchUser();
+                await fetchUser()
+                checkUser();
                 return true;
             }
             return false;
@@ -48,6 +51,19 @@ export const AuthProvider = ({ children }) => {
             return false;
         }
     };
+
+    const checkUser = async () => {
+        switch(role) {
+            case 'Admin':
+                navigate('/dashboard/mng-user');
+                break;
+            case 'Customer':
+                navigate('/');
+                break;
+            default:
+                console.log("Something went wrong");
+        }
+    }
 
     const fetchUser = async () => {
         try {
@@ -64,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         setToken("");
         setUser(null);
         setRole("");
@@ -72,7 +88,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, role, token, setUser, register, login, logout }}>
+        <AuthContext.Provider value={{ user, role, token, fetchUser, setUser, register, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

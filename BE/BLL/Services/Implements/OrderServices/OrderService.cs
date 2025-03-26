@@ -129,7 +129,7 @@ namespace BLL.Services.Implements.OrderServices
                 var result = _mapper.Map<OrderViewDTO>(order);
                 return result;
             }
-            throw new Exception("Not Found");
+            throw new Exception("Order Not Found");
         }
 
         public async Task<OrderViewDTO> ProcessingOrder(Guid id, Guid userId)

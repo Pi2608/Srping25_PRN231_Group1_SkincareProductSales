@@ -1,0 +1,48 @@
+.vnpay-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f4f6;
+}
+
+.vnpay-box {
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+}
+
+.vnpay-box.success {
+    border-left: 6px solid #4CAF50;
+}
+
+.vnpay-box.fail {
+    border-left: 6px solid #f44336;
+}
+
+.vnpay-box h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.vnpay-box p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2d6cdf;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.back-btn:hover {
+    background-color: #1d4bb8;
+}

@@ -23,10 +23,19 @@
 #product-detail .product-container {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     gap: 2rem;
-    max-width: 900px;
+    max-width: 1400px;
     margin: auto;
     padding: 50px 20px;
+}
+
+#product-detail .product-container .product {
+    display: flex;
+    gap: 2rem;
+    max-width: 100%;
+    margin: auto;
+    padding: 0 20px 50px;
 }
 
 #product-detail .product-container .product-image {
@@ -68,7 +77,10 @@
 
 #product-detail .product-container .rating {
     margin: 5px 0;
-    font-size: 14px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 #product-detail .product-container .price {
@@ -222,4 +234,108 @@
 
 .toast-message .close-btn:hover {
     background-color: #ccc;
+}
+
+#product-detail .reviews-section {
+    width: 100%;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+#product-detail .overall-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+#product-detail .average-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#product-detail .average-rating-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff700;
+}
+
+#product-detail .total-reviews {
+    margin-top: 0.5rem;
+    color: #666;
+}
+
+#product-detail .write-review {
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+#product-detail .write-review textarea {
+    width: 100%;
+    min-height: 60px;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+#product-detail .write-review button {
+    display: flex;
+    width: fit-content;
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#product-detail .write-review button:hover {
+    background-color: #0056b3;
+}
+
+#product-detail .reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#product-detail .review-item {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e9e9e9;
+}
+
+#product-detail .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+#product-detail .reviewer-name {
+    font-weight: bold;
+    color: #333;
+}
+
+#product-detail .review-comment {
+    margin-bottom: 0.5rem;
+    margin-left: .5rem;
+    color: #666;
+}
+
+#product-detail .review-date {
+    font-size: 0.8rem;
+    color: #999;
 }

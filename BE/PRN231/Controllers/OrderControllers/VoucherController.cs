@@ -2,6 +2,7 @@
 using DAL.Models.OrderModel;
 using DTO.Order;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using PRN231.Helper;
 
 namespace PRN231.Controllers.OrderControllers
@@ -16,6 +17,7 @@ namespace PRN231.Controllers.OrderControllers
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<IActionResult> GetAllVouchers()
         {
             try

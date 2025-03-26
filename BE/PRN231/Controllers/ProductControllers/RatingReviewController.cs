@@ -4,6 +4,7 @@ using DAL.Models.ProductModel;
 using DTO.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PRN231.Helper;
 
 namespace PRN231.Controllers.ProductControllers
 {
@@ -34,16 +35,16 @@ namespace PRN231.Controllers.ProductControllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateFeedback([FromBody] RatingReview feedback)
+        public async Task<IActionResult> CreateFeedback([FromBody] CreateRatingReviewDTO feedback)
         {
             if (feedback == null) return BadRequest("Invalid feedback data");
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return Unauthorized("User ID not found.");
 
-            feedback.UserId = Guid.Parse(userIdClaim.Value);
+            var userId = this.GetUserId();
 
-            var (success, message, ratingReview) = await _ratingReviewService.CreateFeedbackAsync(feedback);
+            var (success, message, ratingReview) = await _ratingReviewService.CreateFeedbackAsync(userId, feedback);
             if (!success) return StatusCode(500, message);
 
             return Ok(message);

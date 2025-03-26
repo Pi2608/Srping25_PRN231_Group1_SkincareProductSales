@@ -40,13 +40,13 @@
 }
 
 .home-header .ult{
-    width: 10%;
+    width: fit-content;
 }
 
 .home-header .ult .ult-item {
     display: flex;
     justify-content: space-around;
-    gap: 10px;
+    gap: 15px;
 }
 
 .home-header .ult .ult-item > div:hover {

@@ -15,6 +15,11 @@ const ProfileLayout = ({children}) => {
   
     const isActive = (path) => location.pathname === path ? "active" : "";
   
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+        sessionStorage.removeItem('token'); // Remove the token from local storage as well
+    }
 
     return (
         <div id="profile-layout">
@@ -29,9 +34,9 @@ const ProfileLayout = ({children}) => {
                         <ul>
                             <li className={isActive('/profile')} onClick={() => navigate('/profile')}>Profile</li>
                             <li className={isActive('/profile/orders')} onClick={() => navigate('/profile/orders')}>Orders</li>
-                            <li className={isActive('/profile/vouchers')} onClick={() => navigate('/profile/vouchers')}>Vouchers</li>
+                            <li className={isActive('/profile/topup')} onClick={() => navigate('/profile/topup')}>Topup</li>
                             <li className={isActive('/profile/change-pwd')} onClick={() => navigate('/profile/change-pwd')}>Change Password</li>
-                            <li onClick={logout}>Log out</li>
+                            <li onClick={handleLogout}>Log out</li>
                         </ul>
                     </nav>
                 </aside>

@@ -73,6 +73,46 @@
     font-weight: bold;
 }
 
+#voucher_mng .product-table thead th:last-child {
+    display: flex;
+    justify-content: center;
+}
+
+#voucher_mng .product-table tbody td .voucher-action {
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#voucher_mng .product-table tbody td .voucher-action button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+#voucher_mng .product-table tbody td .voucher-action button:first-child {
+    background-color: #3f51b5;
+}
+
+#voucher_mng .product-table tbody td .voucher-action button:last-child {
+    background-color: #f44336;
+}
+
+#voucher_mng .product-table tbody td .voucher-action button:first-child:hover {
+    background-color: #5366d1;
+}
+
+#voucher_mng .product-table tbody td .voucher-action button:last-child:hover {
+    background-color: #fe6857;
+}
+
+#voucher_mng.product-table td.voucher-action:hover {
+    background-color: #ddd;
+}
+
 #voucher_mng .rating {
     font-weight: bold;
     padding: 5px 10px;

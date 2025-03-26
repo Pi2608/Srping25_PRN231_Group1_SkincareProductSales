@@ -21,22 +21,22 @@ namespace DAL.Repositories.Implements.ProductRepos
                 return (false, "Rating review cannot be null", null);
 
             bool hasExistingReview = await _context.RatingReviews
-                .AnyAsync(r => r.UserId == ratingReview.UserId && 
-                            r.ProductId == ratingReview.ProductId && 
+                .AnyAsync(r => r.UserId == ratingReview.UserId &&
+                            r.ProductId == ratingReview.ProductId &&
                             !r.IsDeleted);
 
             if (hasExistingReview)
                 return (false, "You have already reviewed this product", null);
 
             bool hasPurchasedAndReceived = await _context.Orders
-                .Where(o => o.UserId == ratingReview.UserId && 
-                        o.Status == Models.OrderModel.Status.Completed && 
+                .Where(o => o.UserId == ratingReview.UserId &&
+                        o.Status == Models.OrderModel.Status.Completed &&
                         !o.IsDeleted)
                 .Join(_context.OrderDetails,
                     order => order.Id,
                     orderDetail => orderDetail.OrderId,
                     (order, orderDetail) => new { order, orderDetail })
-                .AnyAsync(x => x.orderDetail.ProductId == ratingReview.ProductId && 
+                .AnyAsync(x => x.orderDetail.ProductId == ratingReview.ProductId &&
                             !x.orderDetail.IsDeleted);
 
             if (!hasPurchasedAndReceived)
@@ -98,6 +98,7 @@ namespace DAL.Repositories.Implements.ProductRepos
         {
             return await _context.RatingReviews
                                  .Where(r => r.ProductId == prodId)
+                                 .Include(r => r.User)
                                  .ToListAsync();
         }
     }

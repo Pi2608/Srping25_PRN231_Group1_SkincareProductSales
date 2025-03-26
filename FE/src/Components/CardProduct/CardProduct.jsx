@@ -43,7 +43,7 @@ const CardProduct = ({ product, handleLoginRedirect }) => {
                 <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.details.price*1000)}VND</span>
                 <div className='buy-btn' onClick={(e) => {
                     e.stopPropagation(); 
-                    // user ?  {} : handleLoginRedirect();
+                    user ?  {} : handleLoginRedirect();
                     addToCart(product);
                 }}>Buy Now</div>
             </div>

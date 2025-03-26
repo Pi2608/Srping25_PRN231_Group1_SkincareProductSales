@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import ApiGateway from '../../../../Api/ApiGateway'
 import CardProduct from '../../../../Components/CardProduct/CardProduct'
+import { ToastContainer } from 'react-toastify';
 import './Product.css'
 
 const Products = () => {
     const [MenuProducts, setMenuProducts] = useState([])
+    const [allProducts, setAllProducts] = useState([])
 
     useEffect(() => {
         fetchAllProducts().then((products) => {
             setMenuProducts(products);
-            console.log(products);
+            setAllProducts(products);
         });
     }, []);
 
     const fetchAllProducts = async () => {
         try {
             const products = await ApiGateway.getAllProducts();
-
-            console.log(products);
 
             const productsWithDetails = await Promise.all(
                 products.map(async (product) => {
@@ -33,25 +33,35 @@ const Products = () => {
     };
 
     const filter = (type) => {
-        setMenuProducts(MenuProducts.filter((product)=>product.type === type))
+        setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
     }
+    
+    const handleLoginRedirect = () => {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+    };
 
     return (
         <div id='product'>
+            <ToastContainer />
+            
             <h1 className='title'>Our Featured Products</h1>
 
             <div className='product-container'>
                 <ul className='type'>
-                    <li onClick={() => setMenuProducts(MenuProducts)} className='menu'>All</li>
-                    <li onClick={() => filter("skin care")} className='menu'>Skin Care</li>
-                    <li onClick={() => filter("conditioner")} className='menu'>Conditioners</li>
-                    <li onClick={() => filter("foundation")} className='menu'>Foundations</li>
+                    <li onClick={() => setMenuProducts(allProducts)} className='menu'>All</li>
+                    <li onClick={() => filter("Moisturizers")} className='menu'>Moisturizers</li>
+                    <li onClick={() => filter("Cleansers")} className='menu'>Cleansers</li>
+                    <li onClick={() => filter("Serums")} className='menu'>Serums</li>
                 </ul>
 
 
                 <div className='items'>
                     {MenuProducts?.map((product, i) => (
-                        <CardProduct product={product}/>
+                        <CardProduct
+                            key={i}
+                            product={product}
+                            handleLoginRedirect={handleLoginRedirect}
+                        />
                     ))}
                 </div>
             </div>

@@ -1,0 +1,221 @@
+#edit_prod .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#edit_prod .modal-content {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0;
+    animation: modal-appear 0.3s ease;
+}
+
+#edit_prod .modal-content::-webkit-scrollbar{
+    display: none;
+}
+
+@keyframes modal-appear {
+    from {
+    opacity: 0;
+    transform: translateY(-20px);
+    }
+    to {
+    opacity: 1;
+    transform: translateY(0);
+    }
+}
+
+#edit_prod .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+#edit_prod .modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+#edit_prod .close-button {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+}
+
+#edit_prod .close-button:hover {
+    color: #333;
+}
+
+/* Form styling */
+#edit_prod form {
+    padding: 20px;
+}
+
+#edit_prod .form-group {
+    margin-bottom: 20px;
+}
+
+#edit_prod .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+#edit_prod .form-group input[type="text"],
+#edit_prod .form-group input[type="number"],
+#edit_prod .form-group select,
+#edit_prod .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+#edit_prod .form-group input[type="text"]:focus,
+#edit_prod .form-group input[type="number"]:focus,
+#edit_prod .form-group select:focus,
+#edit_prod .form-group textarea:focus {
+    border-color: #5c6bc0;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(92, 107, 192, 0.2);
+}
+
+#edit_prod .form-group input.error,
+#edit_prod .form-group select.error,
+#edit_prod .form-group textarea.error {
+    border-color: #f44336;
+}
+
+#edit_prod .error-message {
+    color: #f44336;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+}
+
+#edit_prod .form-group.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+#edit_prod .form-group.checkbox label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+#edit_prod .form-group.checkbox input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+#edit_prod .image-preview {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    max-width: 100%;
+    text-align: center;
+}
+
+#edit_prod .image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
+
+#edit_prod .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+#edit_prod .form-actions button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+#edit_prod .save-button {
+    background-color: #5c6bc0;
+    color: white;
+    border: none;
+}
+
+#edit_prod .save-button:hover {
+    background-color: #3f51b5;
+}
+
+#edit_prod .cancel-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+#edit_prod .cancel-button:hover {
+    background-color: #e0e0e0;
+}
+
+#edit_prod .delete-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    margin-right: auto; 
+}
+
+#edit_prod .delete-button:hover {
+    background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .delete-button {
+        order: 3; 
+    }
+}

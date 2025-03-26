@@ -12,11 +12,19 @@ namespace BLL.Helper
     {
         public MappingProfile()
         {
-            //order
+            //user
             CreateMap<UserDTO, User>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => "No Address")).ReverseMap();
             CreateMap<CreateUserDTO, User>().ReverseMap();
 
+            //rating review
+            CreateMap<RatingReviewDTO, RatingReview>();
+            CreateMap<CreateRatingReviewDTO, RatingReview>();
+
+            //category
+            CreateMap<CategoryViewDTO, Category>();
+
+            //order
             CreateMap<OrderViewDTO, Order>().ReverseMap();
             CreateMap<CreateOrUpdateOrder, Order>().ReverseMap();
             CreateMap<CreateOrUpdateOrderDetail, OrderDetail>().ReverseMap();
@@ -33,6 +41,9 @@ namespace BLL.Helper
 
             CreateMap<ProductDetail, ProductDetailViewDto>();
             CreateMap<CreateProductDetailDTO, ProductDetail>();
+
+            //voucher
+            CreateMap<CreateOrUpdateVoucher, Voucher>();
         }
     }
 }
