@@ -96,7 +96,7 @@ namespace PRN231.Controllers.OrderControllers
             {
                 var userId = this.GetUserId();
                 var orderResult = await _orderService.CreateOrder(order, userId);
-                var orderDetail = await _orderDetailService.CreateOrderDetail(orderResult.Id, order.OrderDetails);
+                var orderDetail = await _orderDetailService.CreateOrderDetail(orderResult.Id, order.VoucherCode, order.OrderDetails);
                 var orderView = await _orderService.GetOrderById(orderResult.Id);
                 return Ok(orderView);
             }
