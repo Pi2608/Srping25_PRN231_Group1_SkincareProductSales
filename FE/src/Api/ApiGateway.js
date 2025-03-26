@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { initializeApp } from 'firebase/app';
 
 class ApiGateway {
     static API_BASE = "http://localhost:5276/";
@@ -139,6 +141,19 @@ class ApiGateway {
         }
     }
 
+    //Payment
+    static async handlePayment(request) {
+        const orderId = `ORDER_${Date.now()}`;
+        const response = await ApiGateway.axiosInstance.post('VNPay/CreatePayment', {
+            amount: request.amount,
+            orderId: orderId,
+            orderInfo: "Top Up Successfully",
+        });
+        if (response.data.paymentUrl) {
+            window.location.href = response.data.paymentUrl;
+        }
+    }    
+
     //Role APIs
 
     static async getRole() {
@@ -176,7 +191,7 @@ class ApiGateway {
 
     static async getFeedbackByProduct(productId) {
         try {
-            const response = await this.axiosInstance.get(`/RatingReview/${productId}`);
+            const response = await this.axiosInstance.get(`/RatingReview/GetFeedbackByProduct/${productId}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching feedback for product ${productId}:`, error);
@@ -184,13 +199,14 @@ class ApiGateway {
         }
     }
 
-    static async createFeedback(feedback) {/*{ productId: string; rating: number; comment: string }*/
+    static async createFeedback(feedback) {
         try {
-            const response = await this.axiosInstance.post("/RatingReview", feedback);
+            console.log(feedback);
+            const response = await this.axiosInstance.post("/RatingReview/CreateFeedback", feedback);
             return response.data;
         } catch (error) {
-            console.error("Error creating feedback:", error);
-            throw error;
+            console.error("Error creating feedback:", error.response.data);
+            throw error.response.data;
         }
     }
 
@@ -495,6 +511,17 @@ class ApiGateway {
         }
     }
 
+    static async applyVoucher(orderId, voucherCode) {
+        try {
+            console.log(orderId, voucherCode);
+            const response = await this.axiosInstance.post(`/Order/ApplyVoucher?orderId=${orderId}&voucherCode=${voucherCode}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error applying voucher:", error);
+            throw error;
+        }
+    }
+
     static async createVoucher(code, discount, expiryDate ) {
         try {
             const voucher = {
@@ -510,13 +537,9 @@ class ApiGateway {
         }
     }
 
-    static async updateVoucher(id, code, discount, expiryDate) {
+    static async updateVoucher(id, voucher) {
         try {
-            const voucher = {
-                code: code,
-                discount: discount,
-                expiryDate: expiryDate,
-            };
+            console.log(voucher);
             const response = await this.axiosInstance.post(`/Voucher/UpdateVoucher?id=${id}`, voucher);
             return response.data;
         } catch (error) {
@@ -531,6 +554,26 @@ class ApiGateway {
             return response.data;
         } catch (error) {
             console.error(`Error deleting voucher ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async searchProducts(name ) {
+        try {
+            const response = await this.axiosInstance.get(`/Product/GetAllProducts?$filter=contains(name, '${name}')`);
+            return response.data;
+        } catch (error) {
+            console.error("Error searching products:", error);
+            throw error;
+        }
+    }
+
+    static async searchVouchers(code) {
+        try {
+            const response = await this.axiosInstance.get(`/Voucher/GetAllVouchers?$filter=contains(code, '${code}')`);
+            return response.data;
+        } catch (error) {
+            console.error("Error searching vouchers:", error);
             throw error;
         }
     }

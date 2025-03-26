@@ -8,6 +8,8 @@ import Cart from './Pages/User/Cart/Cart.jsx'
 import ProductDetail from './Pages/User/ProductDetail/ProductDetail.jsx'
 import Profile from './Pages/User/Profile/Profile/Profile.jsx'
 import Order from './Pages/User/Profile/Order/Order.jsx'
+import VNPayReturn from './Pages/User/VNPayReturn/VNPayReturn .jsx'
+import TopupPage from './Pages/User/Profile/TopupPage/TopupPage.jsx'
 import ChangePwd from './Pages/User/Profile/ChangePwd/ChangePwd.jsx'
 import Voucher from './Pages/User/Profile/Voucher/Voucher.jsx'
 import Dashboard from './Pages/Admin/Dashboard/Dashboard.jsx'
@@ -28,11 +30,13 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
           <Route path='/cart' element={<Cart />} />
+          <Route path='/vnpay-return' element={<VNPayReturn />}/>
           <Route path="/product/:productId" element={<ProductDetail key={productId} />} />
           <Route path='/profile'>
             <Route index element={<Profile/>} />
             <Route path='orders' element={<Order/>} />
             <Route path='vouchers' element={<Voucher/>} />
+            <Route path='topup' element={<TopupPage />}/>
             <Route path='change-pwd' element={<ChangePwd/>} />
           </Route>
         </Route>

@@ -3,6 +3,7 @@ using DAL.Models.UserModel;
 using DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using System.Security.Claims;
 
 namespace PRN231.Controllers.UserControllers
@@ -26,6 +27,7 @@ namespace PRN231.Controllers.UserControllers
 
         [HttpGet]
         [Authorize]
+        [EnableQuery]
         public async Task<IActionResult> GetAllUser()
         {
             var users = await _userService.GetAllUsers();
@@ -86,6 +88,25 @@ namespace PRN231.Controllers.UserControllers
                 message,
                 user
             });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> TopUp([FromQuery] TopUpRequestDTO request)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User ID not found.");
+            }
+
+            Guid userId = Guid.Parse(userIdClaim.Value);
+
+            var result = await _userService.TopUpAsync(userId, request);
+            if (!result.isSuccess)
+                return BadRequest(new { message = result.message });
+
+            return Ok(new { message = result.message, newBalance = result.newBalance });
         }
 
         [HttpPut]

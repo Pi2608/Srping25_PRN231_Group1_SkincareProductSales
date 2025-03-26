@@ -1,4 +1,5 @@
-﻿using BLL.Services.Interfaces.IProductServices;
+﻿using AutoMapper;
+using BLL.Services.Interfaces.IProductServices;
 using DAL.Models.ProductModel;
 using DAL.Repositories.Interfaces;
 using DTO.Product;
@@ -8,17 +9,20 @@ namespace BLL.Services.Implements.ProductServices
     public class RatingReviewService : IRatingReviewService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public RatingReviewService(IUnitOfWork unitOfWork)
+        public RatingReviewService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<(bool success, string message, RatingReview ratingReview)> CreateFeedbackAsync(RatingReview feedback)
+        public async Task<(bool success, string message, RatingReview ratingReview)> CreateFeedbackAsync(Guid userId, CreateRatingReviewDTO feedback)
         {
             if (feedback == null) return new ValueTuple<bool, string, RatingReview>(false, "Rating review cannot be null", null);
-
-            var result = await _unitOfWork.RatingReviewRepository.CreateRatingReviewAsync(feedback);
+            var rtfbDto = _mapper.Map<CreateRatingReviewDTO, RatingReview>(feedback);
+            rtfbDto.UserId = userId;
+            var result = await _unitOfWork.RatingReviewRepository.CreateRatingReviewAsync(rtfbDto);
             return result;
         }
 

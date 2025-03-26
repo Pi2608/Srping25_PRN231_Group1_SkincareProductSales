@@ -20,6 +20,12 @@ const ProductDetail = () => {
     const [product, setProduct] = useState();
     const [selectedSize, setSelectedSize] = useState("100ml");
     const [quantity, setQuantity] = useState(1);
+    const [reviews, setReviews] = useState([]);
+    const [canReview, setCanReview] = useState(false);
+    const [newReview, setNewReview] = useState({
+        rating: 0,
+        comment: ''
+    });
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -33,9 +39,9 @@ const ProductDetail = () => {
                 if (product) { 
                     setProduct(product);
                     setSelectedSize(product.details?.size || "100ml");
-                    console.log("Fetched product:", product);
                 }
             });
+            fetchProductReviews(productId);
         }
     }, [productId, location.pathname]);
 
@@ -46,6 +52,57 @@ const ProductDetail = () => {
             return { ...product, details };
         } catch (error) {
             console.error(`Failed to fetch product ${id}:`, error);
+        }
+    };
+
+    const fetchProductReviews = async (id) => {
+        try {
+            const fetchedReviews = await ApiGateway.getFeedbackByProduct(id);
+            setReviews(fetchedReviews);
+            console.log(fetchedReviews);
+        } catch (error) {
+            console.error(`Failed to fetch reviews for product ${id}:`, error);
+        }
+    };
+
+    const handleSubmitReview = async () => {
+        // Validate review
+        if (!user) {
+            toast.error("Please log in to submit a review");
+            return;
+        }
+
+        if (newReview.rating === 0) {
+            toast.error("Please select a rating");
+            return;
+        }
+
+        if (!newReview.comment.trim()) {
+            toast.error("Please write a review comment");
+            return;
+        }
+
+        try {
+            const reviewData = {
+                productId: productId,
+                rating: newReview.rating,
+                review: newReview.comment,
+                isDeleted: false
+            };
+
+            const response = await ApiGateway.createFeedback(reviewData);
+            
+            // Refresh reviews
+            await fetchProductReviews(productId);
+            
+            // Reset new review form
+            setNewReview({ rating: 0, comment: '' });
+            
+            // Show success message from backend
+            toast.success(response || "Review submitted successfully!");
+        } catch (error) {
+            // Display error message from backend
+            toast.error(error || "Failed to submit review");
         }
     };
 
@@ -90,6 +147,12 @@ const ProductDetail = () => {
         toast(<Msg handleLoginRedirect={handleLoginRedirect} />);
     };
 
+    const calculateAverageRating = (reviews) => {
+        if (reviews.length === 0) return 0;
+        const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+        return totalRating / reviews.length;
+    };
+    
     return (
         <div id="product-detail">
             <Header />
@@ -101,38 +164,84 @@ const ProductDetail = () => {
                 </button>
             </div>
             <div className="product-container">
-                <div className="product-image">
-                    <img src={product?.image} alt={product?.name} />
-                </div>
-
-                <div className="product-details">
-                    <h4 className="brand">{product?.detail}</h4>
-                    <h1 className="title">{product?.name}</h1>
-                    <div className="rating">
-                        <Rating name="read-only" value={5} readOnly />
-                        <span>214 reviews</span>
-                    </div>
-                    <div className="price">
-                        <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product?.details?.price*1000)} VND</span>
-                    </div>
-                    <p className="description">
-                        {product?.shortDescription}
-                    </p>
-
-                    <div className="size-selector">
-                        <span>Size:</span>
-                        <button className={selectedSize === product?.details?.size ? "selected" : ""}
-                            onClick={() => setSelectedSize(product?.details?.size)}>{product?.details?.size}ml</button>
+                <div className="product">
+                    <div className="product-image">
+                        <img src={product?.image} alt={product?.name} />
                     </div>
 
-                    <div className="cart-options">
-                        <div className="quantity-selector">
-                            <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                            <span>{quantity}</span>
-                            <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                    <div className="product-details">
+                        <h4 className="brand">{product?.detail}</h4>
+                        <h1 className="title">{product?.name}</h1>
+                        <div className="rating">
+                            <Rating name="read-only" value={calculateAverageRating(reviews)} precision={0.5}  readOnly />
+                            <span>{reviews.length} review{reviews.length > 1 && 's'}</span>
                         </div>
-                        <button className="add-to-cart" onClick={() =>user ? addToCart() : displayMsg() }>Add to Cart</button>
-                        <button className="buy-now" onClick={() =>user ? buyNow() : displayMsg() }>Buy now</button>
+                        <div className="price">
+                            <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product?.details?.price*1000)} VND</span>
+                        </div>
+                        <p className="description">
+                            {product?.shortDescription}
+                        </p>
+
+                        <div className="size-selector">
+                            <span>Size:</span>
+                            <button className={selectedSize === product?.details?.size ? "selected" : ""}
+                                onClick={() => setSelectedSize(product?.details?.size)}>{product?.details?.size}ml</button>
+                        </div>
+
+                        <div className="cart-options">
+                            <div className="quantity-selector">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                <span>{quantity}</span>
+                                <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                            </div>
+                            <button className="add-to-cart" onClick={() =>user ? addToCart() : displayMsg() }>Add to Cart</button>
+                            <button className="buy-now" onClick={() =>user ? buyNow() : displayMsg() }>Buy now</button>
+                        </div>
+                    </div>
+                </div>
+                <div className="reviews-section">
+                    <h2>Customer Reviews</h2>
+
+                    {user && (
+                        <div className="write-review">
+                            <h3>Write a Review</h3>
+                            <Rating
+                                className="new-review-rating"
+                                value={newReview.rating}
+                                onChange={(event, newValue) => {
+                                    setNewReview(prev => ({...prev, rating: newValue}));
+                                }}
+                                precision={0.5} 
+                            />
+                            <textarea 
+                                placeholder="Write your review here..."
+                                value={newReview.comment}
+                                onChange={(e) => setNewReview(prev => ({...prev, comment: e.target.value}))}
+                            />
+                            <button onClick={handleSubmitReview}>Submit Review</button>
+                        </div>
+                    )}
+
+                    {/* Reviews List */}
+                    <div className="reviews-list">
+                        {reviews.map((review, index) => (
+                            <div key={index} className="review-item">
+                                <div className="review-header">
+                                    <span className="reviewer-name">{review.user?.account}</span>
+                                    <Rating 
+                                        name="read-only" 
+                                        value={review.rating} 
+                                        readOnly 
+                                        precision={0.5} 
+                                    />
+                                </div>
+                                <p className="review-comment">{review.review}</p>
+                                <span className="review-date">
+                                    {new Date(review.createdAt).toLocaleDateString()}
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

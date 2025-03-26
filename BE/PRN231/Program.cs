@@ -19,6 +19,7 @@ using Microsoft.OpenApi.Models;
 using AutoMapper;
 using BLL.Helper;
 using Microsoft.EntityFrameworkCore;
+using DAL.Models.OrderModel;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -49,6 +50,9 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<VNPayService>();
+builder.Services.AddHttpContextAccessor();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -167,6 +171,7 @@ app.Run();
 static IEdmModel GetEdmModel()
 {
     var builder = new ODataConventionModelBuilder();
-    builder.EntitySet<Product>("Products"); // Register the Product entity
+    builder.EntitySet<Product>("Products");
+    builder.EntitySet<Voucher>("Vouchers");
     return builder.GetEdmModel();
 }

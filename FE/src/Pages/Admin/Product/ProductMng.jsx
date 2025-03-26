@@ -47,10 +47,26 @@ const ProductMng = () => {
     }
   };
 
-  const handleSearch = (e) => {
+  const handleSearchChange = (e) => {
     setSearch(e.target.value);
-  };
+  }
 
+  const handleSearch = async () => {
+    try {
+      const data = await ApiGateway.searchProducts(search);
+      const productsWithDetails = await Promise.all(
+        data.map(async (product) => {
+            const details = await ApiGateway.getProductDetailByProductId(product.id);
+            return { ...product, details };
+        })
+      );  
+      setError(null);
+      setProductList(productsWithDetails);
+      console.log(data)
+    } catch (error) {
+        console.error("Error fetching products:", error);
+    }
+  }
   const toggleStatus = async (id, currentStatus) => {
     try {
       event.stopPropagation();
@@ -75,7 +91,7 @@ const ProductMng = () => {
   };
 
   const filteredProducts = productList.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name.toLowerCase()
   );
 
   const handleEditProduct = async (updatedProduct, productDetails = null) => {
@@ -183,10 +199,10 @@ const ProductMng = () => {
               type="text"
               placeholder="Search products"
               value={search}
-              onChange={handleSearch}
+              onChange={(e) => handleSearchChange(e)}
               className="search-bar"
             />
-            <button className="search"><SearchIcon />Search</button>
+            <button className="search" onClick={() => handleSearch()}><SearchIcon />Search</button>
             <button className="add" onClick={() => setOpenAddModal(true)}>
               <AddIcon /> Add Product
             </button>

@@ -6,11 +6,13 @@ import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import CartItem from '../../../Components/CartItem/CartItem';
 import ApiGateway from '../../../Api/ApiGateway';
+import { useAuth } from '../../../AuthContext/AuthContext';
 import './Cart.css';
 
 const Cart = () => {
 
     const navigate = useNavigate();
+    const { fetchUser } = useAuth();
 
     const [cart, setCart] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -26,15 +28,15 @@ const Cart = () => {
     useEffect(() => {
         const fetchVouchers = async () => {
             try {
-                // const response = await ApiGateway.getAllVouchers();
-                // setVouchers(response);
+                const response = await ApiGateway.getAllVouchers();
+                setVouchers(response);
                 
                 // Mock vouchers for testing
-                setVouchers([
-                    { id: 1, code: 'WELCOME10', discount: 10, description: '10% off your first order' },
-                    { id: 2, code: 'FREESHIP', discount: 15, description: 'Free shipping on orders over 200,000 VND' },
-                    { id: 3, code: 'SALE20', discount: 20, description: '20% off selected items' }
-                ]);
+                // setVouchers([
+                //     { id: 1, code: 'WELCOME10', discount: 10, description: '10% off your first order' },
+                //     { id: 2, code: 'FREESHIP', discount: 15, description: 'Free shipping on orders over 200,000 VND' },
+                //     { id: 3, code: 'SALE20', discount: 20, description: '20% off selected items' }
+                // ]);
             } catch (error) {
                 console.error('Failed to fetch vouchers:', error);
             }
@@ -45,12 +47,9 @@ const Cart = () => {
 
     const createOrder = async () => {
         try {
-            console.log(selectedItems)
             const response = await ApiGateway.createOrder(selectedItems);
-            console.log(response);
-            console.log(selectedItems);
             if (selectedVoucher) {
-                // await ApiGateway.applyVoucher(orderId, selectedVoucher.id);
+                await ApiGateway.applyVoucher(response.id, selectedVoucher.code);
                 toast.success(`Voucher ${selectedVoucher.code} applied to your order!`, {
                     autoClose: 500,
                 });
@@ -74,6 +73,7 @@ const Cart = () => {
             
             setTimeout(() => {
                 navigate('/profile/orders');
+                fetchUser();
             }, 1000);
         } catch (error) {
             toast.error('Failed to place order. Please try again later.');
@@ -117,9 +117,13 @@ const Cart = () => {
     };
 
     const applyVoucher = (voucher) => {
-        setSelectedVoucher(voucher);
-        setShowVouchers(false);
-        toast.success(`Voucher ${voucher.code} selected!`);
+        if (parseInt(voucher.minimumOrderTotalPrice) > parseInt(finalPrice)) {
+            toast.error(`Order final price must more than ${new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice * 1000)}VND!`);   
+        } else {
+            setSelectedVoucher(voucher);
+            setShowVouchers(false);
+            toast.success(`Voucher ${voucher.code} selected!`);
+        }
     };
 
     const selectedSubtotal = cart
@@ -129,7 +133,7 @@ const Cart = () => {
     const calculateFinalPrice = () => {
         if (!selectedVoucher) return selectedSubtotal;
         
-        const discountAmount = (selectedSubtotal * selectedVoucher.discount) / 100;
+        const discountAmount = (selectedSubtotal * selectedVoucher.discountPercentage) / 100;
         return Math.max(0, selectedSubtotal - discountAmount);
     };
 
@@ -172,7 +176,7 @@ const Cart = () => {
                             
                             {selectedVoucher && (
                                 <div className="selected-voucher">
-                                    <p>Applied: {selectedVoucher.code} ({selectedVoucher.discount}% off)</p>
+                                    <p>Applied: {selectedVoucher.code} ({selectedVoucher.discountPercentage}% off)</p>
                                     <button 
                                         className="remove-voucher-btn"
                                         onClick={() => setSelectedVoucher(null)}
@@ -191,7 +195,7 @@ const Cart = () => {
                                             onClick={() => applyVoucher(voucher)}
                                         >
                                             <div className="voucher-code">{voucher.code}</div>
-                                            <div className="voucher-discount">{voucher.discount}% off</div>
+                                            <div className="voucher-discount">{voucher.discountPercentage}% off for order total price more than {new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice * 1000)}VND</div>
                                             <div className="voucher-description">{voucher.description}</div>
                                         </div>
                                     ))
@@ -203,7 +207,7 @@ const Cart = () => {
                         
                         {selectedVoucher && (
                             <p className="discount-amount">
-                                Discount: -{new Intl.NumberFormat('vi-VN').format((selectedSubtotal * selectedVoucher.discount / 100) * 1000)} VND
+                                Discount: -{new Intl.NumberFormat('vi-VN').format((selectedSubtotal * selectedVoucher.discountPercentage / 100) * 1000)} VND
                             </p>
                         )}
                         

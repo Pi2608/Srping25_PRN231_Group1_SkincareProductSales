@@ -84,7 +84,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">{order.id}</TableCell>
-        <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
+        <TableCell>{new Intl.NumberFormat('vi-VN').format(order.totalPrice * 1000)}</TableCell>
         <TableCell>
           <p style={{color:`${getStatusColor(order.status)}`}}>{order.status}</p> 
         </TableCell>
@@ -135,7 +135,7 @@ function Row(props) {
                     <TableCell>Product</TableCell>
                     <TableCell>Product ID</TableCell>
                     <TableCell align="right">Quantity</TableCell>
-                    <TableCell align="right">Price</TableCell>
+                    <TableCell align="right">Price(VND)</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -146,7 +146,7 @@ function Row(props) {
                       </TableCell>
                       <TableCell>{detail.productId}</TableCell>
                       <TableCell align="right">{detail.quantity}</TableCell>
-                      <TableCell align="right">${detail.totalPrice.toFixed(2)}</TableCell>
+                      <TableCell align="right">{new Intl.NumberFormat('vi-VN').format(detail.totalPrice * 1000)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -168,10 +168,6 @@ const OrderMng = () => {
     message: "",
     severity: "success"
   });
-
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-  };
 
   const filteredOrders = orderList.filter((order) =>
     order.status.toLowerCase().includes(search.toLowerCase())
@@ -249,23 +245,13 @@ const OrderMng = () => {
               Refresh
             </Button>
           </Box>
-          <TextField
-            label="Search orders by status"
-            variant="outlined"
-            value={search}
-            onChange={handleSearch}
-            margin="normal"
-            size="small"
-            sx={{ mb: 2 }}
-            fullWidth
-          />
           <TableContainer>
             <Table aria-label="collapsible table">
               <TableHead>
                 <TableRow>
                   <TableCell />
                   <TableCell>Order ID</TableCell>
-                  <TableCell>Total Price</TableCell>
+                  <TableCell>Total Price(VND)</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>

@@ -165,5 +165,27 @@ namespace BLL.Services.Implements.UserServices
             var process = await _unitOfWork.SaveChangeAsync();
             return new(true, "User restored successfully");
         }
+
+        public async Task<(bool isSuccess, string message, decimal? newBalance)> TopUpAsync(Guid userId, TopUpRequestDTO request)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return (false, "User not found.", null);
+            }
+
+            if (request.Amount < 50000)
+            {
+                return (false, "Amount must be greater than 0.", null);
+            }
+
+            user.MoneyAmount += request.Amount;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.UserRepository.UpdateAsync(user);
+            await _unitOfWork.SaveChangeAsync();
+
+            return (true, "Popyp Successfully", user.MoneyAmount);
+        }
     }
 }

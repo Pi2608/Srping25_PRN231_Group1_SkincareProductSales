@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interfaces.IProductServices;
 using DTO.Product;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace PRN231.Controllers.ProductControllers
 {
@@ -13,6 +14,7 @@ namespace PRN231.Controllers.ProductControllers
         }
 
         [HttpGet]
+        [EnableQuery]
         public async Task<IActionResult> GetAllProducts()
         {
             try

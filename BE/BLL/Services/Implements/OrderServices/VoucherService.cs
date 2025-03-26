@@ -26,7 +26,7 @@ namespace BLL.Services.Implements.OrderServices
             {
                 Code = voucher.Code,
                 DiscountPercentage = voucher.DiscountPercentage,
-                ExpiredDate =  DateTime.Now.AddDays(5),
+                ExpiredDate = DateTime.Now.AddDays(5),
                 MinimumOrderTotalPrice = voucher.MinimumOrderTotalPrice,
                 CreatedAt = DateTime.Now,
                 CreatedBy = userId,
@@ -53,9 +53,14 @@ namespace BLL.Services.Implements.OrderServices
                 throw new Exception("Delete fail");
             }
             voucher.DeletedAt = DateTime.UtcNow;
+            voucher.IsDeleted = true;
             await _unitOfWork.VoucherRepository.DeleteAsync(voucher);
-            return true;
-
+            var process = await _unitOfWork.SaveChangeAsync();
+            if (process > 0)
+            {
+                return true;
+            }
+            return false;
         }
 
         public async Task<List<Voucher>> GetAllVouchers()
@@ -86,9 +91,12 @@ namespace BLL.Services.Implements.OrderServices
             {
                 throw new Exception("Order is null");
             }
-            var updateOrder = _mapper.Map<Voucher>(voucher);
+            // var updateOrder = _mapper.Map<Voucher>(voucher);
             existingVoucher.UpdatedAt = DateTime.Now;
-            existingVoucher.IsDeleted = updateOrder.IsDeleted;
+            existingVoucher.Code = voucher.Code;
+            existingVoucher.DiscountPercentage = voucher.DiscountPercentage;
+            existingVoucher.ExpiredDate = voucher.ExpiredDate;
+            existingVoucher.MinimumOrderTotalPrice = voucher.MinimumOrderTotalPrice;
             var result = await _unitOfWork.VoucherRepository.UpdateAsync(existingVoucher);
             var process = await _unitOfWork.SaveChangeAsync();
             if (process > 0)

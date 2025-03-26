@@ -85,7 +85,7 @@ namespace DAL.Repositories.Implements.UserRepos
                 user.Password = us.Password;
             }
             user.RoleId = us.RoleId;
-            user.UpdateAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
             user.UpdatedBy = byAdmin;
 
             var result = await _context.SaveChangesAsync();
