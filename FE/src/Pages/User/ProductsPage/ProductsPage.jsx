@@ -7,13 +7,15 @@ import Footer from '../../../Components/Footer/Footer';
 import ApiGateway from '../../../Api/ApiGateway';
 import CardProduct from '../../../Components/CardProduct/CardProduct';
 import SearchBox from '../../../Components/SearchBox/SearchBox';
+import SearchIcon from '@mui/icons-material/Search';
 import './ProductsPage.css';
 
 const ProductsPage = ()=>{
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [MenuProducts, setMenuProducts] = useState([])
+    const [MenuProducts, setMenuProducts] = useState([])  
+    const [search, setSearch] = useState("")    
     const [allProducts, setAllProducts] = useState([])
     
     useEffect(() => {
@@ -56,6 +58,7 @@ const ProductsPage = ()=>{
     
     const handleSearch = async () => {
         try {
+            console.log(search);
         const data = await ApiGateway.searchProducts(search);
         const productsWithDetails = await Promise.all(
             data.map(async (product) => {
@@ -76,7 +79,18 @@ const ProductsPage = ()=>{
             <ToastContainer />
 
             <div className='product-container'>
-                <SearchBox handleSearchChange={handleSearchChange} handleSearch={handleSearch}/>
+                <div style={{display: 'flex', gap: "5px", margin: "auto", width: '100%', justifyContent: "center"}}>
+                    <input
+                        type="text"
+                        placeholder="Search products"
+                        value={search}
+                        onChange={(e) => handleSearchChange(e)}
+                        className="search-bar"
+                        style={{width: '60%'}}
+                    />
+                    <button className="search" onClick={() => handleSearch()}><SearchIcon />Search</button>
+                    
+                </div>
 
                 <ul className='type'>
                     <li onClick={() => setMenuProducts(allProducts)} className='menu'>All</li>
