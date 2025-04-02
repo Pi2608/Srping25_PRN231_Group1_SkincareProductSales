@@ -11,18 +11,49 @@ const CardProduct = ({ product, handleLoginRedirect }) => {
     const navigate = useNavigate();
 
     const addToCart = (product) => {
-        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-
-        const existingProduct = cart.find((item) => item.id === product.id);
-        
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            cart.push({ ...product, quantity: 1 });
+        if (!user) {
+            handleLoginRedirect();
+            return;
         }
 
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        
+        // Use the first detail as default when clicking "Buy Now" from card
+        const selectedDetail = product.details?.[0];
+        
+        if (!selectedDetail) {
+            toast.error("Product has no available options");
+            return;
+        }
+        
+        // Create a cart item with the product and its selected detail
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            image: product.image,
+            shortDescription: product.shortDescription,
+            categories: product.categories,
+            details: selectedDetail,
+            quantity: 1
+        };
+        
+        // Check if this product with the same detail already exists in cart
+        const existingProductIndex = cart.findIndex(item => 
+            item.id === product.id && item.details.id === selectedDetail.id
+        );
+        
+        if (existingProductIndex >= 0) {
+            // If exists, just update the quantity
+            cart[existingProductIndex].quantity += 1;
+        } else {
+            // Otherwise add the new product with its detail
+            cart.push(cartItem);
+        }
+        
         sessionStorage.setItem('cart', JSON.stringify(cart));
-
+        
+        console.log(cart);
+        
         toast.success(`${product.name} has been added to your cart!`);
     };
 
@@ -31,19 +62,18 @@ const CardProduct = ({ product, handleLoginRedirect }) => {
             <div className="img-container">
                 <img 
                     src={product.image} 
-                    alt=""
+                    alt={product.name}
                 />
             </div>
 
             <div className='info-container'>
                 <div className='product-info'>
                     <span className='name'>{product.name} <br></br></span>
-                    <span className='details'>{product.detail}</span>
+                    <span className='details'>{product.shortDescription}</span>
                 </div>
-                <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.details.price*1000)}VND</span>
+                <span className='price'>{new Intl.NumberFormat('vi-VN').format(product.details?.[0]?.price)}VND</span>
                 <div className='buy-btn' onClick={(e) => {
-                    e.stopPropagation(); 
-                    user ?  {} : handleLoginRedirect();
+                    e.stopPropagation();
                     addToCart(product);
                 }}>Buy Now</div>
             </div>

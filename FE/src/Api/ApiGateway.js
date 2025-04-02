@@ -3,7 +3,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { initializeApp } from 'firebase/app';
 
 class ApiGateway {
-    static API_BASE = "https://localhost:7118/";
+    static API_BASE = "http://localhost:5276/";
 
     static axiosInstance = axios.create({
         baseURL: ApiGateway.API_BASE,
@@ -22,6 +22,40 @@ class ApiGateway {
 
     static setAuthToken(token) {
         ApiGateway.axiosInstance.defaults.headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    static firebaseConfig = {
+        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+        authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+        appId: import.meta.env.VITE_FIREBASE_APP_ID,
+        measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+    };
+    
+    
+    // Initialize Firebase
+    static firebaseApp = initializeApp(ApiGateway.firebaseConfig);
+    static storage = getStorage(ApiGateway.firebaseApp);
+
+    static async uploadImageToFirebase(imageFile, folder = "products") {
+        try {
+            const timestamp = new Date().getTime();
+            const fileName = `${folder}/${timestamp}_${imageFile.name}`;
+            const storageRef = ref(ApiGateway.storage, fileName);
+            
+            // Upload the file to Firebase Storage
+            const snapshot = await uploadBytes(storageRef, imageFile);
+            
+            // Get the download URL
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading image to Firebase:", error);
+            throw error;
+        }
     }
 
     //User APIs
@@ -141,6 +175,16 @@ class ApiGateway {
         }
     }
 
+    static async topup (amount) {
+        try {
+            const response = await ApiGateway.axiosInstance.post(`/User/TopUp?Amount=${ amount }`);
+            return response.data;
+        } catch (error) {
+            console.error("Top Up error:", error);
+            throw error;
+        }
+    }
+
     //Payment
     static async handlePayment(request) {
         const orderId = `ORDER_${Date.now()}`;
@@ -210,7 +254,7 @@ class ApiGateway {
         }
     }
 
-    static async updateFeedback(feedbackId, feedback) {/*string: { rating: number; comment: string }*/
+    static async updateFeedback(feedbackId, feedback) {
         try {
             const response = await this.axiosInstance.put(`/RatingReview/${feedbackId}`, feedback);
             return response.data;
@@ -264,9 +308,17 @@ class ApiGateway {
         }
     }
 
-    static async createProduct(product) {/*{ name: string; price: number; description: string }*/
+    static async createProduct(product, imageFile = null) {
         try {
-            const response = await this.axiosInstance.post("/Product/CreateProduct", product);
+            let productData = { ...product };
+            
+            // If an image file is provided, upload it to Firebase first
+            if (imageFile) {
+                const imageUrl = await this.uploadImageToFirebase(imageFile);
+                productData.imageUrl = imageUrl;
+            }
+            console.log(productData);
+            const response = await this.axiosInstance.post("/Product/CreateProduct", productData);
             return response.data;
         } catch (error) {
             console.error("Error creating product:", error);
@@ -274,19 +326,32 @@ class ApiGateway {
         }
     }
 
-    static async updateProduct(id, product) {/*{ name: string; price: number; description: string }*/
+    static async updateProduct(product, imageFile = null) {
         try {
-            const response = await this.axiosInstance.put(`/Product/UpdateProduct/${id}`, product);
+            let productData = { 
+                name : product.name, 
+                image : product.image,
+                shortDescription : product.shortDescription,
+                productCategory : product.productCategory
+            };
+            
+            // If an image file is provided, upload it to Firebase first
+            if (imageFile) {
+                const imageUrl = await this.uploadImageToFirebase(imageFile);
+                productData.image = imageUrl; // Add image URL to product data
+            }
+            console.log(productData);
+            const response = await this.axiosInstance.put(`/Product/UpdateProduct/${product.id}`, productData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating product ${id}:`, error);
+            console.error(`Error updating product ${product.id}:`, error);
             throw error;
         }
     }
 
     static async deleteProduct(id) {
         try {
-            const response = await this.axiosInstance.delete(`/Product/DeleteProduct/${id}`);
+            const response = await this.axiosInstance.delete(`/Product/DeleteProduct?id=${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting product ${id}:`, error);
@@ -393,7 +458,7 @@ class ApiGateway {
             console.log(orderDetails)
             var order = {  
                 isDeleted :  false,
-                voucherCode: voucherCode,
+                voucherCode: voucherCode ? voucherCode : "",
                 orderDetails: orderDetails.map(detail => ({
                     productId: detail.productId,
                     quantity: detail.quantity,
@@ -401,7 +466,6 @@ class ApiGateway {
                     size: detail.size
                 }))
             };
-            console.log(order);
             const response = await this.axiosInstance.post("/Order/CreateOrder", order);
             return response.data;
         } catch (error) {

@@ -6,6 +6,7 @@ import ApiGateway from '../../Api/ApiGateway';
 const AddProductModal = ({ onAdd, onClose }) => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   
   const [productData, setProductData] = useState({
     name: '',
@@ -17,7 +18,7 @@ const AddProductModal = ({ onAdd, onClose }) => {
   const [productDetails, setProductDetails] = useState({
     description: '',
     price: '',
-    stock: '',
+    stockQuantity: '', // Changed from 'stock' to match API expectations
     size: ''
   });
 
@@ -46,36 +47,28 @@ const AddProductModal = ({ onAdd, onClose }) => {
 
   const handleCategoryChange = (e) => {
     const { value, checked } = e.target;
+    const categoryId = value;
     
     if (checked) {
+      // Find the full category object for the selected ID
+      const selectedCategory = categories.find(cat => cat.id === categoryId);
+      
       setProductData({
         ...productData,
-        categories: [...productData.categories, value]
+        categories: [...productData.categories, selectedCategory]
       });
     } else {
       setProductData({
         ...productData,
-        categories: productData.categories.filter(cat => cat !== value)
+        categories: productData.categories.filter(cat => cat.id !== categoryId)
       });
-    }
-  };
-
-  const handleDetailsChange = (e) => {
-    const { name, value } = e.target;
-    
-    // Handle numeric inputs correctly
-    if (name === 'price' || name === 'stock') {
-      setProductDetails({ 
-        ...productDetails, 
-        [name]: value !== '' ? value : '' 
-      });
-    } else {
-      setProductDetails({ ...productDetails, [name]: value });
     }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    setImageFile(file); // Store the actual file object for later upload
+    
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -93,19 +86,7 @@ const AddProductModal = ({ onAdd, onClose }) => {
     setIsLoading(true);
     
     try {
-      // Convert numeric string values to numbers before submission
-      const formattedDetails = {
-        ...productDetails,
-        price: productDetails.price !== '' ? parseFloat(productDetails.price) : 0,
-        stock: productDetails.stock !== '' ? parseInt(productDetails.stock) : 0
-      };
-      
-      const newProduct = {
-        ...productData,
-        details: formattedDetails
-      };
-      
-      await onAdd(newProduct);
+      await onAdd(productData, imageFile);
     } catch (error) {
       console.error('Error adding product:', error);
     } finally {
@@ -177,70 +158,13 @@ const AddProductModal = ({ onAdd, onClose }) => {
                         type="checkbox"
                         id={`category-${category.id}`}
                         value={category.id}
-                        checked={productData.categories.includes(category.id)}
+                        checked={productData.categories.some(cat => cat.id === category.id)}
                         onChange={handleCategoryChange}
                       />
                       <label htmlFor={`category-${category.id}`}>{category.name}</label>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-            
-            <div className="product-details">
-              <h3>Product Details</h3>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="price">Price (VNĐ) *</label>
-                  <input
-                    type="number"
-                    id="price"
-                    name="price"
-                    value={productDetails.price}
-                    onChange={handleDetailsChange}
-                    min="100"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="stock">Stock *</label>
-                  <input
-                    type="number"
-                    id="stock"
-                    name="stock"
-                    value={productDetails.stock}
-                    onChange={handleDetailsChange}
-                    min="10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="size">Size(ml) *</label>
-                <input
-                  type="number"
-                  id="size"
-                  name="size"
-                  value={productDetails.size}
-                  onChange={handleDetailsChange}
-                  placeholder="e.g., 100, 200"
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="description">Full Description *</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={productDetails.description}
-                  onChange={handleDetailsChange}
-                  rows="4"
-                  required
-                ></textarea>
               </div>
             </div>
           </div>

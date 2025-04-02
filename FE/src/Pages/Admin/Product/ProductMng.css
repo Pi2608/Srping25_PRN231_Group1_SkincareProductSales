@@ -84,8 +84,8 @@
 }
 
 #product_mng .img-container {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     overflow: hidden;
     border-radius: 4px;
     display: flex;
@@ -163,7 +163,6 @@
 
 #product_mng .error {
     padding: 40px;
-    text-align: center;
     color: #ff3860;
 }
 

@@ -10,7 +10,7 @@ namespace BLL.Services.Interfaces.IProductServices
         Task<List<ProductDetailViewDto>> GetAllProductDetails();
         Task<ProductDetailViewDto> GetProductDetailById(Guid id);
         Task<ProductDetailViewDto> CreateProductDetail(CreateProductDetailDTO productDetail);
-        Task<ProductDetail> GetProductDetailByProductId(Guid productId);
+        Task<List<ProductDetailViewDto>> GetProductDetailByProductId(Guid productId);
         Task<ProductDetailViewDto> UpdateProductDetail(Guid id, CreateProductDetailDTO productDetail);
         Task<bool> DeleteProductDetail(Guid id);
     }

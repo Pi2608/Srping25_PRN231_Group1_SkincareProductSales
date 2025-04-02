@@ -85,6 +85,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setRole("");
         ApiGateway.setAuthToken(null); 
+        navigate('/')
     };
 
     return (

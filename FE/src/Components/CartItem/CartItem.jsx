@@ -11,7 +11,7 @@ const CartItem = ({ id, image, name, type, category, details, quantity, updateQu
         <div className="cart-item-details">
             <h2>{name}</h2>
             {/* <p>{type} - {category}</p> */}
-            <p className="cart-item-price">Price: {new Intl.NumberFormat('vi-VN').format(details.price * 1000)} VND</p>
+            <p className="cart-item-price">Price: {new Intl.NumberFormat('vi-VN').format(details.price)} VND</p>
         </div>
         <div className="cart-item-quantity">
             <button onClick={() => updateQuantity(id, -1)}>-</button>
@@ -19,7 +19,7 @@ const CartItem = ({ id, image, name, type, category, details, quantity, updateQu
             <button onClick={() => updateQuantity(id, 1)}>+</button>
         </div>
         <div className="cart-item-total">
-            <p>Total: <strong>{new Intl.NumberFormat('vi-VN').format(details.price * 1000 * quantity)} VND</strong></p>
+            <p>Total: <strong>{new Intl.NumberFormat('vi-VN').format(details.price * quantity)} VND</strong></p>
         </div>
         <button className="cart-item-remove" onClick={() => removeItem(id, name)}>Remove</button>
     </div>

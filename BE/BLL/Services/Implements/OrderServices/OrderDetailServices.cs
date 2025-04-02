@@ -17,7 +17,7 @@ namespace BLL.Services.Implements.OrderServices
             _mapper = mapper;
         }
 
-        public async Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, string voucherCode, List<CreateOrUpdateOrderDetail> order)
+        public async Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, string? voucherCode, List<CreateOrUpdateOrderDetail> order)
         {
             var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
             var user = await _unitOfWork.UserRepository.GetUserById(existingOrder.UserId);
@@ -148,7 +148,7 @@ namespace BLL.Services.Implements.OrderServices
             }
             throw new Exception("Update fail");
         }
-        public async Task<OrderViewDTO> ApplyVoucherToOrder(Guid orderId, string voucherCode, Guid userId)
+        public async Task<OrderViewDTO> ApplyVoucherToOrder(Guid orderId, string? voucherCode, Guid userId)
         {
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId, false, "OrderDetails", "OrderVouchers");
             if (order == null)

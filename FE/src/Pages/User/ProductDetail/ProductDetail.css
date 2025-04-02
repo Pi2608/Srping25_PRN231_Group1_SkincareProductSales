@@ -27,14 +27,16 @@
     gap: 2rem;
     max-width: 1400px;
     margin: auto;
-    padding: 50px 20px;
+    padding: 0 20px 50px;
 }
 
 #product-detail .product-container .product {
     display: flex;
     gap: 2rem;
     max-width: 100%;
-    margin: auto;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
     padding: 0 20px 50px;
 }
 
@@ -129,6 +131,11 @@
 
 #product-detail .product-container .size-selector .selected {
     background: #c6e3a1;
+}
+
+#product-detail .product-container .stock {
+    font-size: .9rem;
+    color: #aaa;
 }
 
 #product-detail .product-container .cart-options {
@@ -338,4 +345,12 @@
 #product-detail .review-date {
     font-size: 0.8rem;
     color: #999;
+}
+
+#product-detail .loading {
+    width: 100%;
+    min-height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

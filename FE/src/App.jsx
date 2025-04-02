@@ -53,41 +53,41 @@ function App() {
 
         {/* Customer Protected Routes */}
         <Route path='/cart' element={
-          <ProtectedRoute allowedRoles={['Customer']}>
+          // <ProtectedRoute allowedRoles={['Customer']}>
             <Cart />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
         <Route path='/vnpay-return' element={
-          <ProtectedRoute allowedRoles={['Customer']}>
+          // <ProtectedRoute allowedRoles={['Customer']}>
             <VNPayReturn />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
         
         <Route path='/profile'>
           <Route index element={
-            <ProtectedRoute allowedRoles={['Customer']}>
+            // <ProtectedRoute allowedRoles={['Customer']}>
               <Profile />
-            </ProtectedRoute>
+            /* </ProtectedRoute> */
           } />
           <Route path='orders' element={
-            <ProtectedRoute allowedRoles={['Customer']}>
+            // <ProtectedRoute allowedRoles={['Customer']}>
               <Order />
-            </ProtectedRoute>
+            /* </ProtectedRoute> */
           } />
           <Route path='vouchers' element={
-            <ProtectedRoute allowedRoles={['Customer']}>
+            // <ProtectedRoute allowedRoles={['Customer']}>
               <Voucher />
-            </ProtectedRoute>
+            /* </ProtectedRoute> */
           } />
           <Route path='topup' element={
-            <ProtectedRoute allowedRoles={['Customer']}>
+            // <ProtectedRoute allowedRoles={['Customer']}>
               <TopupPage />
-            </ProtectedRoute>
+            /* </ProtectedRoute> */
           } />
           <Route path='change-pwd' element={
-            <ProtectedRoute allowedRoles={['Customer']}>
+            // <ProtectedRoute allowedRoles={['Customer']}>
               <ChangePwd />
-            </ProtectedRoute>
+            /* </ProtectedRoute> */
           } />
         </Route>
       </Route>
@@ -100,24 +100,24 @@ function App() {
           </ProtectedRoute>
         } /> */}
         <Route path='mng-user' element={
-          <ProtectedRoute allowedRoles={['Admin']}>
+          // <ProtectedRoute allowedRoles={['Admin']}>
             <UserMng />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
         <Route path='mng-product' element={
-          <ProtectedRoute allowedRoles={['Admin']}>
+          // <ProtectedRoute allowedRoles={['Admin']}>
             <ProductMng />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
         <Route path='mng-order' element={
-          <ProtectedRoute allowedRoles={['Admin']}>
+          // <ProtectedRoute allowedRoles={['Admin']}>
             <OrderMng />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
         <Route path='mng-voucher' element={
-          <ProtectedRoute allowedRoles={['Admin']}>
+          // <ProtectedRoute allowedRoles={['Admin']}>
             <VoucherMng />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         } />
       </Route>
     </Routes>
