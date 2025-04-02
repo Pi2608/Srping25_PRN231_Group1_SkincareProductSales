@@ -58,8 +58,6 @@ namespace BLL.Services.Implements.OrderServices
 
                 var addOrderDetails = await _unitOfWork.OrderDetailRepository.AddRangeAsync(orderDetails);
                 var updateOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
-                user.MoneyAmount -= updateOrder.TotalPrice;
-                await _unitOfWork.UserRepository.UpdateAsync(user);
                 var process = await _unitOfWork.SaveChangeAsync();
 
                 var applyVoucher = await ApplyVoucherToOrder(orderId, voucherCode, existingOrder.UserId);
@@ -156,45 +154,69 @@ namespace BLL.Services.Implements.OrderServices
                 throw new Exception("Order not found");
             }
 
-            var voucher = await _unitOfWork.VoucherRepository.GetWithConditionAsync(v => v.Code == voucherCode && v.ExpiredDate > DateTime.Now);
-            if (voucher == null)
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
             {
-                throw new Exception("Voucher not found or expired");
+                throw new Exception("User not found");
             }
 
-            if (order.TotalPrice < voucher.MinimumOrderTotalPrice)
+            Voucher? voucher = null;
+
+            if (!string.IsNullOrEmpty(voucherCode))
             {
-                throw new Exception("Order total does not meet the minimum requirement for this voucher");
+                voucher = await _unitOfWork.VoucherRepository.GetWithConditionAsync(v => v.Code == voucherCode && v.ExpiredDate > DateTime.Now);
+                if (voucher == null)
+                {
+                    throw new Exception("Voucher not found or expired");
+                }
+
+                if (order.TotalPrice < voucher.MinimumOrderTotalPrice)
+                {
+                    throw new Exception("Order total does not meet the minimum requirement for this voucher");
+                }
+
+                var orderVoucher = new OrderVoucher
+                {
+                    Order = order,
+                    OrderId = order.Id,
+                    VoucherId = voucher.Id,
+                    Voucher = voucher
+                };
+
+                await _unitOfWork.OrderVoucherRepository.AddAsync(orderVoucher);
+
+                decimal discountAmount = ApplyDiscount(order, voucher);
+
+                if (user.MoneyAmount < discountAmount)
+                {
+                    throw new Exception("User does not have enough balance to apply this voucher.");
+                }
+
+                user.MoneyAmount -= discountAmount;
+                await _unitOfWork.UserRepository.UpdateAsync(user);
             }
 
-            var orderVoucher = new OrderVoucher
-            {
-                Order = order,
-                OrderId = order.Id,
-                VoucherId = voucher.Id,
-                Voucher = voucher
-            };
-
-            var orderVoucherToAdd = _unitOfWork.OrderVoucherRepository.AddAsync(orderVoucher);
-
-            if (orderVoucherToAdd == null)
-            {
-                throw new Exception("Failed to apply voucher");
-            }
-
-            order.TotalPrice -= (decimal)(order.TotalPrice * (voucher.DiscountPercentage / 100));
             order.UpdatedAt = DateTime.Now;
             order.UpdatedBy = userId;
 
             var updateOrderResult = await _unitOfWork.OrderRepository.UpdateAsync(order);
             var process = await _unitOfWork.SaveChangeAsync();
+
             if (process > 0)
             {
-                var result = _mapper.Map<OrderViewDTO>(updateOrderResult);
-                return result;
+                return _mapper.Map<OrderViewDTO>(updateOrderResult);
             }
 
             throw new Exception("Failed to apply voucher");
         }
+
+        private decimal ApplyDiscount(Order order, Voucher voucher)
+        {
+            decimal discountAmount = order.TotalPrice * (voucher.DiscountPercentage / 100);
+            order.TotalPrice -= discountAmount;
+            return discountAmount;
+        }
+
+
     }
 }
