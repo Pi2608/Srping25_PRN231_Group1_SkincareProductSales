@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }) => {
                 setToken(newToken);
                 ApiGateway.setAuthToken(newToken);
                 await fetchUser()
-                checkUser();
                 return true;
             }
             return false;
@@ -118,7 +117,8 @@ export const AuthProvider = ({ children }) => {
             setUser, 
             register, 
             login, 
-            logout 
+            logout,
+            checkUser
         }}>
             {children}
         </AuthContext.Provider>

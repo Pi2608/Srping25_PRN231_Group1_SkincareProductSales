@@ -16,7 +16,7 @@ const Login = () => {
     const navigate = useNavigate();
     const redirectPath = searchParams.get("redirect") || "/";
     const { t, i18n } = useTranslation();
-    const { login } = useAuth();
+    const { login, checkUser } = useAuth();
 
     const validateUsername = (username) => username.trim() !== "";
     const validatePassword = (password) => password.length >= 5;
@@ -45,7 +45,7 @@ const Login = () => {
                 return;
             }
             toast.success(data.message || t("LoginSuccess"));
-            // navigate(redirectPath);
+            checkUser();
         } catch (error) {
             console.error("Login error:", error);
             toast.error(t("LoginFailed"));
