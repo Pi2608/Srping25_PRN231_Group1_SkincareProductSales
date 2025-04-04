@@ -108,9 +108,9 @@ function Row(props) {
                       <TableCell>{detail.size}</TableCell>
                       <TableCell align="center">{detail.stockQuantity}</TableCell>
                       <TableCell align="left">{detail.description}</TableCell>
-                      <TableCell align="center">{new Intl.NumberFormat('vi-VN').format(detail.price)}</TableCell>
-                      <TableCell>
-                        <Box sx={{display: 'flex', gap: '5px', width: 'fit-content'}}>
+                      <TableCell align="right">{new Intl.NumberFormat('vi-VN').format(detail.price)}</TableCell>
+                      <TableCell align="center">
+                        <Box sx={{display: 'flex', gap: '5px', width: '100%', justifyContent: 'center'}}>
                           <Button variant="outlined" onClick={() => onEditProductDetail(product, detail)}>Edit</Button>
                           <Button variant="outlined" color="error" onClick={() => onDeleteProductDetail(detail.id)}>Delete</Button>
                         </Box>

@@ -55,9 +55,6 @@ const handleInputChange = (e) => {
     const { name, value } = e.target;
     
     let processedValue = value;
-    // if (name === 'stockQuantity' || name === 'price') {
-    //     processedValue = Number(value);
-    // }
 
     setProductDetail({
         ...productDetail,

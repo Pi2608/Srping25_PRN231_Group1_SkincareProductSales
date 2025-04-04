@@ -139,26 +139,20 @@ const Order = () => {
                                                     {order.orderDetails.map((detail) => (
                                                         <li key={detail.id}>
                                                             {detail.productName} - {detail.quantity} -{' '}
-                                                            {new Intl.NumberFormat('vi-VN').format(detail.totalPrice * 1000)}VND
+                                                            {new Intl.NumberFormat('vi-VN').format(detail.totalPrice)}VND
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </TableCell>
                                             <TableCell>
-                                                {order.orderVouchers?.length > 0 ? (
-                                                    <ul>
-                                                        {order.orderVouchers.map((voucher) => (
-                                                            <li key={voucher.id}>
-                                                                {voucher.code} ({voucher.discountPercentage}% off)
-                                                            </li>
-                                                        ))}
-                                                    </ul>
+                                                {order.voucherCode ? (
+                                                    `${order.voucherCode}`
                                                 ) : (
                                                     'No vouchers'
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                {new Intl.NumberFormat('vi-VN').format(order.totalPrice * 1000)}VND
+                                                {new Intl.NumberFormat('vi-VN').format(order.totalPrice)}VND
                                             </TableCell>
                                             <TableCell>{order.status}</TableCell>
                                             <TableCell>

@@ -42,12 +42,7 @@ namespace BLL.Services.Implements.OrderServices
                             await _unitOfWork.SaveChangeAsync();
                             throw new Exception("Out of stock");
                         }
-                        if (user.MoneyAmount < existingOrder.TotalPrice)
-                        {
-                            await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
-                            await _unitOfWork.SaveChangeAsync();
-                            throw new Exception("Not enough money");
-                        }
+
                         orderItem.OrderId = orderId;
                         orderItem.TotalPrice = orderItem.Quantity * productDetail.Price;
                         existingOrder.TotalPrice += orderItem.TotalPrice;
@@ -60,11 +55,18 @@ namespace BLL.Services.Implements.OrderServices
                 var updateOrder = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
                 var process = await _unitOfWork.SaveChangeAsync();
 
-                var applyVoucher = await ApplyVoucherToOrder(orderId, voucherCode, existingOrder.UserId);
-                var orderAfterUpdate = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-                orderAfterUpdate.TotalPrice = applyVoucher.TotalPrice;
-                var updateVoucher = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
-                await _unitOfWork.UserRepository.ChargeUserForOrder(existingOrder.UserId, orderAfterUpdate.TotalPrice);
+                // Apply voucher discount if voucher code is provided
+                var orderWithVoucher = await ApplyVoucherToOrder(orderId, voucherCode, existingOrder.UserId);
+
+                // Now charge the user with the final price after voucher is applied
+                if (user.MoneyAmount < orderWithVoucher.TotalPrice)
+                {
+                    await _unitOfWork.OrderRepository.DeleteAsync(existingOrder);
+                    await _unitOfWork.SaveChangeAsync();
+                    throw new Exception("Not enough money");
+                }
+
+                await _unitOfWork.UserRepository.ChargeUserForOrder(existingOrder.UserId, orderWithVoucher.TotalPrice);
                 await _unitOfWork.SaveChangeAsync();
 
                 if (process > 0)
@@ -72,7 +74,6 @@ namespace BLL.Services.Implements.OrderServices
                     var result = _mapper.Map<List<OrderDetailViewDto>>(addOrderDetails);
                     return result;
                 }
-
             }
             throw new Exception("Can not found Order");
         }
@@ -161,11 +162,9 @@ namespace BLL.Services.Implements.OrderServices
                 throw new Exception("User not found");
             }
 
-            Voucher? voucher = null;
-
             if (!string.IsNullOrEmpty(voucherCode))
             {
-                voucher = await _unitOfWork.VoucherRepository.GetWithConditionAsync(v => v.Code == voucherCode && v.ExpiredDate > DateTime.Now);
+                var voucher = await _unitOfWork.VoucherRepository.GetWithConditionAsync(v => v.Code == voucherCode && v.ExpiredDate > DateTime.Now);
                 if (voucher == null)
                 {
                     throw new Exception("Voucher not found or expired");
@@ -186,35 +185,23 @@ namespace BLL.Services.Implements.OrderServices
 
                 await _unitOfWork.OrderVoucherRepository.AddAsync(orderVoucher);
 
-                decimal discountAmount = ApplyDiscount(order, voucher);
-
-                if (user.MoneyAmount < discountAmount)
-                {
-                    throw new Exception("User does not have enough balance to apply this voucher.");
-                }
-
-                await _unitOfWork.UserRepository.ChargeUserForOrder(userId, discountAmount);
+                // Apply discount to the order
+                ApplyDiscount(order, voucher);
             }
 
             order.UpdatedAt = DateTime.Now;
             order.UpdatedBy = userId;
 
             var updateOrderResult = await _unitOfWork.OrderRepository.UpdateAsync(order);
-            var process = await _unitOfWork.SaveChangeAsync();
+            await _unitOfWork.SaveChangeAsync();
 
-            if (process > 0)
-            {
-                return _mapper.Map<OrderViewDTO>(updateOrderResult);
-            }
-
-            throw new Exception("Failed to apply voucher");
+            return _mapper.Map<OrderViewDTO>(updateOrderResult);
         }
 
-        private decimal ApplyDiscount(Order order, Voucher voucher)
+        private void ApplyDiscount(Order order, Voucher voucher)
         {
             decimal discountAmount = order.TotalPrice * (voucher.DiscountPercentage / 100);
             order.TotalPrice -= discountAmount;
-            return discountAmount;
         }
     }
 }

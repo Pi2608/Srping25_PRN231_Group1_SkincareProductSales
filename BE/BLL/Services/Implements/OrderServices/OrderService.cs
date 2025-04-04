@@ -103,19 +103,40 @@ namespace BLL.Services.Implements.OrderServices
             var orders = await _unitOfWork.OrderRepository.GetQuery(true).Where(e => e.IsDeleted == false)
                 .Include(o => o.OrderDetails.Where(od => od.IsDeleted == false))
                 .ThenInclude(od => od.Product).Where(o => o.OrderDetails.All(od => od.Product.IsDeleted == false)).ToListAsync();
-
             var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
+
+            foreach (var order in viewOrder)
+            {
+                var orderVouchers = await _unitOfWork.OrderVoucherRepository.GetOrderVoucherByOrderId(order.Id);
+                if (orderVouchers is not null)
+                {
+                    var vc = await _unitOfWork.VoucherRepository.GetByIdAsync(orderVouchers.VoucherId);
+                    order.VoucherCode = vc.Code;
+                }
+            }
 
             return viewOrder;
         }
 
         public async Task<List<OrderViewDTO>> GetOrderByCurrentUserId(Guid id)
         {
-            var orders = await _unitOfWork.OrderRepository.GetQuery(true).Where(e => e.IsDeleted == false && e.UserId == id)
+            var orders = await _unitOfWork.OrderRepository.GetQuery(true)
+                .Where(e => e.IsDeleted == false && e.UserId == id)
                 .Include(o => o.OrderDetails.Where(od => od.IsDeleted == false))
-                .ThenInclude(od => od.Product).Where(o => o.OrderDetails.All(od => od.Product.IsDeleted == false)).ToListAsync();
+                .ThenInclude(od => od.Product)
+                .Include(o => o.OrderVouchers)
+                .Where(o => o.OrderDetails.All(od => od.Product.IsDeleted == false)).ToListAsync();
 
             var viewOrder = _mapper.Map<List<OrderViewDTO>>(orders);
+            foreach (var order in viewOrder)
+            {
+                var orderVouchers = await _unitOfWork.OrderVoucherRepository.GetOrderVoucherByOrderId(order.Id);
+                if (orderVouchers is not null)
+                {
+                    var vc = await _unitOfWork.VoucherRepository.GetByIdAsync(orderVouchers.VoucherId);
+                    order.VoucherCode = vc.Code;
+                }
+            }
             return viewOrder;
         }
 
@@ -125,6 +146,12 @@ namespace BLL.Services.Implements.OrderServices
             if (order is not null)
             {
                 var result = _mapper.Map<OrderViewDTO>(order);
+                var orderVouchers = await _unitOfWork.OrderVoucherRepository.GetOrderVoucherByOrderId(result.Id);
+                if (orderVouchers is not null)
+                {
+                    var vc = await _unitOfWork.VoucherRepository.GetByIdAsync(orderVouchers.VoucherId);
+                    result.VoucherCode = vc.Code;
+                }
                 return result;
             }
             throw new Exception("Order Not Found");
