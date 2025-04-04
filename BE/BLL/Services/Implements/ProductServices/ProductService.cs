@@ -21,6 +21,7 @@ namespace BLL.Services.Implements.ProductServices
         {
             var newProduct = _mapper.Map<Product>(productDto);
             newProduct.CreatedAt = DateTime.Now;
+            newProduct.IsDeleted = true;
             var addProductResult = await _unitOfWork.ProductRepository.AddAsync(newProduct);
             await _unitOfWork.SaveChangeAsync();
             if (productDto.ProductCategory != null && productDto.ProductCategory.Any())
@@ -56,6 +57,20 @@ namespace BLL.Services.Implements.ProductServices
                 return process > 0;
             }
             throw new Exception("Delete fail");
+        }
+
+        public async Task<bool> SetAvailable(Guid id)
+        {
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+            if (existingProduct != null)
+            {
+                existingProduct.IsDeleted = false;
+                existingProduct.DeletedAt = DateTime.UtcNow;
+                await _unitOfWork.ProductRepository.UpdateAsync(existingProduct);
+                var process = await _unitOfWork.SaveChangeAsync();
+                return process > 0;
+            }
+            throw new Exception("Action fail");
         }
 
         public async Task<List<ProductViewDTO>> GetAllProducts()

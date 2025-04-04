@@ -20,8 +20,9 @@ const ProductsPage = ()=>{
     
     useEffect(() => {
         fetchAllProducts().then((products) => {
-            setMenuProducts(products);
-            setAllProducts(products);
+            const fiterProds = products.filter((prods) => prods.isDeleted === false)
+            setMenuProducts(fiterProds);
+            setAllProducts(fiterProds);
         });
     }, []);
 
@@ -49,7 +50,7 @@ const ProductsPage = ()=>{
     };
     
     const filter = (type) => {
-        setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type)))
+        setMenuProducts(allProducts.filter((product)=>product.categories?.some((cat) => cat.name === type && cat.isDeleted === false)));
     }
 
     const handleSearchChange = (e) => {

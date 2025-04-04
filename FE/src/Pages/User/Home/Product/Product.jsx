@@ -10,8 +10,9 @@ const Products = () => {
 
     useEffect(() => {
         fetchAllProducts().then((products) => {
-            setMenuProducts(products);
-            setAllProducts(products);
+            const fiterProds = products.filter((prods) => prods.isDeleted === false)
+            setMenuProducts(fiterProds);
+            setAllProducts(fiterProds);
         });
     }, []);
 

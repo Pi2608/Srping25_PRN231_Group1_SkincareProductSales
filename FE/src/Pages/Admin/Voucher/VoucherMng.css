@@ -11,27 +11,35 @@
 }
 
 #voucher_mng .action-bar button {
-    height: 100%;
-    min-width: fit-content;
-    padding: 10px;   
-    border-radius: 5px;
-    color: white;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
 }
 
 #voucher_mng .action-bar .search {
-    background-color: #002ee6;
+    background-color: white;
+    color: #0032ff;
+    border: 1px solid #0032ff;
 }
 
 #voucher_mng .action-bar .search:hover {
-    background-color: #0027c5;
+    background-color: #0032ff;
+    color: white;
 }
 
 #voucher_mng .action-bar .add {
-    background-color: #00d220;
+    background-color: white;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    white-space: nowrap;
 }
 
 #voucher_mng .action-bar .add:hover {
-    background-color: #00b91c;
+    background-color: #4CAF50;
+    color: white;
 }
 
 #voucher_mng .table-container {
@@ -94,23 +102,27 @@
 }
 
 #voucher_mng .product-table tbody td .voucher-action button:first-child {
-    background-color: #3f51b5;
+    background-color: white;
+    color: #3f51b5;
+    border: 1px solid #3f51b5;
 }
 
 #voucher_mng .product-table tbody td .voucher-action button:last-child {
-    background-color: #f44336;
+    background-color: white;
+    color: #f44336;
+    border: 1px solid #f44336;
 }
 
 #voucher_mng .product-table tbody td .voucher-action button:first-child:hover {
-    background-color: #5366d1;
+    background-color: #3f51b5;
+    color: white;
+    border-color: #3f51b5;
 }
 
 #voucher_mng .product-table tbody td .voucher-action button:last-child:hover {
-    background-color: #fe6857;
-}
-
-#voucher_mng.product-table td.voucher-action:hover {
-    background-color: #ddd;
+    background-color: #f44336;
+    color: white;
+    border-color: #f44336;
 }
 
 #voucher_mng .rating {

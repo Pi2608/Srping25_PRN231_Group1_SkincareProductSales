@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ApiGateway from '../../Api/ApiGateway';
 import './EditProductModal.css';
 
-const EditProductModal = ({ product, onEdit, onDelete, onClose }) => {
+const EditProductModal = ({ product, onEdit, onClose }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [allCategories, setAllCategories] = useState([]);
@@ -153,13 +153,13 @@ const EditProductModal = ({ product, onEdit, onDelete, onClose }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFile(file); // Store the actual file object for later upload
+      setImageFile(file); 
       
       const reader = new FileReader();
       reader.onload = () => {
         setFormData({
           ...formData,
-          image: reader.result // This will be a data URL for preview only
+          image: reader.result 
         });
       };
       reader.readAsDataURL(file);
@@ -273,19 +273,6 @@ const EditProductModal = ({ product, onEdit, onDelete, onClose }) => {
           </div>
           
           <div className="form-actions">
-            {onDelete && (
-              <button 
-                type="button" 
-                className="delete-button" 
-                onClick={() => {
-                  if (window.confirm('Are you sure you want to delete this product?')) {
-                    onDelete(formData.id);
-                  }
-                }}
-              >
-                Delete
-              </button>
-            )}
             <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
             <button type="submit" className="save-button">Save Changes</button>
           </div>

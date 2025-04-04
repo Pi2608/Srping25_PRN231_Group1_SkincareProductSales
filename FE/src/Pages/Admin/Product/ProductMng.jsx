@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayoutComponent from "../DashBoardLayout/DashboardLayout";
 import AddProductModal from '../../../Components/AddProductModal/AddProductModal';
+import AddProductDetailModal from "../../../Components/AddProductDetailModal/AddProductDetailModal";
 import EditProductModal from "../../../Components/EditProductModal/EditProductModal";
 import EditProductDetailModal from "../../../Components/EditProductDetailModal/EditProductDetailModal";
 import SearchIcon from '@mui/icons-material/Search';
+import SetAvailableButton from "../../../Components/SetAvailableBtn/SetAvailableButton";
 import AddIcon from '@mui/icons-material/Add';
 import ApiGateway from "../../../Api/ApiGateway";
 import { 
@@ -26,7 +28,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./ProductMng.css";
 
 function Row(props) {
-  const { product, onEditProduct, onEditProductDetail, onDeleteProduct, onDeleteProductDetail } = props;
+  const { product, onCreatePoductDetail, onEditProduct, onEditProductDetail, onDeleteProduct, onDeleteProductDetail, onProductUpdated } = props;
   const [open, setOpen] = useState(false);
 
   const getStatusColor = (status) => {
@@ -64,8 +66,9 @@ function Row(props) {
         </TableCell>
         <TableCell>
           <div style={{display: 'flex', gap: '5px'}}>
+            <SetAvailableButton product={product} onProductUpdated={onProductUpdated} />
             <Button variant="outlined" onClick={() => onEditProduct(product)}>Edit</Button>
-            <Button variant="outlined" color="error" onClick={() => onDeleteProduct(product.id)}>Delete</Button>
+            <Button variant="outlined" color="error" disabled={product.isDeleted} onClick={() => onDeleteProduct(product.id)}>Delete</Button>
           </div>
         </TableCell>
         <TableCell>
@@ -81,14 +84,19 @@ function Row(props) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Product Details
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <Typography variant="h6" gutterBottom component="div">
+                  Product Details
+                </Typography>
+                <Button variant="outlined" sx={{marginBottom: '10px', color: "#4caf50", borderColor: "#4caf50"}} onClick={() => onCreatePoductDetail(product, null)}>
+                  <AddIcon />
+                </Button>
+              </Box>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
                     <TableCell>Size</TableCell>
-                    <TableCell align="right">Stock</TableCell>
+                    <TableCell align="center">Stock</TableCell>
                     <TableCell align="left">Description</TableCell>
                     <TableCell align="right">Price(VND)</TableCell>
                     <TableCell align="center">Actions</TableCell>
@@ -100,9 +108,9 @@ function Row(props) {
                       <TableCell>{detail.size}</TableCell>
                       <TableCell align="center">{detail.stockQuantity}</TableCell>
                       <TableCell align="left">{detail.description}</TableCell>
-                      <TableCell align="right">{new Intl.NumberFormat('vi-VN').format(detail.price * 1000)}</TableCell>
+                      <TableCell align="center">{new Intl.NumberFormat('vi-VN').format(detail.price)}</TableCell>
                       <TableCell>
-                        <Box sx={{display: 'flex', gap: '5px'}}>
+                        <Box sx={{display: 'flex', gap: '5px', width: 'fit-content'}}>
                           <Button variant="outlined" onClick={() => onEditProductDetail(product, detail)}>Edit</Button>
                           <Button variant="outlined" color="error" onClick={() => onDeleteProductDetail(detail.id)}>Delete</Button>
                         </Box>
@@ -125,9 +133,10 @@ const ProductMng = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openAddProductDetailModal, setOpenAddProductDetailModal] = useState(false);
   const [openEditProductModal, setOpenEditProductModal] = useState(false);
   const [openEditProductDetailModal, setOpenEditProductDetailModal] = useState(false);
-  const [openAddModal, setOpenAddModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProductDetail, setSelectedProductDetail] = useState(null);
 
@@ -196,20 +205,22 @@ const ProductMng = () => {
 
   const handleEditProductDetail = (product, detail) => {
     setSelectedProduct(product);
-    setSelectedProductDetail(detail);
-    setOpenEditProductDetailModal(true);
+    if (detail) {
+      setSelectedProductDetail(detail);
+      setOpenEditProductDetailModal(true);
+    } else {
+      setOpenAddProductDetailModal(true);
+    }
   };
 
   const handleUpdateProduct = async (updatedProduct, imageFile) => {
     try {
-      // Create a copy of the updated product to format for the API
       const formattedProduct = {
-        id: updatedProduct.id, // Make sure we include the ID
+        id: updatedProduct.id, 
         name: updatedProduct.name,
+        image: updatedProduct.image,
         shortDescription: updatedProduct.shortDescription,
-        // Extract category IDs correctly
         productCategory: updatedProduct.categories.map(category => 
-          // Handle if categories is already an array of IDs or an array of objects with id property
           typeof category === 'object' ? category.id : category
         )
       };
@@ -301,6 +312,7 @@ const ProductMng = () => {
         const createdDetail = await ApiGateway.createProductDetail(formattedDetail);
         updatedProduct.details = [createdDetail];
       }
+
       
       // Update local state
       setProductList(prevList => [...prevList, updatedProduct]);
@@ -348,6 +360,36 @@ const ProductMng = () => {
       toast.error("Failed to delete product detail.");
       console.error("Error deleting product detail:", err);
     }
+  };
+
+  const handleAddProductDetail = async (newDetail) => {
+    try {
+      const createdDetail = await ApiGateway.createProductDetail(newDetail);
+      
+      // Update local state
+      setProductList(prevList =>
+        prevList.map(product => 
+          product.id === newDetail.productId
+            ? {
+                ...product,
+                details: [...product.details, createdDetail]
+              }
+            : product
+        )
+      );
+      
+      setOpenAddProductDetailModal(false);
+      toast.success("Product detail added successfully!");
+      return createdDetail;
+    } catch (err) {
+      toast.error("Failed to add product detail.");
+      console.error("Error adding product detail:", err);
+      throw err;
+    }
+  };
+  
+  const handleProductUpdated = () => {
+    fetchProducts();
   };
 
   return (
@@ -398,10 +440,12 @@ const ProductMng = () => {
                       <Row 
                         key={product.id} 
                         product={product}
+                        onCreatePoductDetail={handleEditProductDetail}
                         onEditProduct={handleEditProduct}
                         onEditProductDetail={handleEditProductDetail}
                         onDeleteProduct={handleDeleteProduct}
                         onDeleteProductDetail={handleDeleteProductDetail}
+                        onProductUpdated={handleProductUpdated}  // Add this line
                       />
                     ))
                   ) : (
@@ -422,7 +466,6 @@ const ProductMng = () => {
             open={openEditProductModal}
             product={selectedProduct}
             onEdit={handleUpdateProduct}
-            onDelete={() => handleDeleteProduct(selectedProduct.id)}
             onClose={() => setOpenEditProductModal(false)}
           />
         )} 
@@ -444,6 +487,16 @@ const ProductMng = () => {
             onClose={() => setOpenAddModal(false)}
           />
         )}
+
+        {openAddProductDetailModal && selectedProduct && (
+          <AddProductDetailModal
+            open={openAddProductDetailModal}
+            product={selectedProduct}
+            onAdd={handleAddProductDetail}  
+            onClose={() => setOpenAddProductDetailModal(false)}
+          />
+        )}
+
       </div>
     </DashboardLayoutComponent>
   );

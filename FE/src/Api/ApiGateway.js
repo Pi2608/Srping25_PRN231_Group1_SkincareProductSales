@@ -334,14 +334,14 @@ class ApiGateway {
                 shortDescription : product.shortDescription,
                 productCategory : product.productCategory
             };
+            console.log("First: ", productData);
             
-            // If an image file is provided, upload it to Firebase first
-            if (imageFile) {
+            if (imageFile && imageFile !== undefined) {
                 const imageUrl = await this.uploadImageToFirebase(imageFile);
-                productData.image = imageUrl; // Add image URL to product data
+                productData.image = imageUrl; 
             }
             console.log(productData);
-            const response = await this.axiosInstance.put(`/Product/UpdateProduct/${product.id}`, productData);
+            const response = await this.axiosInstance.put(`/Product/UpdateProduct?id=${product.id}`, productData);
             return response.data;
         } catch (error) {
             console.error(`Error updating product ${product.id}:`, error);
@@ -352,6 +352,16 @@ class ApiGateway {
     static async deleteProduct(id) {
         try {
             const response = await this.axiosInstance.delete(`/Product/DeleteProduct?id=${id}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting product ${id}:`, error);
+            throw error;
+        }
+    }
+
+    static async setProductAvailable(id) {
+        try {
+            const response = await this.axiosInstance.put(`/Product/AvailableProduct?id=${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting product ${id}:`, error);
@@ -393,7 +403,7 @@ class ApiGateway {
     
     static async createProductDetail(productDetail) {
         try {
-            const response = await this.axiosInstance.post("/", productDetail);
+            const response = await this.axiosInstance.post("/ProductDetail/CreateProductDetail", productDetail);
             return response.data;
         } catch (error) {
             console.error("Error creating product detail:", error);
@@ -403,7 +413,7 @@ class ApiGateway {
     
     static async updateProductDetail(id, updatedProductDetail) {
         try {
-            const response = await this.axiosInstance.put(`/${id}`, updatedProductDetail);
+            const response = await this.axiosInstance.put(`/ProductDetail/UpdateProductDetail?id=${id}`, updatedProductDetail);
             return response.data;
         } catch (error) {
             console.error("Error updating product detail:", error);
@@ -413,7 +423,7 @@ class ApiGateway {
     
     static async deleteProductDetail(id) {
         try {
-            const response = await this.axiosInstance.delete(`/${id}`);
+            const response = await this.axiosInstance.delete(`/ProductDetail/DeleteProductDetail?id=${id}`);
             return response.data;
         } catch (error) {
             console.error("Error deleting product detail:", error);
