@@ -1,88 +1,198 @@
 import React, { useState, useEffect } from 'react';
+import ApiGateway from '../../Api/ApiGateway';
 import './EditProductModal.css';
 
-const EditModal = ({ type, object, onEdit, onDelete, onClose }) => {
+const EditProductModal = ({ product, onEdit, onClose }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const [allCategories, setAllCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoryError, setCategoryError] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
-    if (object) {
+    // Initialize form data from product prop
+    if (product) {
       const initialData = {
-        id: object.id,
-        name: object.name,
-        image: object.image,
-        shortDescription: object.shortDescription,
-        categories: object.categories || [],
-        size: object.details?.size || '',
-        stock: object.details?.stockQuantity || 0,
-        price: object.details?.price || 0,
-        rating: object.details?.rating || '',
-        description: object.details?.description || '',
+        id: product.id,
+        name: product.name || '',
+        image: product.image || '',
+        shortDescription: product.shortDescription || '',
+        categories: product.categories || [],
       };
       
       setFormData(initialData);
     }
-  }, [object]);
+    
+    // Fetch all categories from API
+    fetchCategories();
+  }, [product]);
+
+  const fetchCategories = async () => {
+    setIsLoadingCategories(true);
+    setCategoryError(null);
+    
+    try {
+      // Replace with your actual API endpoint
+      const response = await ApiGateway.getAllCategories();
+      
+      setAllCategories(response);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategoryError('Failed to load categories. Please try again.');
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     });
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null
+      });
+    }
+  };
+
+  // Check if a category is selected
+  const isCategorySelected = (categoryId) => {
+    if (!formData?.categories) {
+      return false;
+    }
+    
+    // Handle both scenarios: categories as array of objects or array of IDs
+    if (formData.categories.length > 0 && typeof formData.categories[0] === 'object') {
+      // If categories is an array of objects with id property
+      return formData.categories.some(category => category.id === categoryId);
+    } else {
+      // If categories is already an array of IDs
+      return formData.categories.includes(categoryId);
+    }
+  };
+
+  // Update handleCategoryChange to handle both object arrays and ID arrays
+  const handleCategoryChange = (categoryId) => {
+    let updatedCategories = [...(formData.categories || [])];
+    
+    // Determine if we're working with an array of category objects or just IDs
+    const isObjectArray = updatedCategories.length > 0 && typeof updatedCategories[0] === 'object';
+    
+    if (isObjectArray) {
+      // Working with an array of category objects
+      const existingIndex = updatedCategories.findIndex(cat => cat.id === categoryId);
+      
+      if (existingIndex >= 0) {
+        // Remove category if already selected
+        updatedCategories.splice(existingIndex, 1);
+      } else {
+        // Get the category object from allCategories
+        const categoryToAdd = allCategories.find(cat => cat.id === categoryId);
+        if (categoryToAdd) {
+          updatedCategories.push(categoryToAdd);
+        }
+      }
+    } else {
+      // Working with an array of category IDs
+      if (updatedCategories.includes(categoryId)) {
+        // Remove category if already selected
+        const index = updatedCategories.indexOf(categoryId);
+        updatedCategories.splice(index, 1);
+      } else {
+        // Add category if not selected
+        updatedCategories.push(categoryId);
+      }
+    }
+    
+    setFormData({
+      ...formData,
+      categories: updatedCategories
+    });
+    
+    // Clear category error if any categories are selected
+    if (updatedCategories.length > 0 && errors.categories) {
+      setErrors({
+        ...errors,
+        categories: null
+      });
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     
-    if (type === 'Product') {
-      if (!formData.name?.trim()) newErrors.name = 'Product name is required';
-      if (!formData.size?.toString().trim()) newErrors.size = 'Size is required';
-      
-      if (!formData.price) {
-        newErrors.price = 'Price is required';
-      } else if (isNaN(formData.price) || Number(formData.price) <= 0) {
-        newErrors.price = 'Price must be a positive number';
-      }
-      
-      if (!formData.stock) {
-        newErrors.stock = 'Stock is required';
-      } else if (isNaN(formData.stock) || Number(formData.stock) < 0) {
-        newErrors.stock = 'Stock must be a non-negative number';
-      }
+    // Required field validation
+    if (!formData.name?.trim()) newErrors.name = 'Product name is required';
+    if (!formData.shortDescription?.trim()) newErrors.shortDescription = 'Short description is required';
+    
+    // Only validate image URL if no new file is selected and we're using the existing URL
+    if (!imageFile && !formData.image?.trim()) {
+      newErrors.image = 'Image is required';
+    }
+    
+    // URL validation for image field only if it's a URL and not a file
+    if (!imageFile && formData.image?.trim() && !isValidUrl(formData.image)) {
+      newErrors.image = 'Please enter a valid URL';
+    }
+    
+    // Categories validation (must select at least one)
+    if (!formData.categories || formData.categories.length === 0) {
+      newErrors.categories = 'Please select at least one category';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file); 
+      
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData({
+          ...formData,
+          image: reader.result 
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Helper function to validate URLs
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
     if (validateForm()) {
-      const formattedData = {
-        id: formData.id,
-        name: formData.name,
-        image: formData.image,
-        shortDescription: formData.shortDescription,
-        categories: formData.categories,
-        details: {
-          productId: formData.id,
-          size: formData.size,
-          stockQuantity: Number(formData.stock),
-          price: Number(formData.price),
-          rating: formData.rating,
-          description: formData.description,
-        }
-      };
-      
-      onEdit(formattedData);
+      onEdit(formData, imageFile);
     }
   };
-  const renderForm = () => {
-    if (type === 'Product') {
-      return (
-        <>
+  
+  return (
+    <div id='edit_prod' className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2>Edit Product</h2>
+          <button className="close-button" onClick={onClose}>&times;</button>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="name">Product Name*</label>
             <input
@@ -97,130 +207,72 @@ const EditModal = ({ type, object, onEdit, onDelete, onClose }) => {
           </div>
           
           <div className="form-group">
-            <label htmlFor="shortDescription">Short Description</label>
+            <label htmlFor="shortDescription">Short Description*</label>
             <input
               type="text"
               id="shortDescription"
               name="shortDescription"
               value={formData.shortDescription || ''}
               onChange={handleChange}
+              className={errors.shortDescription ? 'error' : ''}
             />
+            {errors.shortDescription && <span className="error-message">{errors.shortDescription}</span>}
           </div>
           
           <div className="form-group">
-            <label htmlFor="size">Size (ml)*</label>
+            <label htmlFor="image">Product Image</label>
             <input
-              type="text"
-              id="size"
-              name="size"
-              value={formData.size || ''}
-              onChange={handleChange}
-              className={errors.size ? 'error' : ''}
-            />
-            {errors.size && <span className="error-message">{errors.size}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="price">Price (VNĐ)*</label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              value={formData.price || ''}
-              onChange={handleChange}
-              min="0"
-              step="1000"
-              className={errors.price ? 'error' : ''}
-            />
-            {errors.price && <span className="error-message">{errors.price}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="stock">Stock*</label>
-            <input
-              type="number"
-              id="stock"
-              name="stock"
-              value={formData.stock || ''}
-              onChange={handleChange}
-              min="0"
-              className={errors.stock ? 'error' : ''}
-            />
-            {errors.stock && <span className="error-message">{errors.stock}</span>}
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="rating">Rating</label>
-            <select
-              id="rating"
-              name="rating"
-              value={formData.rating || ''}
-              onChange={handleChange}
-            >
-              <option value="">Select Rating</option>
-              <option value="5 Stars">5 Stars</option>
-              <option value="4 Stars">4 Stars</option>
-              <option value="3 Stars">3 Stars</option>
-              <option value="2 Stars">2 Stars</option>
-              <option value="1 Star">1 Star</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="image">Image URL</label>
-            <input
-              type="text"
+              type="file"
               id="image"
               name="image"
-              value={formData.image || ''}
-              onChange={handleChange}
-              placeholder="https://..."
+              onChange={handleImageChange}
+              accept="image/*"
             />
             {formData.image && (
               <div className="image-preview">
                 <img src={formData.image} alt="Product preview" />
               </div>
             )}
+            {errors.image && <span className="error-message">{errors.image}</span>}
           </div>
           
           <div className="form-group">
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description || ''}
-              onChange={handleChange}
-              rows="4"
-            ></textarea>
+            <label>Categories*</label>
+            {isLoadingCategories ? (
+              <div className="loading-categories">Loading categories...</div>
+            ) : categoryError ? (
+              <div className="category-error">
+                {categoryError}
+                <button 
+                  type="button" 
+                  className="retry-button" 
+                  onClick={fetchCategories}
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <div className={`categories-container ${errors.categories ? 'error' : ''}`}>
+                {allCategories.map(category => (
+                  <div key={category.id} className="category-checkbox" style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+                    <input
+                      type="checkbox"
+                      id={`category-${category.id}`}
+                      checked={isCategorySelected(category.id)}
+                      onChange={() => handleCategoryChange(category.id)}
+                    />
+                    <label htmlFor={`category-${category.id}`} style={{margin: 0}}>{category.name}</label>
+                  </div>
+                ))}
+                {allCategories.length === 0 && (
+                  <div className="no-categories">No categories available</div>
+                )}
+              </div>
+            )}
+            {errors.categories && <span className="error-message">{errors.categories}</span>}
           </div>
-        </>
-      );
-    }
-    
-    return <p>Unknown type: {type}</p>;
-  };
-
-  return (
-    <div id='edit_prod' className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h2>Edit {type}</h2>
-          <button className="close-button" onClick={onClose}>&times;</button>
-        </div>
-        
-        <form onSubmit={handleSubmit}>
-          {renderForm()}
           
           <div className="form-actions">
-            {onDelete && (
-              <button 
-                type="button" 
-                className="delete-button" 
-                onClick={() => onDelete(formData.id)}
-              >
-                Delete
-              </button>
-            )}
             <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
             <button type="submit" className="save-button">Save Changes</button>
           </div>
@@ -230,4 +282,4 @@ const EditModal = ({ type, object, onEdit, onDelete, onClose }) => {
   );
 };
 
-export default EditModal;
+export default EditProductModal;

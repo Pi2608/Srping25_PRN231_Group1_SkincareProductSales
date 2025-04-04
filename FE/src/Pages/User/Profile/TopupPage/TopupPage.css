@@ -73,6 +73,12 @@
     background-color: #f5f5f5;
 }
 
+#topup .payment-method.COD:hover{
+    border-color: #438a55;
+    color: #438a55;
+    background-color: #f5f5f5;
+}
+
 #topup .payment-method.MOMO.selected {
     border-color: #db2777;
     color: #db2777;
@@ -82,6 +88,12 @@
 #topup .payment-method.VNPay.selected {
     border-color: #00569d;
     color: #00569d;
+    background-color: #f5f5f5;
+}
+
+#topup .payment-method.COD.selected {
+    border-color: #438a55;
+    color: #438a55;
     background-color: #f5f5f5;
 }
 

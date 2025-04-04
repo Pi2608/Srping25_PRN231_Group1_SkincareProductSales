@@ -70,6 +70,20 @@ namespace PRN231.Controllers.ProductControllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> AvailableProduct([FromQuery] Guid id)
+        {
+            try
+            {
+                var result = await _productService.SetAvailable(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete]
         public async Task<IActionResult> DeleteProduct([FromQuery] Guid id)
         {

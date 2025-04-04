@@ -9,5 +9,6 @@ namespace DTO.Product
         public int StockQuantity { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

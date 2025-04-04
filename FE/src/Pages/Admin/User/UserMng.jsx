@@ -162,7 +162,7 @@ const UserMng = () => {
             <table className="product-table">
                 <thead>
                   <tr>
-                      <th>No</th>
+                      <th onClick={() => orderUser("createdAt")}>No</th>
                       <th className="active" onClick={() => orderUser("account")}>User Name</th>
                       <th onClick={() => orderUser("email")}>Email</th>
                       <th onClick={() => orderUser("address")}>Address</th>

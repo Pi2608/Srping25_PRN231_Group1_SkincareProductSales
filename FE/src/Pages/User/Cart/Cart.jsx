@@ -12,7 +12,7 @@ import './Cart.css';
 const Cart = () => {
 
     const navigate = useNavigate();
-    const { fetchUser } = useAuth();
+    const { user, fetchUser } = useAuth();
 
     const [cart, setCart] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -21,6 +21,9 @@ const Cart = () => {
     const [selectedVoucher, setSelectedVoucher] = useState(null);
 
     useEffect(() => {
+        if(user){
+            console.log(user)
+        }
         const storedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
         setCart(storedCart);
     }, []);
@@ -30,13 +33,6 @@ const Cart = () => {
             try {
                 const response = await ApiGateway.getAllVouchers();
                 setVouchers(response);
-                
-                // Mock vouchers for testing
-                // setVouchers([
-                //     { id: 1, code: 'WELCOME10', discount: 10, description: '10% off your first order' },
-                //     { id: 2, code: 'FREESHIP', discount: 15, description: 'Free shipping on orders over 200,000 VND' },
-                //     { id: 3, code: 'SALE20', discount: 20, description: '20% off selected items' }
-                // ]);
             } catch (error) {
                 console.error('Failed to fetch vouchers:', error);
             }
@@ -46,15 +42,21 @@ const Cart = () => {
     }, []);
 
     const createOrder = async () => {
+        // Check if user has enough money
+        if (finalPrice > user?.moneyAmount) {
+            toast.error('You do not have enough money to place this order.');
+            return;
+        }
+        
         try {
-            const response = await ApiGateway.createOrder(selectedItems, selectedVoucher.code);
+            console.log(selectedItems);
+            console.log(selectedVoucher);
+            const response = await ApiGateway.createOrder(selectedItems, selectedVoucher?.code);
             
             toast.success('Order placed successfully! Your order ID is ' + response.id, {
                 autoClose: 500,
             });
-            setTimeout(() => {
-                navigate('/profile/orders');
-            }, 1000);
+            
             const remainingItems = cart.filter(item => 
                 !selectedItems.some(selected => selected.productId === item.id)
             );
@@ -88,7 +90,7 @@ const Cart = () => {
             setCart(updatedCart);
             sessionStorage.setItem('cart', JSON.stringify(updatedCart));
 
-            setSelectedItems((prev) => prev.filter((item) => item.id !== id));
+            setSelectedItems((prev) => prev.filter((item) => item.productId !== id));
 
             toast.success(`"${name}" removed from cart!`);
         }
@@ -112,7 +114,7 @@ const Cart = () => {
 
     const applyVoucher = (voucher) => {
         if (parseInt(voucher.minimumOrderTotalPrice) > parseInt(finalPrice)) {
-            toast.error(`Order final price must more than ${new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice * 1000)}VND!`);   
+            toast.error(`Order final price must more than ${new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice)}VND!`);   
         } else {
             setSelectedVoucher(voucher);
             setShowVouchers(false);
@@ -132,6 +134,7 @@ const Cart = () => {
     };
 
     const finalPrice = calculateFinalPrice();
+    const insufficientFunds = finalPrice > (user?.moneyAmount || 0);
 
     return (
         <div id='cart'>
@@ -157,7 +160,13 @@ const Cart = () => {
                     </div>
                     <div className="cart-summary">
                         <h2>Summary Order</h2>
-                        <p>Subtotal: {new Intl.NumberFormat('vi-VN').format(selectedSubtotal * 1000)} VND</p>
+                        <p>Subtotal: {new Intl.NumberFormat('vi-VN').format(selectedSubtotal)} VND</p>
+                        
+                        {user && (
+                            <p className="available-balance">
+                                Your Balance: {new Intl.NumberFormat('vi-VN').format(user.moneyAmount || 0)} VND
+                            </p>
+                        )}
                         
                         {/* Voucher section */}
                         <div className="voucher-section">
@@ -182,14 +191,16 @@ const Cart = () => {
                             
                             <div className={`vouchers-list ${showVouchers ? 'show' : ''}`}>
                                 {vouchers.length > 0 ? (
-                                    vouchers.map((voucher) => (
+                                    vouchers.filter(vc => new Date(vc.expiredDate) > new Date()).map((voucher) => (
                                         <div 
                                             key={voucher.id} 
                                             className="voucher-item"
                                             onClick={() => applyVoucher(voucher)}
                                         >
-                                            <div className="voucher-code">{voucher.code}</div>
-                                            <div className="voucher-discount">{voucher.discountPercentage}% off for order total price more than {new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice * 1000)}VND</div>
+                                            <div className="voucher-code">
+                                                {voucher.code} - Expires: {new Date(voucher.expiredDate).toLocaleDateString('vi-VN')}
+                                            </div>
+                                            <div className="voucher-discount">{voucher.discountPercentage}% off for order total price more than {new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice)}VND</div>
                                             <div className="voucher-description">{voucher.description}</div>
                                         </div>
                                     ))
@@ -201,19 +212,23 @@ const Cart = () => {
                         
                         {selectedVoucher && (
                             <p className="discount-amount">
-                                Discount: -{new Intl.NumberFormat('vi-VN').format((selectedSubtotal * selectedVoucher.discountPercentage / 100) * 1000)} VND
+                                Discount: -{new Intl.NumberFormat('vi-VN').format((selectedSubtotal * selectedVoucher.discountPercentage / 100))} VND
                             </p>
                         )}
                         
-                        {selectedVoucher && (
-                            <p className="final-price">
-                                <strong>Final Price: {new Intl.NumberFormat('vi-VN').format(finalPrice * 1000)} VND</strong>
+                        <p className="final-price">
+                            <strong>Final Price: {new Intl.NumberFormat('vi-VN').format(finalPrice)} VND</strong>
+                        </p>
+                        
+                        {insufficientFunds && selectedItems.length > 0 && (
+                            <p className="insufficient-funds-warning">
+                                Warning: You don't have enough money for this purchase.
                             </p>
                         )}
                         
                         <button 
                             className="cart-checkout" 
-                            disabled={selectedItems.length === 0}
+                            disabled={selectedItems.length === 0 || insufficientFunds}
                             onClick={() => createOrder()}
                         >
                             Buy Now ({selectedItems.length})
@@ -227,4 +242,4 @@ const Cart = () => {
     );
 }
 
-export default Cart;
+export default Cart;    

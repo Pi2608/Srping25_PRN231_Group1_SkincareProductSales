@@ -100,8 +100,8 @@ const VoucherMng = () => {
               onChange={(e) => handleSearchChange(e)}
               className="search-bar"
             />
-            <Button className="search" onClick={handleSearch} startIcon={<SearchIcon />}>Search</Button>
-            <Button className="add" startIcon={<AddIcon />}>Add Voucher</Button>
+            <button className="search" onClick={handleSearch}><SearchIcon />Search</button>
+            <button className="add"><AddIcon /> Add Voucher</button>
           </div>
           <table className="product-table">
             <thead>
@@ -121,11 +121,11 @@ const VoucherMng = () => {
                   <td>{voucher.code}</td>
                   <td>{voucher.discountPercentage}%</td>
                   <td>{new Date(voucher.expiredDate).toLocaleDateString()}</td>
-                  <td>{new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice * 1000)} VND</td>
+                  <td>{new Intl.NumberFormat('vi-VN').format(voucher.minimumOrderTotalPrice)} VND</td>
                   <td>
                     <div className="voucher-action">
-                      <button onClick={() => handleUpdateClick(voucher)} startIcon={<EditIcon />} className="edit">Edit</button>
-                      <button onClick={() => handleDeleteClick(voucher)} startIcon={<DeleteIcon />} className="delete">Delete</button>
+                      <Button variant="outlined" onClick={() => handleUpdateClick(voucher)} className="edit">Edit</Button>
+                      <Button variant="outlined" onClick={() => handleDeleteClick(voucher)} className="delete">Delete</Button>
                     </div>
                   </td>
                 </tr>

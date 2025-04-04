@@ -53,18 +53,29 @@ namespace BLL.Services.Implements.ProductServices
             return _mapper.Map<ProductDetailViewDto>(existingDetail);
         }
 
-        public async Task<ProductDetail> GetProductDetailByProductId(Guid productId)
+        // public async Task<List<ProductDetailViewDto>> GetProductDetailByProductId(Guid productId)
+        // {
+        //     var productDetails =  (await _unitOfWork.ProductDetailRepository
+        //                 .GetAllAsync(p => p.ProductId == productId, true))
+        //                 .ToListAsync();
+
+        //     if (productDetails.IsNullOrEmpty())
+        //     {
+        //         throw new Exception("No product details found for this productId");
+        //     }
+
+        //     return productDetails;
+        // }
+
+        public async Task<List<ProductDetailViewDto>> GetProductDetailByProductId(Guid productId)
         {
             var productDetails = await _unitOfWork.ProductDetailRepository
-                .GetAllAsync(p => p.ProductId == productId, true);
+                // .GetAllAsync(p => p.ProductId == productId, true);
+                .GetProductDetailsByProductIdAsync(productId);
 
-            if (productDetails.IsNullOrEmpty())
-            {
-                throw new Exception("No product details found for this productId");
-            }
-
-            return productDetails.FirstOrDefault();
+            return productDetails;
         }
+
 
         public async Task<bool> DeleteProductDetail(Guid id)
         {

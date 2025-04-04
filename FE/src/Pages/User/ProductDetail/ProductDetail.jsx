@@ -4,7 +4,7 @@ import Footer from "../../../Components/Footer/Footer";
 import Rating from '@mui/material/Rating';
 import ApiGateway from "../../../Api/ApiGateway";
 import { useAuth } from "../../../AuthContext/AuthContext";
-import { ProductsData } from '../../../data/products';
+import CircularProgress from '@mui/material/CircularProgress';
 import { ToastContainer, toast } from "react-toastify";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,10 +18,13 @@ const ProductDetail = () => {
     const { user } = useAuth();
 
     const [product, setProduct] = useState();
+    const [productDetails, setProductDetails] = useState();
     const [selectedSize, setSelectedSize] = useState("100ml");
+    const [selectedDetail, setSelectedDetail] = useState();
     const [quantity, setQuantity] = useState(1);
     const [reviews, setReviews] = useState([]);
     const [canReview, setCanReview] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [newReview, setNewReview] = useState({
         rating: 0,
         comment: ''
@@ -38,7 +41,9 @@ const ProductDetail = () => {
             fetchProductById(productId).then((product) => {
                 if (product) { 
                     setProduct(product);
-                    setSelectedSize(product.details?.size || "100ml");
+                    setProductDetails(product.details);
+                    setSelectedDetail(product.details[0]);
+                    setSelectedSize(product.details?.[0].size || "100ml");
                 }
             });
             fetchProductReviews(productId);
@@ -47,11 +52,14 @@ const ProductDetail = () => {
 
     const fetchProductById = async (id) => {
         try {
+            setLoading(true);
             const product = await ApiGateway.getProductById(id);
             const details = await ApiGateway.getProductDetailByProductId(id);
             return { ...product, details };
         } catch (error) {
             console.error(`Failed to fetch product ${id}:`, error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -111,35 +119,77 @@ const ProductDetail = () => {
     };
 
     const addToCart = () => {
-        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-
-        const existingProduct = cart.find((item) => item.id === product.id && item.size === selectedSize);
-        
-        if (existingProduct) {
-            existingProduct.quantity += quantity;
-        } else {
-            cart.push({ ...product, size: selectedSize, quantity });
+        if (!user) {
+            displayMsg();
+            return;
         }
-
+        
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    
+        // Create a cart item with the product and its selected detail
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            image: product.image,
+            shortDescription: product.shortDescription,
+            categories: product.categories,
+            details: selectedDetail,
+            quantity: quantity
+        };
+        
+        // Check if this product with the same detail already exists in cart
+        const existingProductIndex = cart.findIndex(item => 
+            item.id === product.id && item.details?.id === selectedDetail?.id
+        );
+        
+        if (existingProductIndex >= 0) {
+            // If exists, just update the quantity
+            cart[existingProductIndex].quantity += quantity;
+        } else {
+            // Otherwise add the new product with its detail
+            cart.push(cartItem);
+        }
+    
         sessionStorage.setItem('cart', JSON.stringify(cart));
-
-        toast.success(`${quantity}x ${product.name} (${selectedSize}) has been added to your cart!`);
+    
+        toast.success(`${quantity}x ${product.name} (${selectedSize}ml) has been added to your cart!`);
     };
-
+    
     const buyNow = () => {
-        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
-
-        const existingProduct = cart.find((item) => item.id === product.id && item.size === selectedSize);
-        
-        if (existingProduct) {
-            existingProduct.quantity += quantity;
-        } else {
-            cart.push({ ...product, size: selectedSize, quantity });
+        if (!user) {
+            displayMsg();
+            return;
         }
-
+        
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    
+        // Create a cart item with the product and its selected detail
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            image: product.image,
+            shortDescription: product.shortDescription,
+            categories: product.categories,
+            details: selectedDetail,
+            quantity: quantity
+        };
+        
+        // Check if this product with the same detail already exists in cart
+        const existingProductIndex = cart.findIndex(item => 
+            item.id === product.id && item.details?.id === selectedDetail?.id
+        );
+        
+        if (existingProductIndex >= 0) {
+            // If exists, just update the quantity
+            cart[existingProductIndex].quantity += quantity;
+        } else {
+            // Otherwise add the new product with its detail
+            cart.push(cartItem);
+        }
+    
         sessionStorage.setItem('cart', JSON.stringify(cart));
-
-        toast.success(`${quantity}x ${product.name} (${selectedSize}) has been added to your cart!`);
+    
+        toast.success(`${quantity}x ${product.name} (${selectedSize}ml) has been added to your cart!`);
         navigate('/cart');
     };
 
@@ -152,6 +202,12 @@ const ProductDetail = () => {
         const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
         return totalRating / reviews.length;
     };
+
+    const setCurrentDetail = (size) => {
+        const detail = productDetails.find((detail) => detail.size === size);
+        setSelectedSize(size)
+        setSelectedDetail(detail);
+    }
     
     return (
         <div id="product-detail">
@@ -164,42 +220,54 @@ const ProductDetail = () => {
                 </button>
             </div>
             <div className="product-container">
-                <div className="product">
-                    <div className="product-image">
-                        <img src={product?.image} alt={product?.name} />
-                    </div>
-
-                    <div className="product-details">
-                        <h4 className="brand">{product?.detail}</h4>
-                        <h1 className="title">{product?.name}</h1>
-                        <div className="rating">
-                            <Rating name="read-only" value={calculateAverageRating(reviews)} precision={0.5}  readOnly />
-                            <span>{reviews.length} review{reviews.length > 1 && 's'}</span>
-                        </div>
-                        <div className="price">
-                            <span className="current-price">{new Intl.NumberFormat('vi-VN').format(product?.details?.price*1000)} VND</span>
-                        </div>
-                        <p className="description">
-                            {product?.shortDescription}
-                        </p>
-
-                        <div className="size-selector">
-                            <span>Size:</span>
-                            <button className={selectedSize === product?.details?.size ? "selected" : ""}
-                                onClick={() => setSelectedSize(product?.details?.size)}>{product?.details?.size}ml</button>
+                {loading ? 
+                    <div className="loading">
+                        <CircularProgress />
+                    </div> 
+                    : 
+                    <div className="product">
+                        <div className="product-image">
+                            <img src={product?.image} alt={product?.name} />
                         </div>
 
-                        <div className="cart-options">
-                            <div className="quantity-selector">
-                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                                <span>{quantity}</span>
-                                <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                        <div className="product-details">
+                            {/* <h4 className="brand">{product?.detail}</h4> */}
+                            <h1 className="title">{product?.name}</h1>
+                            <div className="rating">
+                                <Rating name="read-only" value={calculateAverageRating(reviews)} precision={0.5}  readOnly />
+                                <span>{reviews.length} review{reviews.length > 1 && 's'}</span>
                             </div>
-                            <button className="add-to-cart" onClick={() =>user ? addToCart() : displayMsg() }>Add to Cart</button>
-                            <button className="buy-now" onClick={() =>user ? buyNow() : displayMsg() }>Buy now</button>
+                            <div className="price">
+                                <span className="current-price">{new Intl.NumberFormat('vi-VN').format(selectedDetail?.price)} VND</span>
+                            </div>
+                            <p className="description">
+                                {selectedDetail?.description}
+                            </p>
+
+                            <div className="size-selector">
+                                <span>Size:</span>
+                                {productDetails?.map((detail, index) => (
+                                    <button className={selectedSize === detail?.size ? "selected" : ""}
+                                        onClick={() => setCurrentDetail(detail?.size)}>{detail?.size}ml</button>
+                                ))}
+                            </div>
+
+                            <div className="stock">
+                                <span>Stock: {selectedDetail?.stockQuantity} available</span>
+                            </div>
+
+                            <div className="cart-options">
+                                <div className="quantity-selector">
+                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                    <span>{quantity}</span>
+                                    <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                                </div>
+                                <button className="add-to-cart" onClick={addToCart}>Add to Cart</button>
+                                <button className="buy-now" onClick={buyNow}>Buy now</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
                 <div className="reviews-section">
                     <h2>Customer Reviews</h2>
 
@@ -225,23 +293,35 @@ const ProductDetail = () => {
 
                     {/* Reviews List */}
                     <div className="reviews-list">
-                        {reviews.map((review, index) => (
-                            <div key={index} className="review-item">
-                                <div className="review-header">
-                                    <span className="reviewer-name">{review.user?.account}</span>
-                                    <Rating 
-                                        name="read-only" 
-                                        value={review.rating} 
-                                        readOnly 
-                                        precision={0.5} 
-                                    />
-                                </div>
-                                <p className="review-comment">{review.review}</p>
-                                <span className="review-date">
-                                    {new Date(review.createdAt).toLocaleDateString()}
-                                </span>
+
+                        {loading ? 
+                            <div className="loading">
+                                <CircularProgress/>
                             </div>
-                        ))}
+                            :
+                            reviews.length > 0 ? 
+                                reviews.map((review, index) => (
+                                    <div key={index} className="review-item">
+                                        <div className="review-header">
+                                            <span className="reviewer-name">{review.user?.account}</span>
+                                            <Rating 
+                                                name="read-only" 
+                                                value={review.rating} 
+                                                readOnly 
+                                                precision={0.5} 
+                                            />
+                                        </div>
+                                        <p className="review-comment">{review.review}</p>
+                                        <span className="review-date">
+                                            {new Date(review.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                ))
+                                :
+                                <div className="review-item">
+                                    <p className="review-comment">There are no comment here</p>
+                                </div>
+                        }
                     </div>
                 </div>
             </div>

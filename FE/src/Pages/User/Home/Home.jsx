@@ -4,9 +4,13 @@ import Header from '../../../Components/Header/Header';
 import Footer from '../../../Components/Footer/Footer';
 import Products from './Product/Product';
 import Review from './Review/Review';
+import { useNavigate } from 'react-router-dom';
 import './Home.css'; 
 
 const Home = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className="home">
       <Header/>
@@ -14,7 +18,7 @@ const Home = () => {
       <section className="home-banner">
         <div className='banner-left'>
           <p>Discover the best skincare products tailored for you.</p>
-          <button className='discover'>Discover</button>
+          <button className='discover' onClick={() => navigate('/products')}>Discover</button>
         </div>
         <div className="banner-right">
           <img src={Banner} alt="Banner" />

@@ -17,7 +17,7 @@ namespace BLL.Services.Implements.OrderServices
             _mapper = mapper;
         }
 
-        public async Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, string voucherCode, List<CreateOrUpdateOrderDetail> order)
+        public async Task<List<OrderDetailViewDto>> CreateOrderDetail(Guid orderId, string? voucherCode, List<CreateOrUpdateOrderDetail> order)
         {
             var existingOrder = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
             var user = await _unitOfWork.UserRepository.GetUserById(existingOrder.UserId);
@@ -64,6 +64,7 @@ namespace BLL.Services.Implements.OrderServices
                 var orderAfterUpdate = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
                 orderAfterUpdate.TotalPrice = applyVoucher.TotalPrice;
                 var updateVoucher = await _unitOfWork.OrderRepository.UpdateAsync(existingOrder);
+                await _unitOfWork.UserRepository.ChargeUserForOrder(existingOrder.UserId, orderAfterUpdate.TotalPrice);
                 await _unitOfWork.SaveChangeAsync();
 
                 if (process > 0)
@@ -192,8 +193,7 @@ namespace BLL.Services.Implements.OrderServices
                     throw new Exception("User does not have enough balance to apply this voucher.");
                 }
 
-                user.MoneyAmount -= discountAmount;
-                await _unitOfWork.UserRepository.UpdateAsync(user);
+                await _unitOfWork.UserRepository.ChargeUserForOrder(userId, discountAmount);
             }
 
             order.UpdatedAt = DateTime.Now;
@@ -216,7 +216,5 @@ namespace BLL.Services.Implements.OrderServices
             order.TotalPrice -= discountAmount;
             return discountAmount;
         }
-
-
     }
 }

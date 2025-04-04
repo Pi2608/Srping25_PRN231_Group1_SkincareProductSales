@@ -9,6 +9,7 @@ namespace BLL.Services.Interfaces.IProductServices
         Task<ProductViewDTO> GetProductById(Guid id);
         Task<ProductViewDTO> CreateProduct(CreatProductDTO productDto);
         Task<ProductViewDTO> UpdateProduct(Guid id, CreatProductDTO productDto);
+        Task<bool> SetAvailable(Guid id);
         Task<bool> DeleteProduct(Guid id);
     }
 }
