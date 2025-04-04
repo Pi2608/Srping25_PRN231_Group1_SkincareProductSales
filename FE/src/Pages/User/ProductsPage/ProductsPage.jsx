@@ -80,7 +80,7 @@ const ProductsPage = ()=>{
             <ToastContainer />
 
             <div className='product-container'>
-                <div style={{display: 'flex', gap: "5px", margin: "auto", width: '100%', justifyContent: "center"}}>
+                <div style={{display: 'flex', gap: "5px", margin: "0 auto", width: '100%', justifyContent: "center"}}>
                     <input
                         type="text"
                         placeholder="Search products"

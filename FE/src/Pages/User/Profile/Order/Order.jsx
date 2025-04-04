@@ -52,7 +52,7 @@ const mockOrders = [
 ];
 
 const Order = () => {
-    const { user } = useAuth();
+    const { user, fetchUser } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -102,6 +102,7 @@ const Order = () => {
         } finally {
             setLoading(false);
             setIsModalOpen(false);
+            fetchUser(); 
         }
     };
 
@@ -162,7 +163,7 @@ const Order = () => {
                                             <TableCell>{order.status}</TableCell>
                                             <TableCell>
                                                 <Button
-                                                    variant="contained"
+                                                    variant="outlined"
                                                     color="error"
                                                     onClick={() => handleCancelClick(order.id)}
                                                     disabled={loading || !(order.status === Status.Pending || order.status === Status.Processing)}

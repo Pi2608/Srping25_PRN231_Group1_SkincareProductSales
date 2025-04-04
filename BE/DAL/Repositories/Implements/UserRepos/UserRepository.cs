@@ -64,6 +64,32 @@ namespace DAL.Repositories.Implements.UserRepos
             return result > 0;
         }
 
+        public async Task<bool> ChargeUserForOrder(Guid userId, decimal money)
+        {
+            User? user = await GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.MoneyAmount -= money;
+
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> RefundUserBalance(Guid userId, decimal money)
+        {
+            User? user = await GetUserById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+            user.MoneyAmount += money;
+
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> EditUser(Guid userId, EditUserDTO us, Guid byAdmin)
         {
             User? user = await GetUserById(userId);
